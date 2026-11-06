@@ -278,23 +278,41 @@ export interface BuyResult {
   refusal: ContractError | null;
 }
 
+export interface BuyOptions extends ActionOptions {
+  /**
+   * The listing the buyer confirmed. When given, the purchase is refused before signing if the ask
+   * changed, and the confirmed sync nonce (not one read at click time) goes into the transfer, so a
+   * relist between page load and settlement refunds instead of settling at a different price.
+   */
+  expected?: { ask: U128; syncNonce?: number };
+}
+
 /**
  * Pays the ask in USDC with `usdc.ft_transfer_call(registry, ask, {"action":"acquire","token_id",
- * "expected_sync_nonce"})`. The registry settles atomically: it moves the NFT and the vault's
- * shareholder and pays the seller and the founder royalty, or refunds the buyer in full. The sync
- * nonce makes a purchase against a listing that changed after it was read refund instead of settle.
+ * "expected_sync_nonce"})`. One buyer transaction settles in separate receipts: the vault records
+ * the new shareholder, then the registry moves the NFT and pays the seller and the founder royalty;
+ * if a step fails the buyer is refunded in full. The sync nonce makes a purchase against a listing
+ * that changed after it was read refund instead of settle.
  */
-export async function buyCompany(sender: TxSender, tokenId: string, options: ActionOptions = {}): Promise<BuyResult> {
+export async function buyCompany(sender: TxSender, tokenId: string, options: BuyOptions = {}): Promise<BuyResult> {
   const registry = registryOf(options);
   const listing = await registry.getListing(tokenId);
   if (!listing) throw new ActionRefusedError(`Company ${tokenId} is not listed`, 'ERR_TOKEN_NOT_LISTED');
   if (listing.seller === sender.accountId) {
     throw new ActionRefusedError('The seller cannot buy their own listing', 'ERR_BUYER_IS_SELLER');
   }
+  const expected = options.expected;
+  if (expected && (listing.ask !== expected.ask || (expected.syncNonce !== undefined && listing.sync_nonce !== expected.syncNonce))) {
+    throw new ActionRefusedError(
+      `The listing changed after you saw it: the ask is now ${listing.ask} micro-USDC (you confirmed ${expected.ask}). Reload and confirm again.`,
+      'ERR_LISTING_CHANGED',
+    );
+  }
+  const nonce = expected?.syncNonce ?? listing.sync_nonce;
   const state = await vaultOf(registry, tokenId).getState();
   await requireBalance(state.usdc_token, sender.accountId, BigInt(listing.ask), 'This purchase');
   const results = await sender.send([
-    usdcCalls.acquire(state.usdc_token, registry.registryId, listing.ask, tokenId, listing.sync_nonce),
+    usdcCalls.acquire(state.usdc_token, registry.registryId, listing.ask, tokenId, nonce),
   ]);
   const token = await registry.nftToken(tokenId);
   const acquired = token?.owner_id === sender.accountId;
