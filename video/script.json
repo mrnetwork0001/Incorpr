@@ -1,0 +1,114 @@
+{
+  "title": "Incorpr: a company you can sell in one NFT transfer",
+  "model": "eleven_multilingual_v2",
+  "pronounce": {
+    "NFT": "N F T",
+    "NFT.": "N F T.",
+    "USDC": "U S D C",
+    "USDC,": "U S D C,",
+    "TEE": "T E E",
+    "TEE,": "T E E,",
+    "NEAR": "near",
+    "NEAR.": "near.",
+    "NEAR,": "near,",
+    "Incorpr": "Incorper",
+    "Incorpr,": "Incorper,",
+    "Incorpr.": "Incorper.",
+    "EVM": "E V M",
+    "API": "A P I",
+    "nearblocks.": "near blocks.",
+    "AI": "A I",
+    "NFT,": "N F T,"
+  },
+  "voices": {
+    "narrator": {
+      "name": "Sarah",
+      "id": "EXAVITQu4vr4xnSDxMaL",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.8,
+        "style": 0.2,
+        "use_speaker_boost": true
+      }
+    }
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "seconds": 10,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "A company you can sell in one NFT transfer. This is Incorpr, on NEAR.",
+          "say": "A company you can sell in one N F T transfer. This is Incorper, on near."
+        }
+      ]
+    },
+    {
+      "id": "incorporate",
+      "seconds": 19,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Incorporate a company, and NEAR creates its vault: a sub-account with no owner key. Chain Signatures give that vault its own Bitcoin, Solana and EVM addresses. There is no seed phrase to leak.",
+          "say": "Incorporate a company, and near creates its vault: a sub-account with no owner key. Chain Signatures give that vault its own Bitcoin, Solana and E V M addresses. There is no seed phrase to leak."
+        }
+      ]
+    },
+    {
+      "id": "earn",
+      "seconds": 19,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Customers pay per API call in USDC, or from another chain through NEAR Intents. The vault books revenue only when the tokens arrive. The model runs in a NEAR AI Cloud TEE, and the browser verifies its signature.",
+          "say": "Customers pay per A P I call in U S D C, or from another chain through near Intents. The vault books revenue only when the tokens arrive. The model runs in a near A I Cloud T E E, and the browser verifies its signature."
+        }
+      ]
+    },
+    {
+      "id": "rob",
+      "seconds": 23,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "An AI can be talked into anything. So try it: ask the treasury agent to send the money out. It may agree. The vault does not. Its firewall runs on-chain, and NEAR rejects the transaction. The failed receipt is on nearblocks.",
+          "say": "An A I can be talked into anything. So try it: ask the treasury agent to send the money out. It may agree. The vault does not. Its firewall runs on-chain, and near rejects the transaction. The failed receipt is on near blocks."
+        }
+      ]
+    },
+    {
+      "id": "sell",
+      "seconds": 17,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "To sell, the owner lists the company. The buyer pays, and the NFT and the company move to the buyer in one transaction. Listing freezes the owner's signing, so nothing leaves on the way.",
+          "say": "To sell, the owner lists the company. The buyer pays, and the N F T and the company move to the buyer in one transaction. Listing freezes the owner's signing, so nothing leaves on the way."
+        }
+      ]
+    },
+    {
+      "id": "borrow",
+      "seconds": 14,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Or keep it and borrow. Pledge the NFT, receive a USDC loan, and owner signing stays frozen until the loan is repaid.",
+          "say": "Or keep it and borrow. Pledge the N F T, receive a U S D C loan, and owner signing stays frozen until the loan is repaid."
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "seconds": 14,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Built on NEAR. Every claim links to a transaction. Incorpr, for the NEAR Hackathon.",
+          "say": "Built on near. Every claim links to a transaction. Incorper, for the near Hackathon."
+        }
+      ]
+    }
+  ]
+}
