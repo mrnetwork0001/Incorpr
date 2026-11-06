@@ -1,0 +1,32 @@
+[workspace]
+resolver = "2"
+members = [
+    "company-vault",
+    "incorpr-registry",
+    "integration-tests",
+    "test-doubles/mpc-signer",
+    "test-doubles/intents",
+    "test-doubles/test-usdc",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace.dependencies]
+# Pinned exactly. near-sdk 5.30 added PromiseAction::UniversalStateInit without a feature gate, so
+# every contract built with it imports promise_batch_action_universal_state_init. Mainnet
+# (protocol 87) runs with wasm_config.universal_accounts = false and rejects that wasm at deploy.
+# 5.29.1 is the newest release without it; it keeps the gas-key and global-contract actions,
+# which mainnet does support. scripts/check-wasm-imports.py enforces this after every build.
+near-sdk = "=5.29.1"
+near-contract-standards = "=5.29.1"
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true

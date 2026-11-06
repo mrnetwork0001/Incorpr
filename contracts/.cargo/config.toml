@@ -1,0 +1,3 @@
+# Each sandbox test starts its own node.
+[env]
+RUST_TEST_THREADS = "4"
