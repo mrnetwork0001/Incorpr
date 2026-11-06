@@ -1,0 +1,13 @@
+node_modules/
+out/
+.cache/
+.env
+.env.*
+!.env.example
+public/footage/
+public/stills/
+public/audio/
+public/evidence/
+public/hero
+*.log
+.DS_Store

@@ -1,0 +1,38 @@
+{
+  "name": "incorpr-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync.mjs",
+    "studio": "node scripts/sync.mjs && remotion studio src/index.ts",
+    "draft": "node scripts/sync.mjs && remotion render src/index.ts Incorpr out/draft.mp4 --scale 0.5 --crf 24 --concurrency 8",
+    "render": "node scripts/sync.mjs && remotion render src/index.ts Incorpr out/incorpr-demo-raw.mp4 --image-format jpeg --jpeg-quality 95 --codec h264 --crf 16 --x264-preset medium --pixel-format yuv420p --audio-codec aac --audio-bitrate 320k",
+    "finish": "node scripts/finish.mjs out/incorpr-demo-raw.mp4 out/incorpr-demo.mp4",
+    "poster": "node scripts/sync.mjs && remotion still src/index.ts Poster out/incorpr-thumbnail.png",
+    "banner": "node scripts/sync.mjs && remotion still src/index.ts Banner out/incorpr-x-header.png",
+    "typecheck": "tsc --noEmit",
+    "vo": "node scripts/voiceover.mjs",
+    "vocheck": "node scripts/vocheck.mjs",
+    "sfx": "node scripts/sfx.mjs",
+    "music": "node scripts/music.mjs",
+    "timing": "node scripts/timing.mjs",
+    "capture": "node scripts/capture.mjs",
+    "encode": "node scripts/encode.mjs",
+    "stills": "node scripts/sync.mjs && node scripts/stills.mjs",
+    "look": "node scripts/look.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.530",
+    "@remotion/google-fonts": "4.0.530",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "remotion": "4.0.530"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "4.0.530",
+    "@remotion/renderer": "4.0.530",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.6.0"
+  }
+}
