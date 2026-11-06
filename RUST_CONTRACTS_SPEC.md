@@ -1,3 +1,7 @@
+> **Historical design draft, superseded.** The contracts as built follow `docs/ARCHITECTURE.md`, which wins wherever the two disagree; its section 7 lists each change and the defect it fixes.
+> Notable differences: the vault builds and hashes every payload itself, revenue is booked only through `ft_on_transfer`, and a freeze alone is not treated as protection against pre-signed transactions.
+> Code: `contracts/`. Tests: `cd contracts && cargo test --workspace` (78 tests). Start with `README.md`.
+
 # 🦀 Incorpr — Multi-Contract Rust Specification (`near-sdk 5.x`)
 
 This document gives Claude Code the exact Rust data structures, cross-contract interfaces (`v1.signer` MPC + Sub-account deployment), WASM byte-level firewall rules, dynamic `NEP-177` SVG generator, and `near-workspaces` integration tests required for **Incorpr**.

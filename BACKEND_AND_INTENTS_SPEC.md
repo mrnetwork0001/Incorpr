@@ -1,3 +1,7 @@
+> **Historical design draft, superseded.** The code as built follows `docs/ARCHITECTURE.md`, which wins wherever the two disagree; its section 7 lists each change and the defect it fixes.
+> Notable differences: TEE approvals are checked on-chain with `ecrecover`, the agent acts through a vault-only `intents.near` key instead of per-quote deposit addresses, and treasury rebalance execution is not in this release.
+> Code: `web/src/lib/` and `web/src/app/api/`. Start with `README.md`.
+
 # 🌐 Incorpr — TEE Inference, Multichain MPC Derivation & NEAR Intents Recipes
 
 This guide provides the exact TypeScript modules for `web/src/lib/` to connect **NEAR Chain Signatures (`v1.signer`)**, **NEAR AI Cloud TEE (`cloud-api.near.ai/v1`)**, and **NEAR Intents (`1click.chaindefuser.com`)**.
