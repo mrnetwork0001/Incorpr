@@ -363,7 +363,7 @@ export function CompanyCard(props: CardProps) {
           <span className={s.tokenId}>#{tokenId}</span>
           <EncumbrancePill state={label} />
         </div>
-        <ButtonLink variant="secondary" href={`/company/${tokenId}`} arrow>
+        <ButtonLink variant="secondary" href={`/company/${tokenId}`}>
           Cockpit
         </ButtonLink>
       </header>

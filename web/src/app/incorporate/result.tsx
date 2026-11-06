@@ -181,7 +181,7 @@ export function IncorporatedResult({ result, registryId, onReset }: { result: In
       </div>
 
       <div className={s.resultActions}>
-        <ButtonLink href={`/company/${tokenId}`} arrow>
+        <ButtonLink href={`/company/${tokenId}`}>
           Open the company
         </ButtonLink>
         <Button variant="secondary" onClick={onReset}>

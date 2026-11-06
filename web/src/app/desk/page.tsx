@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: 'Capital Markets Desk | Incorpr' };
 export default function DeskPage() {
   const { network, registryId } = getNetworkConfig();
   return (
-    <AppShell handoff={false}>
+    <AppShell>
       <PageHeader
         eyebrow="Capital Markets Desk"
         index="04"

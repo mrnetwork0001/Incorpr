@@ -55,7 +55,7 @@ export default async function ExchangePage() {
   const revenue = rows.reduce((sum, r) => sum + BigInt(r.company.revenue_30d), 0n);
 
   return (
-    <AppShell handoff={false}>
+    <AppShell>
       <PageHeader
         eyebrow="Exchange"
         index="01"
@@ -101,7 +101,7 @@ export default async function ExchangePage() {
           </Notice>
         )}
         {board.kind === 'ready' && board.rows.length === 0 && (
-          <Notice tone="empty" title="No companies yet" action={<ButtonLink href="/incorporate" arrow>Incorporate the first one</ButtonLink>}>
+          <Notice tone="empty" title="No companies yet" action={<ButtonLink href="/incorporate">Incorporate the first one</ButtonLink>}>
             <p>
               <code className={s.code}>{board.registryId}</code> has no companies incorporated.
             </p>

@@ -78,7 +78,7 @@ function SafetyPanel() {
 export default async function RobPage() {
   const target = await targetView();
   return (
-    <AppShell handoff={false}>
+    <AppShell>
       <PageHeader
         eyebrow="Rob this company"
         title="The agent can be talked into it."

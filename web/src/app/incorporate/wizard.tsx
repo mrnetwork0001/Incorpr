@@ -365,7 +365,7 @@ export function IncorporateWizard({
                 <span />
               )}
               <div className={s.actionsRight}>
-                <Button onClick={next} arrow>
+                <Button onClick={next}>
                   {step === 2 ? 'Review' : 'Continue'}
                 </Button>
               </div>
@@ -541,11 +541,11 @@ function ReviewStep({
         </div>
         <div className={s.actionsRight}>
           {!wallet.accountId && !wallet.unavailableReason ? (
-            <Button onClick={wallet.signIn} disabled={!wallet.ready} arrow>
+            <Button onClick={wallet.signIn} disabled={!wallet.ready}>
               Connect wallet
             </Button>
           ) : (
-            <Button onClick={onSubmit} disabled={Boolean(blocker)} busy={busy} busyLabel="Signing" arrow>
+            <Button onClick={onSubmit} disabled={Boolean(blocker)} busy={busy} busyLabel="Signing">
               {cost.status === 'ok' ? `Incorporate for ${formatNear(cost.yocto)}` : 'Incorporate'}
             </Button>
           )}

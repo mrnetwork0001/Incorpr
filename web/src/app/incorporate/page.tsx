@@ -26,7 +26,7 @@ export default async function IncorporatePage() {
   const cost = await readCost(registryId);
 
   return (
-    <AppShell handoff={false}>
+    <AppShell>
       <div className={s.page}>
         <PageHeader
           eyebrow="Incorporate"

@@ -360,7 +360,7 @@ function AttemptPanel({
               aria-describedby={invalid ? 'rob-destination-error' : 'rob-destination-hint'}
             />
           </Field>
-          <Button onClick={() => void run()} busy={running} busyLabel="Sending transactions" disabled={invalid} arrow>
+          <Button onClick={() => void run()} busy={running} busyLabel="Sending transactions" disabled={invalid}>
             Try to move the money
           </Button>
           <p className={s.hint}>

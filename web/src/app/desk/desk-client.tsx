@@ -38,7 +38,7 @@ export function Desk({ registryId, network }: { registryId: string; network: str
         tone="empty"
         title="Connect a wallet"
         action={
-          <Button onClick={wallet.signIn} arrow>
+          <Button onClick={wallet.signIn}>
             Connect wallet
           </Button>
         }
@@ -164,7 +164,7 @@ function DeskLoaded({ registryId, accountId, sender }: { registryId: string; acc
             title={`${accountId} owns no companies on ${registryId}`}
             action={
               <div className={s.actions}>
-                <ButtonLink href="/incorporate" arrow>
+                <ButtonLink href="/incorporate">
                   Incorporate one
                 </ButtonLink>
                 <ButtonLink variant="secondary" href="/exchange">
