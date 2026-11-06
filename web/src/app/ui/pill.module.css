@@ -1,0 +1,53 @@
+/* Encumbrance state pill: FREE teal, LISTED amber, PLEDGED lilac. */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pill) 9%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--pill) 38%, transparent),
+    0 0 18px -8px var(--pill);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--pill);
+}
+
+.pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--pill);
+  box-shadow: 0 0 8px var(--pill);
+}
+
+.free {
+  --pill: #79d4c0;
+}
+
+.listed {
+  --pill: #f0a24c;
+}
+
+.pledged {
+  --pill: #c9b3ff;
+}
+
+.pledged::before {
+  /* A square marks a lien, so the states differ by shape as well as colour. */
+  border-radius: 1.5px;
+}
+
+.listed::before {
+  border-radius: 1px;
+  transform: rotate(45deg) scale(0.9);
+}
