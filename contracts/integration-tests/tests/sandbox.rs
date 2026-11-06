@@ -50,21 +50,35 @@ fn wasm(name: &str) -> Result<Vec<u8>> {
 
 /// The nearcore release mainnet validators run (RPC `status`, 2026-11-06).
 const MAINNET_NEARCORE: &str = "2.14.0";
-/// Mainnet's current protocol version. nearcore 2.14.0 starts a fresh genesis at 88, where
-/// `universal_accounts` is enabled; at 87 the node's runtime_config matches mainnet key for key
+/// Default genesis protocol. nearcore 2.14.0 starts a fresh genesis at 88, where
+/// `universal_accounts` is enabled; at 87 the node's runtime_config matched mainnet key for key
 /// (compared against EXPERIMENTAL_protocol_config from rpc.mainnet.fastnear.com), including
-/// wasm_config.universal_accounts = false. Running every test here means every contract deploy
-/// in this suite is a deploy mainnet would accept.
+/// wasm_config.universal_accounts = false. Mainnet moved to 88 on 2026-11-06; run the suite with
+/// INCORPR_SANDBOX_PROTOCOL=88 to cover both. A long-lived node upgrades itself after a few epochs,
+/// so the version is asserted at startup only.
 const MAINNET_PROTOCOL: u32 = 87;
+
+/// Genesis protocol for this run: 87 by default, or INCORPR_SANDBOX_PROTOCOL (for example 88, which
+/// mainnet has run since 2026-11-06) to run the same suite on the newer runtime.
+fn sandbox_protocol() -> Result<u32> {
+    match std::env::var("INCORPR_SANDBOX_PROTOCOL") {
+        Ok(v) if !v.trim().is_empty() => v
+            .trim()
+            .parse()
+            .map_err(|e| anyhow!("INCORPR_SANDBOX_PROTOCOL must be a protocol version, got {v:?}: {e}")),
+        _ => Ok(MAINNET_PROTOCOL),
+    }
+}
 
 /// Starts a local node pinned to mainnet's runtime and connects near-workspaces to it. The
 /// returned `near_sandbox::Sandbox` owns the node process; dropping it stops the node.
 async fn mainnet_runtime_sandbox() -> Result<(near_sandbox::Sandbox, Worker<Sandbox>)> {
+    let want = sandbox_protocol()?;
     let config = near_sandbox::SandboxConfig {
         // near-workspaces adds this account to its own sandboxes; tests that create top-level
         // accounts go through it.
         additional_accounts: vec![near_sandbox::GenesisAccount::default_with_name("registrar".parse()?)],
-        additional_genesis: Some(json!({ "protocol_version": MAINNET_PROTOCOL })),
+        additional_genesis: Some(json!({ "protocol_version": want })),
         ..Default::default()
     };
     let node = near_sandbox::Sandbox::start_sandbox_with_config_and_version(config, MAINNET_NEARCORE)
@@ -75,7 +89,7 @@ async fn mainnet_runtime_sandbox() -> Result<(near_sandbox::Sandbox, Worker<Sand
         .validator_key(ValidatorKey::HomeDir(node.home_dir.path().to_path_buf()))
         .await?;
     let protocol = worker.status().await?.protocol_version;
-    anyhow::ensure!(protocol == MAINNET_PROTOCOL, "sandbox runs protocol {protocol}, want {MAINNET_PROTOCOL}");
+    anyhow::ensure!(protocol == want, "sandbox runs protocol {protocol}, want {want}");
     Ok((node, worker))
 }
 
@@ -4121,7 +4135,8 @@ fn single_import_module(host_fn: &str, i64_params: u8) -> Vec<u8> {
     module
 }
 
-/// The near-sdk 5.30 failure mode, reproduced on the mainnet-pinned node. The runtime does not
+/// The near-sdk 5.30 failure mode, reproduced on a protocol-87 node (at 88 the test checks the
+/// import links instead). The runtime does not
 /// check imports at deploy time: a contract importing promise_batch_action_universal_state_init
 /// deploys, then every call into it fails to link, `new` included, so the account holds code that
 /// can never run. The same module importing log_utf8 deploys and runs, so the failure comes from the
@@ -4141,6 +4156,12 @@ async fn test_mainnet_runtime_cannot_link_universal_state_init_import() -> Resul
     let deployed = gated.deploy(&single_import_module("promise_batch_action_universal_state_init", 4)).await?;
     assert!(deployed.is_success(), "deploy-time behaviour changed: {:?}", deployed.details.failures());
     let call = gated.call(gated.id(), "noop").transact().await?;
-    assert_failed(&call, "Link Error: unknown or invalid import");
+    if sandbox_protocol()? >= 88 {
+        // Protocol 88 enables universal_accounts, so the same import links and the call runs.
+        // Mainnet has run 88 since 2026-11-06; the 5.29.1 pin stays so the wasm also runs on 87.
+        assert_ok(&call);
+    } else {
+        assert_failed(&call, "Link Error: unknown or invalid import");
+    }
     Ok(())
 }
