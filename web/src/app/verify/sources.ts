@@ -41,6 +41,7 @@ export interface TestLocation {
 
 export const TEST_FILES: { file: string; kind: TestLocation['kind'] }[] = [
   { file: 'contracts/integration-tests/tests/sandbox.rs', kind: 'sandbox' },
+  { file: 'contracts/integration-tests/tests/transfer_races.rs', kind: 'sandbox' },
   { file: 'contracts/company-vault/src/lib.rs', kind: 'unit' },
   { file: 'contracts/company-vault/src/chain.rs', kind: 'unit' },
   { file: 'contracts/incorpr-registry/src/lib.rs', kind: 'unit' },
@@ -249,6 +250,8 @@ export interface Evidence {
     usdc_token?: string;
     protocol_version?: number;
     registry_code_hash?: string;
+    /** In-place code upgrades by scripts/upgrade-registry.mjs, oldest first. */
+    registry_upgrades?: { from_code_hash: string; to_code_hash: string; tx_hash: string; explorer_url?: string | null; at: string; state_unchanged: boolean | null }[];
     vault_wasm_sha256?: string;
     incorporation_cost_yocto?: string;
     updated_at?: string;

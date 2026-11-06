@@ -77,6 +77,7 @@ function LiveChecks({ report, evidence }: { report: LiveReport; evidence: Eviden
   const vaultMethods = abiMethods('company_vault');
   const upgradeLike = vaultMethods?.filter((m) => UPGRADE_NAMES.test(m)) ?? [];
   const evidenceHash = evidence.kind === 'ok' ? (evidence.evidence.deployment.registry_code_hash ?? null) : null;
+  const lastUpgrade = evidence.kind === 'ok' ? (evidence.evidence.deployment.registry_upgrades?.at(-1) ?? null) : null;
 
   return (
     <div className={v.stack}>
@@ -171,9 +172,13 @@ function LiveChecks({ report, evidence }: { report: LiveReport; evidence: Eviden
                   detail={`On chain ${registry.codeHash}${repoRegistry ? `, repo ${nearCodeHash(repoRegistry)}` : ', repo wasm not in this deployment'}`}
                 />
                 <CheckRow
-                  label="Registry code hash equals the one recorded at deploy"
+                  label="Registry code hash equals the evidence log (deploy, or its latest upgrade)"
                   status={registry.evidenceMatch}
-                  detail={evidenceHash ? `Evidence log: ${evidenceHash}` : 'No deploy record in the evidence log'}
+                  detail={
+                    evidenceHash
+                      ? `Evidence log: ${evidenceHash}${lastUpgrade ? `, upgraded in place from ${shortHash(lastUpgrade.from_code_hash)} by tx ${shortHash(lastUpgrade.tx_hash)}` : ''}`
+                      : 'No deploy record in the evidence log'
+                  }
                 />
                 <CheckRow
                   label="Full access keys on the registry account"
@@ -538,7 +543,7 @@ export default async function VerifyPage() {
   const reality = realityRows(report, evidence, tests);
 
   return (
-    <AppShell handoff={false}>
+    <AppShell>
       <div className={v.page}>
         <PageHeader
           eyebrow="Verify"

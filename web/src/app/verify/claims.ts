@@ -245,6 +245,78 @@ export const CLAIMS: Claim[] = [
     live: 'charter-hash',
   },
   {
+    id: 'transfer-races',
+    claim:
+      'A payout that is still in flight when the company is sold, pledged or moved cannot pay the seller twice or send the buyer\'s money to the seller. Each race runs both transactions in the same blocks and checks whichever order the chain produced.',
+    source: 'Security model: transfer threat model (docs/THREAT_MODEL.md, A8)',
+    methods: ['claim_dividends', 'on_dividends_paid', 'nft_transfer_payout', 'list_company', 'accept_offer', 'pay_compute_bill', 'agent_deposit_to_intents', 'withdraw_pending'],
+    tests: [
+      'test_claim_in_flight_when_a_marketplace_sale_lands',
+      'test_failed_claim_restores_to_the_company_after_an_owner_transfer',
+      'test_listing_with_a_claim_in_flight_is_safe_for_the_buyer',
+      'test_pledge_with_a_claim_in_flight_honours_lender_terms',
+      'test_customer_payment_mid_sale_is_booked_to_the_company_for_the_buyer',
+      'test_failed_compute_bill_during_a_sale_restores_the_reserve',
+      'test_intents_deposit_in_flight_when_an_owner_transfer_lands',
+      'test_concurrent_acquires_settle_once_and_refund_the_rest',
+      'test_failed_sale_payouts_stay_with_the_seller_through_a_resale',
+      'test_principal_and_repayment_payouts_through_a_repay_and_a_sale',
+      'test_auction_proceeds_and_pledge_period_revenue_reach_the_right_accounts',
+      'test_cancel_racing_accept_pays_the_principal_once',
+      'test_repay_racing_a_bid_settles_once',
+    ],
+    evidence: { steps: ['dividends'], methods: ['claim_dividends'] },
+    note:
+      'These tests live in contracts/integration-tests/tests/transfer_races.rs. A failed dividend transfer goes back to retained_earnings, which belongs to whoever is shareholder when the callback runs; a failed registry payout stays credited to its account. No failed payout has happened on mainnet.',
+  },
+  {
+    id: 'owner-room',
+    claim:
+      'The owner room at /company/<id>/owner opens only for the account nft_token names as owner. Access is checked against the chain on every request, so a sale moves it to the buyer.',
+    source: 'Company page: Owner room, holder only',
+    methods: ['nft_token'],
+    tests: [
+      'opens for the holder and refuses the same cookie once nft_token names someone else',
+      'ends the session once the key that signed in is deleted or downgraded, while the account still holds the token',
+      'answers 401 without a cookie, 403 after a sale, and passes the holder',
+      'refuses a function-call access key',
+      'refuses a signature for another recipient',
+      'issues a challenge for the configured host when a relay sends X-Forwarded-Host: phish.example',
+    ],
+    evidence: {},
+    note:
+      'Vitest tests in web/tests/ownerAuth.test.ts, with real NEP-413 signatures and a mocked RPC; web/tests/ownerAuth.live.test.ts reads nft_token and view_access_key on mainnet. Sign-in needs a full access key. A real wallet sign-in by the mainnet holder has not been run yet. The settings the room groups are public through get_state.',
+  },
+  {
+    id: 'history',
+    claim:
+      'Each company page lists what the NFT earned, what it paid out, what was refused, and who held it, rebuilt from contract event logs and reconciled with the vault\'s own counters.',
+    source: 'Company page: History',
+    methods: ['ft_on_transfer', 'claim_dividends', 'nft_transfer', 'get_state'],
+    tests: [
+      'ignores ft_on_transfer called directly by an account that is not the USDC contract (constructed)',
+      'FastNEAR lists and returns every evidence transaction',
+    ],
+    evidence: { steps: ['pay', 'buy', 'dividends'] },
+    note:
+      'Vitest tests in web/tests/history.parser.test.ts (real mainnet logs) and web/tests/history.live.test.ts (read-only mainnet). An event counts only when the contract that owns its standard logged it. Without FASTNEAR_API_KEY the route can fall back to NearBlocks and archival RPC, which miss intents.near settlements that name the vault only in a log.',
+  },
+  {
+    id: 'operator-key',
+    claim:
+      'The web server can sign as the operator with a function-call key that reaches one vault, five non-payable methods and a gas allowance. It cannot transfer NEAR, attach a deposit, add or delete keys, or call another contract.',
+    source: 'Security model: who holds which key (docs/OPERATOR_KEY.md)',
+    methods: ['record_service_call', 'setup_intents_key', 'agent_deposit_to_intents', 'agent_swap_intent', 'agent_withdraw_intent'],
+    tests: [
+      'the chain refuses a NEAR transfer, AddKey, DeleteKey, another contract, a deposit and an unlisted method',
+      'allowance: only burnt gas is deducted, and a call is refused when the allowance cannot cover its prepaid gas',
+      '--replace that stops before its transaction leaves the key files matching the chain, and a rerun still deletes the old key',
+    ],
+    evidence: {},
+    note:
+      'Vitest tests in web/tests/operatorKey.sandbox.e2e.test.ts, run against a local sandbox. Not yet switched on mainnet: operator.incorpr.near holds one full access key, and the web server signs with it until scripts/operator-key.mjs --network mainnet --confirm-mainnet runs.',
+  },
+  {
     id: 'runtime',
     claim: "The contracts link on mainnet's runtime.",
     source: 'Build status',
@@ -294,6 +366,8 @@ export const KEY_HOLDERS: KeyRow[] = [
       "Choose a withdrawal destination other than the company's own addresses",
       'Report revenue, or use the agent methods while encumbered',
     ],
+    trust:
+      'On mainnet operator.incorpr.near holds one full access key, which can also move the USDC it receives as compute_payee. scripts/operator-key.mjs adds a function-call key for the web server, limited to one vault and the operator methods; it has been rehearsed on a sandbox and not yet run on mainnet (docs/OPERATOR_KEY.md).',
   },
   {
     holder: 'Registry',
@@ -301,7 +375,7 @@ export const KEY_HOLDERS: KeyRow[] = [
     can: ['sync_owner, begin_transit and apply_encumbrance on its own vaults', 'Hold the NFT, the listing book and the loan book'],
     never: ["Sign anything on the vault's behalf", 'Move vault USDC or call the shareholder methods'],
     trust:
-      'The registry account itself keeps a full access key on the deployer machine, so its code can be redeployed until that key is deleted (docs/DEPLOY.md). The live check above counts its keys.',
+      'The registry account itself keeps a full access key on the deployer machine. Until it is deleted, that key can redeploy the registry, call sync_owner or apply_encumbrance on any vault directly to name a new shareholder, and move USDC the registry holds (docs/THREAT_MODEL.md section 4.1). The never list above holds for the code, not for that key. The live check above counts its keys.',
   },
   {
     holder: 'Buyer',
