@@ -381,8 +381,8 @@
 
 .statGrid {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 20px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
 }
 
 .stat {
@@ -755,15 +755,19 @@ a.addressText:hover {
   line-height: 1.35;
 }
 
+/* Block, not grid: inline children (text, <code>, links) must flow as one paragraph. */
 .noticeBody {
   margin-top: 8px;
-  display: grid;
-  gap: 10px;
+  display: block;
   max-width: 44rem;
   font-size: 14.5px;
   line-height: 1.6;
   color: var(--ui-grey-1);
   overflow-wrap: anywhere;
+}
+
+.noticeBody > * + * {
+  margin-top: 10px;
 }
 
 .noticeBody code {
@@ -782,13 +786,14 @@ a.addressText:hover {
 
 /* ---------- Tabs ---------- */
 
+/* Wraps instead of scrolling, so no tab is hidden past the edge of a narrow panel. */
 .tabList {
   display: flex;
+  flex-wrap: wrap;
   max-width: 100%;
   gap: 4px;
-  overflow-x: auto;
   padding: 4px;
-  border-radius: 999px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.02);
   box-shadow: inset 0 0 0 1px var(--ui-hair);
   scrollbar-width: none;
@@ -801,7 +806,11 @@ a.addressText:hover {
 
 .tab {
   display: inline-flex;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: left;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
@@ -1108,8 +1117,10 @@ a.addressText:hover {
   .hover,
   .hover:hover,
   .primary,
+  .primary:not(:disabled):not([aria-disabled='true']):hover,
   .primary::after,
-  .arrow {
+  .arrow,
+  .btn:not(:disabled):hover .arrow {
     transition: none;
     transform: none;
   }

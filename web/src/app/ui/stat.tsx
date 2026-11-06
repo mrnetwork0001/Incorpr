@@ -38,7 +38,7 @@ export function Stat({ label, value, unit, hint, tone = 'default', size = 'md' }
   );
 }
 
-/** Responsive grid for Stat: as many 170px columns as fit, one column on a phone. */
+/** Responsive grid for Stat: as many 140px columns as fit, two on a phone, one column on a phone. */
 export function StatGrid({ children, className }: { children: ReactNode; className?: string }) {
   return <div className={[k.statGrid, className].filter(Boolean).join(' ')}>{children}</div>;
 }

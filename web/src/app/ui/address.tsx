@@ -8,7 +8,7 @@ export type AddressProps = {
   chain?: Chain;
   /** "address" links the explorer's account page, "tx" its transaction page. */
   target?: ExplorerTarget;
-  /** Characters kept at each end. Defaults 8 and 6. */
+  /** Characters kept at each end. Defaults 8 and 6; 18 and 10 for NEAR account ids. */
   head?: number;
   tail?: number;
   /** Show the whole value, wrapping anywhere, instead of truncating the middle. */
@@ -25,15 +25,17 @@ export function Address({
   value,
   chain = 'near',
   target = 'address',
-  head = 8,
-  tail = 6,
+  head,
+  tail,
   full,
   noLink,
   showChain,
   className,
 }: AddressProps) {
   const href = noLink ? null : explorerHref(chain, target, value);
-  const shown = full ? value : middleTruncate(value, head, tail);
+  // NEAR account ids are read by name, so they keep more of each end than hashes and L1 addresses.
+  const nearAccount = chain === 'near' && target === 'address';
+  const shown = full ? value : middleTruncate(value, head ?? (nearAccount ? 18 : 8), tail ?? (nearAccount ? 10 : 6));
   const textClass = [k.addressText, full && k.addressWrap].filter(Boolean).join(' ');
   const kind = target === 'tx' ? 'transaction' : 'address';
   return (
