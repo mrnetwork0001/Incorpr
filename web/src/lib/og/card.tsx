@@ -317,7 +317,8 @@ export async function renderCard(node: ReactElement, { maxAge = 300 }: { maxAge?
   const fonts = await loadOgFonts();
   return new ImageResponse(node, {
     ...OG_SIZE,
-    fonts: fonts.map((f) => ({ name: f.name, data: f.data, weight: f.weight, style: f.style })),
+    // An empty list makes next/og fail with "No fonts are loaded"; leave it out to use the bundled font.
+    ...(fonts.length > 0 ? { fonts: fonts.map((f) => ({ name: f.name, data: f.data, weight: f.weight, style: f.style })) } : {}),
     headers: { 'cache-control': `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${maxAge * 4}` },
   });
 }

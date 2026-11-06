@@ -39,7 +39,8 @@ export function parseFontFaces(css: string): FaceRef[] {
 }
 
 async function fetchWithTimeout(url: string): Promise<Response> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), cache: 'no-store' });
+  // Font files never change, and a no-store fetch stops Next from prerendering the static cards at build time.
+  const res = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS), cache: 'force-cache' });
   if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
   return res;
 }
