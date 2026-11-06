@@ -100,7 +100,7 @@ node scripts/demo.mjs --network mainnet --confirm-mainnet --all --token 1
 | `rug-listed` | Owner tries `claim_dividends`, `request_shareholder_signature` (BTC key) and `nft_transfer`. All three are recorded as failed transactions with `ERR_ACCOUNT_ENCUMBERED_CLAIM_FROZEN`, `ERR_ACCOUNT_ENCUMBERED_SIGNING_FROZEN` and `ERR_TOKEN_ENCUMBERED`. A different error, or a success, stops the demo |
 | `buy` | `demo-buyer` acquires through `ft_transfer_call` `{"action":"acquire","expected_sync_nonce":N}`. On a rerun the seller is `demo-buyer` and the founder buys back |
 | `lend` / `borrow` / `rug-pledged` / `repay` | Lender prepays storage and funds a 1.00 USDC offer at 1.01 repay. Owner `accept_offer` (vault becomes Pledged), the rug attempts are refused, then the owner repays |
-| `rebalance` | Prints the planned BTC/SOL trade for retained earnings and records real 1Click `dry: true` quotes next to the vault's price floor. Nothing is executed. `--execute` is refused |
+| `rebalance` | Runs `scripts/rebalance.mjs` for the company, sized to its USDC on `intents.near` plus retained earnings (or `--quote-usdc`). Without `--execute`: key and deposit checks, balances and a live solver relay quote against the vault's price floor, read-only, no NEAR AI call. With `--execute`: the full run in section 4d |
 | `dividends` | Shareholder `claim_dividends(retained_earnings)` |
 | `btc-send` | If the treasury `bc1…` address holds confirmed UTXOs and `--btc-to` is given, the script builds a P2WPKH spend and has `request_shareholder_signature` sign each BIP-143 sighash through `v1.signer`. It checks each signature against the derived key, then broadcasts to mempool.space. Without UTXOs it reports the address and skips |
 
@@ -118,16 +118,63 @@ node scripts/rob-setup.mjs --network mainnet --confirm-mainnet   # creates rob.i
 
 Each attempt prepays 30 TGas (60 for the two TEE-proof swaps) and stops when a signer falls below `ROB_MIN_BALANCE_NEAR` (default 0.1) plus its largest prepaid gas. The operator was funded with 0.3 NEAR at deploy and also pays for `record_service_call`; top it up before opening `/rob` to visitors.
 
+## 4c. Upgrade the registry code in place
+
+`scripts/upgrade-registry.mjs` replaces the code of a live registry with `contracts/res/incorpr_registry.wasm`: one `DeployContract` action from the registry to itself, signed with the `incorpr.near` key, with no init or migration call. Use it only for changes that keep the borsh state layout and every storage key, such as the charter renderer. The vaults are not touched: their code is fixed at incorporation, and `company_vault.wasm` inside the new registry is byte-identical to the old one.
+
+```bash
+scripts/build-contracts.sh                                          # same hashes on every build
+node scripts/upgrade-registry.mjs --network mainnet --dry-run        # reads chain and files only, no key
+node scripts/upgrade-registry.mjs --network mainnet --confirm-mainnet
+node scripts/evidence.mjs --network mainnet
+```
+
+What the script checks:
+
+- The wasm import check, then that the registry runs either the code hash recorded in `docs/evidence/mainnet.json` (`deployment.registry_code_hash`) or the new one. If it already runs the new one, it sends nothing.
+- The registry's free balance against the 10x gas prepay rule plus the new code's storage, and that at least the 0.5 NEAR reserve stays free.
+- Before and after the deploy, at final finality: sha256 of every stored value (`view_state`), and every view (supply, metadata, costs, `list_companies`, and per token `nft_token` without media, `get_company`, `get_listing`, `get_loan`, `get_offers`, `nft_payout`). Each charter must come from the new renderer, and `media_hash` must be the sha256 of the SVG.
+
+As soon as the deploy lands, the script moves `deployment.registry_code_hash` to the new hash and appends an entry to `deployment.registry_upgrades` with the transaction. Afterwards it sets that entry's `state_unchanged` and `charter_checks_passed`. If a read fails after the deploy, rerun the same command: it sees the new code, sends nothing and runs the checks again. If the evidence file missed the transaction, add `--upgrade-tx <hash>`. The script checks on chain that it is a successful `DeployContract` from the registry to itself, then records it.
+
+Run it while nothing else sends to the registry (no demo steps, `/rob` closed). A transaction between the two snapshots shows up as a changed key, and the script then exits non-zero even though the upgrade landed. The sandbox rehearsal is `node scripts/upgrade-registry.mjs --network sandbox` against a sandbox deployed from the old wasm. `test_upgrade_from_the_mainnet_registry_keeps_state` does the same in `cargo test`, from `contracts/integration-tests/fixtures/incorpr_registry-776418c.wasm`, the code first deployed as `incorpr.near`.
+
+## 4d. Execute a treasury rebalance
+
+`scripts/rebalance.mjs` sells USDC from the vault for SOL (or BTC) through NEAR Intents:
+
+| Step | What happens |
+|---|---|
+| a | `setup_intents_key` (operator): the vault registers its MPC-derived ed25519 key, path `incorpr-<id>-intents`, on `intents.near`. Once per vault |
+| b | `agent_deposit_to_intents` (operator) moves retained earnings to `intents.near`. If retained earnings are short and `--fund-from` is given, the current shareholder pays the vault first. A shareholder payment is booked as related-party revenue, outside `gross_revenue` and `revenue_30d`. If the shareholder lacks USDC, the `--fund-from` account sends it the missing amount with a plain `ft_transfer`, which books no revenue |
+| c | `intents.near` balances before |
+| d | Live solver relay quote, checked against the allowlist, the 24 h cap and the price floor |
+| e | The vault's `swap_tee_request` body sent unchanged to NEAR AI Cloud. The answer must be `APPROVE <proposal_hash>`, and the signature must recover to an address in the vault's `tee_signers` |
+| f | `agent_swap_intent` (operator): the vault runs its firewall again, signs the NEP-413 `token_diff` through `v1.signer` and returns it. The script checks the signature against the registered key |
+| g | `publish_intent` to the solver relay with the quote hash, `get_status` until `SETTLED`, balances after |
+
+```bash
+node scripts/rebalance.mjs --network mainnet --dry-run --sell-usdc 0.5 --fund-from demo-customer.incorpr.near
+node scripts/rebalance.mjs --network mainnet --confirm-mainnet --sell-usdc 0.5 --fund-from demo-customer.incorpr.near
+node scripts/evidence.mjs --network mainnet
+```
+
+The dry run sends nothing. It does make one real NEAR AI call, unless `--no-approve` is given. Key files needed for the real run: `operator.incorpr.near`, the shareholder (`demo-buyer.incorpr.near` for token 1 today), and the `--fund-from` account. Each run is written to `docs/evidence/rebalance-mainnet.json`. If the run stops after signing, the same command resumes publishing or polling while the quote and the intent deadline allow it. The script refuses to sign a new intent while one the vault signed earlier is still live (`latest_intent_deadline_ms`, block time + 300 s). That intent can still settle. While it is live the vault also refuses a listing, a pledge, a sale settlement and a transfer to a new owner (`ERR_UNEXPIRED_SIGNED_INTENTS`).
+
+Limits seen on 2026-11-06: solvers answered 0.5 USDC to SOL, but not 1 or 5 USDC, and not USDC to BTC. A `min_deadline_ms` of 60 to 180 s was answered; 240 and 300 s were not. If `agent_swap_intent` fails with `ERR_INSUFFICIENT_GAS_FOR_SIGNATURE`, rerun with `--swap-gas-tgas 120`. The relay may require a partner key for `publish_intent`. If it answers with an auth error, set `NEAR_INTENTS_RELAY_API_KEY` and rerun before the quote expires.
+
+The Cockpit's Execute button (`POST /api/rebalance`) runs the same steps a, b and d to g with the server's operator key. It funds only from retained earnings. On mainnet it stays off unless `INCORPR_ALLOW_MAINNET_REBALANCE=true`. The route has no login: anyone who can reach it can start a run for any company whose operator is the server's key. The vault's firewall bounds what a run can do: target weights from the charter, the epoch cap, the price floor and a real TEE approval. Leave it off on a public deployment. One run per vault at a time per server process. A vault with a live signed intent is refused with 409.
+
 ## 5. Not in this release
 
-- Rebalance execution: `agent_deposit_to_intents`, the TEE approval and `agent_swap_intent` with solver settlement. Quotes only.
+- Rebalance execution has run on the sandbox through signing, with a real NEAR AI approval. On the sandbox the intents double does not settle. `publish_intent` and settlement on `intents.near` have not run on mainnet yet (section 4d).
 - The L1 freshness check (BTC UTXOs, SOL/EVM nonces unchanged) before a sale or loan.
-- Cross-chain customer payments through NEAR Intents. Customers pay in USDC on NEAR with `ft_transfer_call`. On testnet that is Test USDC.
+- A customer payment from a token on another chain, end to end. Customers pay in USDC on NEAR with `ft_transfer_call` (on testnet, Test USDC). A wNEAR payment swapped through 1Click has run on mainnet (`scripts/pay-in-any-token.mjs`).
 
 ## 6. Notes and limits
 
 - `near-sdk` is pinned to 5.29.1 (contracts agent). On protocol 87, mainnet had `universal_accounts = false`, and a wasm importing `promise_batch_action_universal_state_init` deployed but then failed every call with `Link Error: unknown or invalid import`. Mainnet moved to protocol 88 on 2026-11-06 (`universal_accounts = true`). The 5.29.1 wasm only drops that import. Both scripts were rehearsed end to end on a protocol-88 sandbox as well as on 87. The `cargo test` sandbox suite pins 87 by default; `INCORPR_SANDBOX_PROTOCOL=88 cargo test -p integration-tests --test sandbox` runs it at 88, where the link-error test checks that the gated import links instead.
-- `incorpr.near` keeps a full access key on the deployer's machine. It is the registry `owner`, which `set_default_policy` requires, and the key can redeploy the registry. The vaults have no keys and no upgrade method. To make the registry immutable, delete that key once the policy is final.
+- `incorpr.near` keeps a full access key on the deployer's machine. It is the registry `owner`, which `set_default_policy` requires, and the key can redeploy the registry (section 4c, `scripts/upgrade-registry.mjs`). The vaults have no keys and no upgrade method. To make the registry immutable, delete that key once the policy is final.
 - The demo accounts are controlled by the same person as the founder. The sale and the loan are real contract executions, not trades between independent parties. Payments from `demo-customer` count toward `revenue_30d`, because only the current shareholder's own payments are excluded (ARCHITECTURE.md section 4).
 - `v1.signer`'s sign fee was not read on chain. `btc-send` attaches `--sign-deposit-yocto`, default 1. The vault forwards the whole deposit to the signer.
 - On 2026-11-06, 1Click answered "No liquidity available" for USDC to `btc.omft.near` dry quotes. USDC to SOL quoted normally. The evidence records whatever 1Click returns.

@@ -25,7 +25,7 @@ Status on 2026-11-06: the registry `incorpr.near` and one company vault `c-1.inc
 5. **`/verify`.** Each claim with its test name and transaction link. Pick one and open it.
 6. **Evidence file.** Open `docs/MAINNET_EVIDENCE.md` and spot-check a few hashes on nearblocks (see below).
 
-To check the code instead of the deployment: `cd contracts && cargo test --workspace` (78 tests, about 6 minutes, downloads a nearcore sandbox) and `cd web && npm ci && npx vitest run`. See the README, section Build and test.
+To check the code instead of the deployment: `cd contracts && cargo test --workspace` (87 tests, about 6 minutes, downloads a nearcore sandbox) and `cd web && npm ci && npx vitest run`. See the README, section Build and test.
 
 ## Optional wallet path
 
@@ -59,7 +59,7 @@ What to look for in `transactions`, by `step`:
 | `lend`, `borrow` | Lender funds an offer; owner `accept_offer` pledges the company |
 | `rug-pledged` | Failed transactions with `ERR_ACCOUNT_ENCUMBERED_CLAIM_FROZEN` and `ERR_TOKEN_ENCUMBERED` |
 | `repay`, `dividends` | Loan repaid; shareholder claims retained earnings |
-| `rebalance` | No transaction. Entries in `quotes`: 1Click `dry: true` quotes next to the vault's price floor |
+| `rebalance` | Read-only by default: no transaction, a live solver relay quote next to the vault's price floor. An executed run (`scripts/rebalance.mjs`) records its transactions under steps `rebalance:key`, `rebalance:fund`, `rebalance:deposit` and `rebalance:sign`, and the run itself (quote, TEE approval, signed intent, relay answer, settlement) in `docs/evidence/rebalance-mainnet.json` |
 | `btc-send` | Present only if the BTC treasury address held UTXOs; entries in `bitcoin` |
 
 Refused transactions are recorded on purpose. A different error than the expected one, or a success, stops the demo script.
@@ -68,7 +68,8 @@ Refused transactions are recorded on purpose. A different error than the expecte
 
 - Real: the contracts, `v1.signer`, NEAR AI Cloud inference and attestation, USDC payments on NEAR, the refused robbery transactions.
 - Controlled by the deployer: `demo-customer`, `demo-buyer` and `demo-lender`. The sale and loan are real contract executions, not trades between independent parties.
-- Not in this release: rebalance execution through `intents.near` (dry 1Click quotes only), cross-chain customer pay-in run end to end, an on-chain L1 freshness gate.
+- Built, not yet run on mainnet: rebalance execution through `intents.near` (`scripts/rebalance.mjs`). On the sandbox it ran through the vault's signed intent with a real NEAR AI approval.
+- Not in this release: a customer payment from a token on another chain run end to end (a wNEAR payment through 1Click has run), an on-chain L1 freshness gate.
 - Testnet has no `intents.near` and no 1Click.
 - The local sandbox uses labelled test doubles for the signer, intents and USDC.
 
