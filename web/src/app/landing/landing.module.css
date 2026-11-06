@@ -678,15 +678,7 @@
   left: 120%;
 }
 
-.ctaArrow {
-  width: 16px;
-  height: 16px;
-  transition: transform 200ms ease;
-}
 
-.cta:hover .ctaArrow {
-  transform: translateX(3px);
-}
 
 .secondary {
   font-size: 15px;

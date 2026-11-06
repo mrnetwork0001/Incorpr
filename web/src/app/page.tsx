@@ -135,15 +135,21 @@ type StatusLevel = 'done' | 'partial' | 'pending';
 
 // Update these rows as work lands. They are claims about the repo, so keep them true.
 const STATUS: [string, string, StatusLevel][] = [
-  ['Contract suite', '78 tests passing, 62 of them on a local NEAR sandbox node at protocol 87', 'done'],
-  ['Web suite', '245 tests passing, including end-to-end contract actions on a local sandbox', 'done'],
-  ['Mainnet deployment', 'incorpr.near and the keyless vault c-1.incorpr.near at protocol 88. Pay, list, sell, lend, borrow, repay and claim dividends all run on mainnet; 37 transactions re-checked against the chain', 'done'],
+  ['Contract suite', '100 tests passing, 77 of them on a local NEAR sandbox node at protocol 87', 'done'],
+  ['Web suite', '419 tests passing, 3 skipped, including end-to-end contract actions on a local sandbox', 'done'],
+  ['Mainnet deployment', 'incorpr.near and the keyless vault c-1.incorpr.near at protocol 88. Pay, list, sell, lend, borrow, repay, claim dividends and a treasury swap all run on mainnet; 48 transactions re-checked against the chain', 'done'],
   ['Rob this company', 'Live on mainnet. Five attacks sent from real keys, including the agent agreeing in chat, and the vault refused each one on-chain', 'done'],
   ['TEE inference end to end', 'A paid call served by NEAR AI Cloud on mainnet; the ECDSA signature recovers to the attested TDX signer and the call is recorded on the vault', 'done'],
   ['Address derivation', 'Read from the live mainnet signer, v1.signer, on this page', 'done'],
   ['App screens', 'Exchange, Incorporate, Company, Desk, Rob and Verify, all reading mainnet state', 'done'],
-  ['Treasury rebalance', 'Firewall and TEE approval checks run on mainnet and refuse bad swaps. Executing an approved swap through intents.near is not in this release; the agent shows live 1Click quotes', 'partial'],
-  ['Cross-chain pay-in', 'Client for paying in other tokens through 1Click is written for mainnet. Not yet run end to end', 'pending'],
+  ['Treasury rebalance', 'Run on mainnet: TEE approval checked on-chain, intent signed by v1.signer for the vault, settled by a NEAR Intents solver. 0.5 USDC swapped to 0.005545636 SOL', 'done'],
+  ['Transfer races', '13 sandbox tests send a payout and a sale, pledge or transfer in the same blocks, including a dividend claim still in flight when the company is sold. In each, the seller ends with at most the dividends accrued before the sale', 'done'],
+  ['Threat model', 'docs/THREAT_MODEL.md lists 17 ways a seller or borrower could try to keep the money, each with the contract rule, its test and the mainnet transaction where one exists', 'done'],
+  ['Per-company history', 'The company page lists payments, payouts, refusals and every holder, rebuilt from contract events and reconciled with the vault counters on 8 fields', 'done'],
+  ['Holder-only owner room', '/company/1/owner opens only for the account nft_token names, checked on every request. Tested with real NEP-413 signatures and a mocked chain; a wallet sign-in by the mainnet holder has not been run', 'partial'],
+  ['Scoped operator key', 'Live on mainnet: the server signs with a function-call key limited to the vault and five methods. The chain refused a transfer, another contract, a deposit and an unlisted method signed with it', 'done'],
+  ['Bitcoin spend and held signature', 'Run on mainnet: the owner had the vault sign a BTC transfer and held it; listing was refused with ERR_RAW_SIGNATURES_THIS_EPOCH. The transfer was then broadcast from the keyless address and the epoch rotated', 'done'],
+  ['Pay in another token', 'Run on mainnet: wNEAR swapped to USDC through NEAR Intents 1Click, then booked by the vault as a paid call. A source token on another chain takes the same 1Click route; not run', 'done'],
 ];
 
 const STATUS_STYLES: Record<StatusLevel, { label: string; className: string | undefined }> = {
@@ -243,20 +249,6 @@ const ICONS: Record<string, ReactNode> = {
   ),
 };
 
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 16 16" className={ui.ctaArrow} aria-hidden>
-      <path
-        d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 export default async function LandingPage() {
   const { mpcContract, registryId } = getNetworkConfig();
@@ -451,7 +443,6 @@ export default async function LandingPage() {
               <div className={ui.closingActions}>
                 <Link href="/exchange" className={ui.cta}>
                   Launch App
-                  <ArrowIcon />
                 </Link>
                 <a href="#how-it-works" className={ui.secondary}>
                   How it works
