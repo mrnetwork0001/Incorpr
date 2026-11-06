@@ -1,0 +1,1645 @@
+{
+  "schema_version": "0.4.0",
+  "metadata": {
+    "name": "company-vault",
+    "version": "0.1.0",
+    "build": {
+      "compiler": "rustc 1.98.0",
+      "builder": "cargo-near cargo-near-build 0.11.5"
+    },
+    "wasm_hash": "HikhecrHTSDFybvrHrKaKa2reCo1hjfFzsJ4tcvJhpP5"
+  },
+  "body": {
+    "functions": [
+      {
+        "name": "agent_deposit_to_intents",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "agent_swap_intent",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "p",
+              "type_schema": {
+                "$ref": "#/definitions/SwapProposal"
+              }
+            },
+            {
+              "name": "tee",
+              "type_schema": {
+                "$ref": "#/definitions/TeeProof"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "agent_withdraw_intent",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "p",
+              "type_schema": {
+                "$ref": "#/definitions/WithdrawProposal"
+              }
+            },
+            {
+              "name": "tee",
+              "type_schema": {
+                "$ref": "#/definitions/TeeProof"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "apply_encumbrance",
+        "doc": " Section 3 is enforced here, when the freeze lands: a signature raced in between the\n registry call and this receipt makes the listing or pledge fail. Ends any transit.",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "new_shareholder",
+              "type_schema": {
+                "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+                "type": "string"
+              }
+            },
+            {
+              "name": "state",
+              "type_schema": {
+                "$ref": "#/definitions/EncumbranceState"
+              }
+            },
+            {
+              "name": "sync_nonce",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            },
+            {
+              "name": "terms",
+              "type_schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/PledgeTerms"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "begin_transit",
+        "doc": " First step of a settlement. From here until `apply_encumbrance` names the final holder, no\n account has shareholder or agent rights, so a settlement that fails midway hands nothing to\n anyone. Refuses dirty keys and unexpired intents the same way a freeze does.",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "sync_nonce",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "claim_dividends",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "contract_source_metadata",
+        "kind": "view"
+      },
+      {
+        "name": "ft_on_transfer",
+        "doc": " NEP-141 receiver. The only path that books revenue.",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "sender_id",
+              "type_schema": {
+                "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+                "type": "string"
+              }
+            },
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "msg",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "get_payment",
+        "kind": "view",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "call_id",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Payment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "get_state",
+        "kind": "view",
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/VaultView"
+          }
+        }
+      },
+      {
+        "name": "new",
+        "kind": "call",
+        "modifiers": [
+          "init"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "args",
+              "type_schema": {
+                "$ref": "#/definitions/VaultInit"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "on_compute_paid",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "name": "on_dividends_paid",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "shareholder",
+              "type_schema": {
+                "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+                "type": "string"
+              }
+            },
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "name": "on_intent_signed",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "message",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "nonce_b64",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "callbacks": [
+          {
+            "serialization_type": "json",
+            "type_schema": true
+          }
+        ],
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/SignedIntent"
+          }
+        }
+      },
+      {
+        "name": "on_intents_deposit",
+        "doc": " `ft_transfer_call` returns the amount the receiver kept.",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "callbacks": [
+          {
+            "serialization_type": "json",
+            "type_schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "on_intents_key_added",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "on_intents_key_derived",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "callbacks": [
+          {
+            "serialization_type": "json",
+            "type_schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "on_treasury_keys",
+        "kind": "call",
+        "modifiers": [
+          "private"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "epoch",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0.0
+              }
+            }
+          ]
+        },
+        "callbacks": [
+          {
+            "serialization_type": "json",
+            "type_schema": {
+              "type": "string"
+            }
+          },
+          {
+            "serialization_type": "json",
+            "type_schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/TreasuryAddresses"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "pay_compute_bill",
+        "doc": " Allowed while encumbered: a listed or pledged company keeps paying its compute bills, and\n the funds can only reach the `compute_payee` fixed at incorporation.",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "amount",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "payment_stats",
+        "kind": "view",
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/PaymentStats"
+          }
+        }
+      },
+      {
+        "name": "record_service_call",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "call_id",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "tee_chat_id",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "refresh_metrics",
+        "doc": " Pushes current metrics to the registry. The registry keeps a snapshot and cannot read the\n vault's 30-day window on its own, so a quiet company's charter goes stale until this runs.",
+        "kind": "call"
+      },
+      {
+        "name": "refresh_treasury_keys",
+        "kind": "call",
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "request_shareholder_signature",
+        "doc": " Marks the current epoch dirty before calling the signer, so the company cannot be listed or\n pledged until the shareholder rotates to fresh addresses.",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "domain_id",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            },
+            {
+              "name": "payload_hex",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "subpath",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "revenue_30d",
+        "kind": "view",
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "rotate_treasury_epoch",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "set_operator",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "account",
+              "type_schema": {
+                "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "set_policy",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "allowed_tokens",
+              "type_schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "name": "epoch_caps",
+              "type_schema": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "set_price_floors",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "floors",
+              "type_schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PriceFloor"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "set_tee_policy",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "models",
+              "type_schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "name": "prompt_hash",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "set_tee_signers",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "addresses",
+              "type_schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "setup_intents_key",
+        "doc": " Takes no key argument. Only the MPC-derived key for the intents path is ever registered.",
+        "kind": "call",
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/PromiseOrValueString"
+          }
+        }
+      },
+      {
+        "name": "sign_legacy_epoch",
+        "doc": " Reaches funds left on addresses from a previous epoch. Those funds are excluded from NAV,\n and these signatures do not dirty the current epoch.",
+        "kind": "call",
+        "modifiers": [
+          "payable"
+        ],
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "epoch",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0.0
+              }
+            },
+            {
+              "name": "domain_id",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            },
+            {
+              "name": "payload_hex",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "subpath",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/Promise"
+          }
+        }
+      },
+      {
+        "name": "swap_tee_request",
+        "doc": " The exact request body for an `agent_swap_intent` approval. Hash it as sent.",
+        "kind": "view",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "p",
+              "type_schema": {
+                "$ref": "#/definitions/SwapProposal"
+              }
+            },
+            {
+              "name": "model",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "system_prompt",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/TeeRequest"
+          }
+        }
+      },
+      {
+        "name": "sync_owner",
+        "doc": " A direct change of shareholder, used by `nft_transfer`. `require_clean` is set when an\n approved account moves the token, which is how a marketplace sells it: raw signatures in\n the current epoch then refuse the sale. Without it, a dirty epoch rotates in\n `set_shareholder`, and the receiver starts on keys that have never signed.",
+        "kind": "call",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "new_shareholder",
+              "type_schema": {
+                "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+                "type": "string"
+              }
+            },
+            {
+              "name": "sync_nonce",
+              "type_schema": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            },
+            {
+              "name": "require_clean",
+              "type_schema": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "treasury_addresses",
+        "kind": "view",
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/TreasuryAddresses"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "withdraw_tee_request",
+        "doc": " The exact request body for an `agent_withdraw_intent` approval. Hash it as sent.",
+        "kind": "view",
+        "params": {
+          "serialization_type": "json",
+          "args": [
+            {
+              "name": "p",
+              "type_schema": {
+                "$ref": "#/definitions/WithdrawProposal"
+              }
+            },
+            {
+              "name": "model",
+              "type_schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "system_prompt",
+              "type_schema": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "result": {
+          "serialization_type": "json",
+          "type_schema": {
+            "$ref": "#/definitions/TeeRequest"
+          }
+        }
+      }
+    ],
+    "root_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "String",
+      "type": "string",
+      "definitions": {
+        "EncumbranceState": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "Free"
+              ]
+            },
+            {
+              "type": "object",
+              "required": [
+                "Listed"
+              ],
+              "properties": {
+                "Listed": {
+                  "type": "object",
+                  "required": [
+                    "ask"
+                  ],
+                  "properties": {
+                    "ask": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "Pledged"
+              ],
+              "properties": {
+                "Pledged": {
+                  "type": "object",
+                  "required": [
+                    "debt",
+                    "due_ms",
+                    "lender"
+                  ],
+                  "properties": {
+                    "debt": {
+                      "type": "string"
+                    },
+                    "due_ms": {
+                      "type": "integer",
+                      "format": "uint64",
+                      "minimum": 0.0
+                    },
+                    "lender": {
+                      "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "Payment": {
+          "type": "object",
+          "required": [
+            "amount",
+            "payer",
+            "served"
+          ],
+          "properties": {
+            "amount": {
+              "type": "string"
+            },
+            "payer": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "served": {
+              "type": "boolean"
+            },
+            "tee_chat_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "PaymentStats": {
+          "description": "Measured over the payment records still on-chain. Sybil payers can make these look healthy too.",
+          "type": "object",
+          "required": [
+            "distinct_payers",
+            "largest_payer_amount",
+            "records",
+            "served_amount",
+            "total_amount"
+          ],
+          "properties": {
+            "distinct_payers": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "largest_payer_amount": {
+              "type": "string"
+            },
+            "records": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "served_amount": {
+              "type": "string"
+            },
+            "total_amount": {
+              "type": "string"
+            }
+          }
+        },
+        "PledgeTerms": {
+          "description": "A lender's conditions on the company it priced, checked when the pledge lands.",
+          "type": "object",
+          "properties": {
+            "min_retained": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "required_epoch": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0.0
+            }
+          }
+        },
+        "Policy": {
+          "description": "Agent-facing configuration. A new shareholder starts from the values fixed at incorporation, so a seller cannot hand a buyer an operator or TEE signer of their own choosing.",
+          "type": "object",
+          "required": [
+            "allowed_tokens",
+            "epoch_caps",
+            "operator",
+            "price_floors",
+            "tee_models",
+            "tee_prompt_hash",
+            "tee_signers"
+          ],
+          "properties": {
+            "allowed_tokens": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "epoch_caps": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "maxItems": 2,
+                "minItems": 2
+              }
+            },
+            "operator": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "price_floors": {
+              "description": "A pair with no floor cannot be swapped.",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PriceFloor"
+              }
+            },
+            "tee_models": {
+              "description": "Model ids an approval may come from. An empty list refuses every approval.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tee_prompt_hash": {
+              "description": "Lowercase hex sha256 of the system prompt. Empty refuses every approval.",
+              "type": "string"
+            },
+            "tee_signers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "PriceFloor": {
+          "description": "A swap of `sell_token` for `buy_token` must promise at least `min_buy` buy units for every `per_sell` sell units, in base units. A shareholder-set bound, not an oracle price.",
+          "type": "object",
+          "required": [
+            "buy_token",
+            "min_buy",
+            "per_sell",
+            "sell_token"
+          ],
+          "properties": {
+            "buy_token": {
+              "type": "string"
+            },
+            "min_buy": {
+              "type": "string"
+            },
+            "per_sell": {
+              "type": "string"
+            },
+            "sell_token": {
+              "type": "string"
+            }
+          }
+        },
+        "Promise": true,
+        "PromiseOrValueString": {
+          "type": "string"
+        },
+        "SignedIntent": {
+          "description": "Ready for `execute_intents` or the solver relay.",
+          "type": "object",
+          "required": [
+            "payload",
+            "public_key",
+            "signature",
+            "standard"
+          ],
+          "properties": {
+            "payload": {
+              "$ref": "#/definitions/SignedIntentPayload"
+            },
+            "public_key": {
+              "type": "string"
+            },
+            "signature": {
+              "type": "string"
+            },
+            "standard": {
+              "type": "string"
+            }
+          }
+        },
+        "SignedIntentPayload": {
+          "type": "object",
+          "required": [
+            "message",
+            "nonce",
+            "recipient"
+          ],
+          "properties": {
+            "message": {
+              "type": "string"
+            },
+            "nonce": {
+              "type": "string"
+            },
+            "recipient": {
+              "type": "string"
+            }
+          }
+        },
+        "SwapProposal": {
+          "type": "object",
+          "required": [
+            "buy_token",
+            "min_buy_amount",
+            "nonce_b64",
+            "sell_amount",
+            "sell_token"
+          ],
+          "properties": {
+            "buy_token": {
+              "type": "string"
+            },
+            "min_buy_amount": {
+              "type": "string"
+            },
+            "nonce_b64": {
+              "type": "string"
+            },
+            "sell_amount": {
+              "type": "string"
+            },
+            "sell_token": {
+              "type": "string"
+            }
+          }
+        },
+        "TeeProof": {
+          "type": "object",
+          "required": [
+            "response_body",
+            "signature_hex",
+            "system_prompt",
+            "text"
+          ],
+          "properties": {
+            "response_body": {
+              "type": "string"
+            },
+            "signature_hex": {
+              "type": "string"
+            },
+            "system_prompt": {
+              "description": "Its sha256 must equal `tee_prompt_hash`.",
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        "TeeRequest": {
+          "description": "The exact bytes the operator must send to NEAR AI for a proposal, and the hash the model must answer with.",
+          "type": "object",
+          "required": [
+            "body",
+            "proposal_hash"
+          ],
+          "properties": {
+            "body": {
+              "type": "string"
+            },
+            "proposal_hash": {
+              "type": "string"
+            }
+          }
+        },
+        "TreasuryAddresses": {
+          "type": "object",
+          "required": [
+            "btc",
+            "ed25519_key",
+            "epoch",
+            "evm",
+            "secp256k1_key",
+            "sol"
+          ],
+          "properties": {
+            "btc": {
+              "type": "string"
+            },
+            "ed25519_key": {
+              "type": "string"
+            },
+            "epoch": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "evm": {
+              "type": "string"
+            },
+            "secp256k1_key": {
+              "type": "string"
+            },
+            "sol": {
+              "type": "string"
+            }
+          }
+        },
+        "VaultInit": {
+          "type": "object",
+          "required": [
+            "allowed_tokens",
+            "btc_hrp",
+            "compute_payee",
+            "compute_reserve_bps",
+            "epoch_caps",
+            "founder",
+            "founder_royalty_bps",
+            "intents_contract",
+            "mpc_contract",
+            "operator",
+            "price_floors",
+            "price_micro_usdc",
+            "registry",
+            "shareholder",
+            "tee_models",
+            "tee_prompt_hash",
+            "tee_signers",
+            "token_id",
+            "usdc_token"
+          ],
+          "properties": {
+            "allowed_tokens": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "btc_hrp": {
+              "type": "string"
+            },
+            "compute_payee": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "compute_reserve_bps": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "epoch_caps": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "maxItems": 2,
+                "minItems": 2
+              }
+            },
+            "founder": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "founder_royalty_bps": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "intents_contract": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "mpc_contract": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "operator": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "price_floors": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PriceFloor"
+              }
+            },
+            "price_micro_usdc": {
+              "type": "string"
+            },
+            "registry": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "shareholder": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "tee_models": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tee_prompt_hash": {
+              "type": "string"
+            },
+            "tee_signers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "token_id": {
+              "type": "string"
+            },
+            "usdc_token": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            }
+          }
+        },
+        "VaultView": {
+          "type": "object",
+          "required": [
+            "api_calls_served",
+            "btc_hrp",
+            "compute_paid",
+            "compute_payee",
+            "compute_reserve",
+            "compute_reserve_bps",
+            "default_policy",
+            "deposited_to_intents",
+            "dividends_paid",
+            "encumbrance",
+            "founder",
+            "founder_royalty_bps",
+            "free_near_balance",
+            "gross_revenue",
+            "in_transit",
+            "intents_contract",
+            "intents_key_registered",
+            "latest_intent_deadline_ms",
+            "mpc_contract",
+            "owner_generation",
+            "payment_records",
+            "policy",
+            "price_micro_usdc",
+            "raw_sigs_this_epoch",
+            "registry",
+            "related_party_revenue",
+            "retained_earnings",
+            "revenue_30d",
+            "shareholder",
+            "spend_window",
+            "spent_this_window",
+            "sync_nonce",
+            "token_id",
+            "treasury_epoch",
+            "usdc_token"
+          ],
+          "properties": {
+            "addresses": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/TreasuryAddresses"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "api_calls_served": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "btc_hrp": {
+              "type": "string"
+            },
+            "compute_paid": {
+              "type": "string"
+            },
+            "compute_payee": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "compute_reserve": {
+              "type": "string"
+            },
+            "compute_reserve_bps": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "default_policy": {
+              "$ref": "#/definitions/Policy"
+            },
+            "deposited_to_intents": {
+              "type": "string"
+            },
+            "dividends_paid": {
+              "type": "string"
+            },
+            "encumbrance": {
+              "$ref": "#/definitions/EncumbranceState"
+            },
+            "founder": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "founder_royalty_bps": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "free_near_balance": {
+              "description": "Account balance above what its storage requires. A plain NEAR transfer tops it up.",
+              "type": "string"
+            },
+            "gross_revenue": {
+              "type": "string"
+            },
+            "in_transit": {
+              "type": "boolean"
+            },
+            "intents_contract": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "intents_key": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "intents_key_registered": {
+              "type": "boolean"
+            },
+            "latest_intent_deadline_ms": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "mpc_contract": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "owner_generation": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "payment_records": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "policy": {
+              "$ref": "#/definitions/Policy"
+            },
+            "price_micro_usdc": {
+              "type": "string"
+            },
+            "raw_sigs_this_epoch": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "registry": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "related_party_revenue": {
+              "type": "string"
+            },
+            "retained_earnings": {
+              "type": "string"
+            },
+            "revenue_30d": {
+              "type": "string"
+            },
+            "shareholder": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            },
+            "spend_window": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "spent_this_window": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "maxItems": 2,
+                "minItems": 2
+              }
+            },
+            "sync_nonce": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "token_id": {
+              "type": "string"
+            },
+            "treasury_epoch": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "usdc_token": {
+              "description": "NEAR Account Identifier.\n\nThis is a unique, syntactically valid, human-readable account identifier on the NEAR network.\n\n[See the crate-level docs for information about validation.](index.html#account-id-rules)\n\nAlso see [Error kind precedence](AccountId#error-kind-precedence).\n\n## Examples\n\n``` use near_account_id::AccountId;\n\nlet alice: AccountId = \"alice.near\".parse().unwrap();\n\nassert!(\"ƒelicia.near\".parse::<AccountId>().is_err()); // (ƒ is not f) ```",
+              "type": "string"
+            }
+          }
+        },
+        "WithdrawProposal": {
+          "type": "object",
+          "required": [
+            "amount",
+            "chain",
+            "destination",
+            "nonce_b64",
+            "token"
+          ],
+          "properties": {
+            "amount": {
+              "type": "string"
+            },
+            "chain": {
+              "type": "string"
+            },
+            "destination": {
+              "type": "string"
+            },
+            "nonce_b64": {
+              "type": "string"
+            },
+            "token": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
