@@ -63,7 +63,8 @@ export async function networkContext(o) {
       intents: o.intents ?? 'intents.near',
       usdc: o.usdc ?? MAINNET_USDC,
       btcHrp: 'bc',
-      btcApi: 'https://mempool.space/api',
+      // BTC_ESPLORA_API overrides the Esplora endpoint (same API as mempool.space), for networks that block one of them.
+      btcApi: process.env.BTC_ESPLORA_API || 'https://mempool.space/api',
       btcExplorer: 'https://mempool.space',
       demoParent: isImplicit(deployer) ? registry : deployer,
       envFile: join(DOCS_DIR, '..', 'web', '.env.local'),
