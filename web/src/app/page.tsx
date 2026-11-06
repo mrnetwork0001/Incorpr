@@ -4,8 +4,10 @@ import type { TreasuryAddresses } from '@/lib/contracts';
 import { deriveTreasuryAddresses } from '@/lib/mpcAddresses';
 import { getNetworkConfig } from '@/lib/near';
 import { EncumbrancePill } from './encumbrance-pill';
-import { Handoff, Hero, HeroNav, Mark } from './hero/hero';
+import { Hero, HeroNav } from './hero/hero';
+import { LandingMotion } from './landing/landing-motion';
 import ui from './landing/landing.module.css';
+import { SiteFooter } from './ui/site-footer';
 
 // The hero addresses are read from the MPC contract at render, then reused for an hour.
 export const revalidate = 3600;
@@ -39,13 +41,13 @@ const LIFECYCLE: { step: string; title: string; method: string; body: string }[]
     step: '02',
     title: 'Earn',
     method: 'ft_on_transfer',
-    body: 'Customers pay per call in USDC, directly or from another chain through 1Click. The vault checks the amount against the price, splits it between compute reserve and retained earnings, and stores the payment. Paying a call does not depend on the operator, and the service route checks the on-chain payment before it runs inference.',
+    body: 'Customers pay per call in USDC on NEAR with ft_transfer_call. The vault checks the amount against the price, splits it between compute reserve and retained earnings, and stores the payment. Paying a call does not depend on the operator, and the service route checks the on-chain payment before it runs inference.',
   },
   {
     step: '03',
     title: 'Compound',
     method: 'agent_swap_intent',
-    body: 'The treasury agent proposes a swap as structured fields. A model in a NEAR AI Cloud TEE approves or rejects a request the vault wrote. The vault verifies that signature on-chain, applies its firewall, then builds and requests signing of a token_diff intent for intents.near.',
+    body: 'The treasury agent proposes a swap as structured fields. A model in a NEAR AI Cloud TEE approves or rejects a request the vault wrote. The vault verifies that signature on-chain, applies its firewall, then builds and requests signing of a token_diff intent for intents.near. This path is tested on a sandbox; execution on intents.near is not in this release.',
   },
   {
     step: '04',
@@ -121,7 +123,7 @@ const PRIMITIVES: [string, string, string][] = [
     'v1.signer',
     'Secp256k1 for Bitcoin and EVM, Ed25519 for Solana and intents. The vault composes every derivation path.',
   ],
-  ['NEAR Intents', 'intents.near, 1Click', 'Cross-chain customer payments, and treasury swaps settled under a key only the vault can use.'],
+  ['NEAR Intents', 'intents.near, 1Click', 'Treasury swaps signed under a key only the vault can use, priced against live 1Click quotes. Swap execution is not in this release.'],
   [
     'NEAR AI Cloud',
     'cloud-api.near.ai',
@@ -133,13 +135,15 @@ type StatusLevel = 'done' | 'partial' | 'pending';
 
 // Update these rows as work lands. They are claims about the repo, so keep them true.
 const STATUS: [string, string, StatusLevel][] = [
-  ['Contract suite', '77 tests passing, 61 of them on a local NEAR sandbox node', 'done'],
-  ['Address derivation', 'Read from the live testnet signer on this page', 'done'],
-  ['Exchange board', 'Reads companies from the registry. Trading actions are not wired yet', 'partial'],
-  ['Incorporate, Cockpit, Desk screens', 'Not built yet', 'pending'],
-  ['Testnet deployment', 'Not run yet. No public registry address exists', 'pending'],
-  ['TEE inference end to end', 'Routes built. Needs a NEAR AI Cloud API key', 'pending'],
-  ['Mainnet Intents settlement', 'Not exercised. Sandbox uses a test double for the verifier', 'pending'],
+  ['Contract suite', '78 tests passing, 62 of them on a local NEAR sandbox node at protocol 87', 'done'],
+  ['Web suite', '245 tests passing, including end-to-end contract actions on a local sandbox', 'done'],
+  ['Mainnet deployment', 'incorpr.near and the keyless vault c-1.incorpr.near at protocol 88. Pay, list, sell, lend, borrow, repay and claim dividends all run on mainnet; 37 transactions re-checked against the chain', 'done'],
+  ['Rob this company', 'Live on mainnet. Five attacks sent from real keys, including the agent agreeing in chat, and the vault refused each one on-chain', 'done'],
+  ['TEE inference end to end', 'A paid call served by NEAR AI Cloud on mainnet; the ECDSA signature recovers to the attested TDX signer and the call is recorded on the vault', 'done'],
+  ['Address derivation', 'Read from the live mainnet signer, v1.signer, on this page', 'done'],
+  ['App screens', 'Exchange, Incorporate, Company, Desk, Rob and Verify, all reading mainnet state', 'done'],
+  ['Treasury rebalance', 'Firewall and TEE approval checks run on mainnet and refuse bad swaps. Executing an approved swap through intents.near is not in this release; the agent shows live 1Click quotes', 'partial'],
+  ['Cross-chain pay-in', 'Client for paying in other tokens through 1Click is written for mainnet. Not yet run end to end', 'pending'],
 ];
 
 const STATUS_STYLES: Record<StatusLevel, { label: string; className: string | undefined }> = {
@@ -255,7 +259,7 @@ function ArrowIcon() {
 }
 
 export default async function LandingPage() {
-  const { mpcContract, registryId, network } = getNetworkConfig();
+  const { mpcContract, registryId } = getNetworkConfig();
   const vaultAccount = `c-1.${registryId ?? EXAMPLE_REGISTRY}`;
   const addresses = await readExampleAddresses(vaultAccount);
 
@@ -267,6 +271,7 @@ export default async function LandingPage() {
         <Hero vaultAccount={vaultAccount} registryId={registryId} addresses={addresses} mpcContract={mpcContract} />
 
         <div className={ui.page}>
+          <LandingMotion />
           <Section
             id="problem"
             index="01"
@@ -475,57 +480,7 @@ export default async function LandingPage() {
             </div>
           </section>
 
-          <footer className={ui.footer}>
-            <div className={ui.footGrid}>
-              <div>
-                <Link href="/" className={ui.footBrand}>
-                  <Mark className={ui.footMark} />
-                  incorpr
-                </Link>
-                <p className={ui.footBlurb}>Companies as NEP-171 NFTs on NEAR, each with its own keyless vault and treasury.</p>
-              </div>
-              <div>
-                <p className={ui.footHead}>App</p>
-                <div className={ui.footLinks}>
-                  <Link href="/exchange">Exchange</Link>
-                  <Link href="/incorporate">Incorporate</Link>
-                  <Link href="/desk">Capital markets desk</Link>
-                  <Link href="/verify">Verify the claims</Link>
-                </div>
-              </div>
-              <div>
-                <p className={ui.footHead}>Protocol</p>
-                <div className={ui.footLinks}>
-                  <a href="#how-it-works">How it works</a>
-                  <a href="#states">Company state</a>
-                  <a href="#security">Security model</a>
-                  <a href="#status">Build status</a>
-                </div>
-              </div>
-              <div>
-                <p className={ui.footHead}>Live network</p>
-                <div className={ui.footLinks}>
-                  <p className={ui.netRow}>
-                    <span className={ui.netKey}>Network</span>
-                    <span className={ui.netVal}>{network}</span>
-                  </p>
-                  <p className={ui.netRow}>
-                    <span className={ui.netKey}>Signer</span>
-                    <span className={ui.netVal}>{mpcContract}</span>
-                  </p>
-                  <p className={ui.netRow}>
-                    <span className={ui.netKey}>Registry</span>
-                    <span className={ui.netVal}>{registryId ?? 'not configured'}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className={ui.footLegal}>
-              <span>&copy;2026 Incorpr</span>
-              <span>NEAR Hackathon 2026</span>
-            </div>
-          </footer>
-          <Handoff />
+          <SiteFooter onLanding />
         </div>
       </main>
     </>
