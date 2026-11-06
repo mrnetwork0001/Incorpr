@@ -264,13 +264,17 @@ export class Near {
       const { txHash, signedTransaction } = await signer.signTransaction(tx);
       hash = near.baseEncode(txHash);
       try {
+        // INCLUDED, not NONE: with NONE the RPC accepts a transaction the chunk producer later drops
+        // (for example NotEnoughBalance for the attached gas), and the poll below never finds it.
         await this.rpc('send_tx', {
           signed_tx_base64: Buffer.from(signedTransaction.encode()).toString('base64'),
-          wait_until: 'NONE',
+          wait_until: 'INCLUDED',
         });
         break;
       } catch (error) {
         const text = error.message ?? String(error);
+        // The node's own wait expired; the transaction may still land, so poll for it instead of resending.
+        if (/TIMEOUT/i.test(text)) break;
         if (/InvalidNonce/.test(text) && attempt < 4) {
           await sleep(POLL_MS);
           continue;
