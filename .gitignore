@@ -1,0 +1,29 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+web/.env.local
+
+# Dependencies and build output
+node_modules/
+.next/
+web/next-env.d.ts
+*.tsbuildinfo
+target/
+
+# Third-party clone, restored by the command in CLAUDE.md section 3
+vendor/
+
+# contracts/res/*.wasm stays tracked: incorpr-registry embeds company_vault.wasm at compile time.
+
+# Local tooling and caches
+.claude/
+.DS_Store
+__pycache__/
+*.pyc
+
+# Demo film: renders, caches, captured footage, local secrets
+video/out/
+video/.cache/
+video/footage/
+video/.env
