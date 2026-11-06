@@ -8,6 +8,22 @@ import { base64 } from '@scure/base';
 import { RegistryClient, VaultClient, ftViews, type Payment, type SignedIntent } from './contracts';
 import type { OneClickToken, QuoteRequest, QuoteResponse, StatusResponse } from './intentsQuotes';
 import { getNetworkConfig, getProvider, viewFunction } from './near';
+import {
+  bestSolverQuote,
+  decodeIntentNonce,
+  encodeIntentNonce,
+  parseIntentStatus,
+  parsePublishResult,
+  parseSolverQuotes,
+  publishIntentParams,
+  solverQuoteParams,
+  type IntentStatus,
+  type PublishIntentPayload,
+  type PublishIntentResult,
+  type RelayIntentStatus,
+  type SolverQuote,
+  type SolverQuoteRequest,
+} from './rebalance';
 
 const oneClickUrl = () => (process.env.NEAR_INTENTS_ONE_CLICK_URL || 'https://1click.chaindefuser.com/v0').replace(/\/$/, '');
 const solverRpcUrl = () => process.env.NEAR_INTENTS_SOLVER_RPC_URL || 'https://solver-relay-v2.chaindefuser.com/rpc';
@@ -207,33 +223,12 @@ export async function vaultPaymentState(vault: string, callId: string): Promise<
 
 // ---------------------------------------------------------------------------- Intent nonces
 
-const VERSIONED_MAGIC_PREFIX = Uint8Array.of(0x56, 0x28, 0xf6, 0xc6);
-const VERSION_V1 = 0;
-
-/**
- * `intents.near` V1 nonce: magic (4) || version (1) || salt (4) || deadline ns, i64 LE (8) ||
- * random (15), from near/intents contracts/defuse/core/src/nonce. The verifier refuses a salt it
- * has rotated out, or an intent whose deadline is later than the nonce's.
- */
+/** See `encodeIntentNonce` in ./rebalance for the layout and the deployed revision it follows. */
 export function buildIntentNonce(saltHex: string, deadlineMs: number, random: Uint8Array = randomBytes(15)): string {
-  if (!/^[0-9a-f]{8}$/i.test(saltHex)) throw new Error(`Invalid salt ${saltHex}`);
-  if (random.length !== 15) throw new Error('Nonce needs 15 random bytes');
-  const nonce = new Uint8Array(32);
-  nonce.set(VERSIONED_MAGIC_PREFIX, 0);
-  nonce[4] = VERSION_V1;
-  nonce.set(Buffer.from(saltHex, 'hex'), 5);
-  new DataView(nonce.buffer).setBigInt64(9, BigInt(deadlineMs) * 1_000_000n, true);
-  nonce.set(random, 17);
-  return base64.encode(nonce);
+  return encodeIntentNonce(saltHex, deadlineMs, random);
 }
 
-export function parseIntentNonce(nonceB64: string): { saltHex: string; deadlineMs: number } | null {
-  const bytes = base64.decode(nonceB64);
-  if (bytes.length !== 32) throw new Error('Nonce must be 32 bytes');
-  if (VERSIONED_MAGIC_PREFIX.some((b, i) => bytes[i] !== b) || bytes[4] !== VERSION_V1) return null;
-  const deadlineNs = new DataView(bytes.buffer, bytes.byteOffset).getBigInt64(9, true);
-  return { saltHex: Buffer.from(bytes.subarray(5, 9)).toString('hex'), deadlineMs: Number(deadlineNs / 1_000_000n) };
-}
+export const parseIntentNonce = decodeIntentNonce;
 
 /** Random 32 bytes. Valid for the vault, and for a verifier that does not use salts. */
 export function randomNonce(): string {
@@ -251,15 +246,23 @@ export function buildExecuteIntentsArgs(signed: SignedIntent): { signed: SignedI
   return { signed: [signed] };
 }
 
-export interface PublishIntentPayload {
-  quote_hashes: string[];
-  signed_data: SignedIntent;
-}
+export type { IntentStatus, PublishIntentPayload, PublishIntentResult, RelayIntentStatus, SolverQuote };
+export { bestSolverQuote };
 
 /** Solver relay `publish_intent` params. The quote hashes name the solver quotes this intent fills. */
 export function buildPublishIntentPayload(signed: SignedIntent, quoteHashes: string[]): PublishIntentPayload {
   if (quoteHashes.length === 0) throw new SolverRelayError('publish_intent needs at least one quote hash');
-  return { quote_hashes: quoteHashes, signed_data: signed };
+  return publishIntentParams(signed, quoteHashes);
+}
+
+/**
+ * The relay documentation asks for a partner key in `X-API-Key`. `quote` answers without one;
+ * set NEAR_INTENTS_RELAY_API_KEY if `publish_intent` refuses.
+ */
+function relayHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (process.env.NEAR_INTENTS_RELAY_API_KEY) headers['x-api-key'] = process.env.NEAR_INTENTS_RELAY_API_KEY;
+  return headers;
 }
 
 async function solverRpc<T>(method: string, params: unknown): Promise<T> {
@@ -267,7 +270,7 @@ async function solverRpc<T>(method: string, params: unknown): Promise<T> {
   try {
     res = await fetch(solverRpcUrl(), {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: relayHeaders(),
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params: [params] }),
       cache: 'no-store',
       signal: AbortSignal.timeout(30_000),
@@ -276,61 +279,85 @@ async function solverRpc<T>(method: string, params: unknown): Promise<T> {
     throw new SolverRelayError(`Solver relay request failed: ${error instanceof Error ? error.message : String(error)}`);
   }
   if (!res.ok) throw new SolverRelayError(`Solver relay returned HTTP ${res.status}`);
-  const body = (await res.json()) as { result?: T; error?: { message?: string } };
-  if (body.error) throw new SolverRelayError(body.error.message ?? `${method} failed`);
+  const body = (await res.json()) as { result?: T; error?: { message?: string; data?: unknown } };
+  if (body.error) {
+    const detail = body.error.data === undefined ? '' : `: ${JSON.stringify(body.error.data).slice(0, 300)}`;
+    throw new SolverRelayError(`${body.error.message ?? `${method} failed`}${detail}`);
+  }
   return body.result as T;
 }
 
-export interface SolverQuote {
-  defuse_asset_identifier_in: string;
-  defuse_asset_identifier_out: string;
-  amount_in: string;
-  amount_out: string;
-  expiration_time: string;
-  quote_hash: string;
+/**
+ * Live solver quotes, filtered to offers for exactly this pair and amount that have not expired.
+ * Solvers often answer null for a pair: this returns an empty list, not an error.
+ */
+export async function solverQuote(params: SolverQuoteRequest): Promise<SolverQuote[]> {
+  const result = await solverRpc<unknown>('quote', solverQuoteParams(params));
+  try {
+    return parseSolverQuotes(result, params, Date.now());
+  } catch (error) {
+    throw new SolverRelayError(error instanceof Error ? error.message : String(error));
+  }
 }
 
-/** Live solver quotes. Solvers often answer null for a pair: this returns an empty list, not an error. */
-export async function solverQuote(params: {
-  assetIn: string;
-  assetOut: string;
-  exactAmountIn: string;
-  minDeadlineMs?: number;
-}): Promise<SolverQuote[]> {
-  const quotes = await solverRpc<SolverQuote[] | null>('quote', {
-    defuse_asset_identifier_in: params.assetIn,
-    defuse_asset_identifier_out: params.assetOut,
-    exact_amount_in: params.exactAmountIn,
-    ...(params.minDeadlineMs === undefined ? {} : { min_deadline_ms: params.minDeadlineMs }),
-  });
-  return quotes ?? [];
-}
-
-export function bestSolverQuote(quotes: SolverQuote[]): SolverQuote | null {
-  return quotes.reduce<SolverQuote | null>(
-    (best, quote) => (!best || BigInt(quote.amount_out) > BigInt(best.amount_out) ? quote : best),
-    null,
-  );
-}
-
-export interface PublishIntentResult {
-  status: string;
-  intent_hash?: string;
-  reason?: string;
-}
-
-export function publishIntent(payload: PublishIntentPayload): Promise<PublishIntentResult> {
+/** Sends the intent. Mainnet only: the relay settles on `intents.near`. */
+export async function publishIntent(payload: PublishIntentPayload): Promise<PublishIntentResult> {
   if (getNetworkConfig().network !== 'mainnet') {
     throw new SolverRelayError('The solver relay settles on mainnet only');
   }
-  return solverRpc<PublishIntentResult>('publish_intent', payload);
+  return parsePublishResult(await solverRpc<unknown>('publish_intent', payload));
 }
 
-export function intentStatus(intentHash: string): Promise<Record<string, unknown>> {
-  return solverRpc<Record<string, unknown>>('get_status', { intent_hash: intentHash });
+export async function intentStatus(intentHash: string): Promise<IntentStatus> {
+  try {
+    return parseIntentStatus(await solverRpc<unknown>('get_status', { intent_hash: intentHash }));
+  } catch (error) {
+    if (error instanceof SolverRelayError) throw error;
+    throw new SolverRelayError(error instanceof Error ? error.message : String(error));
+  }
+}
+
+/** Polls `get_status` until SETTLED, NOT_FOUND_OR_NOT_VALID three times in a row, or `timeoutMs`. Returns the last status seen. */
+export async function waitForIntent(intentHash: string, { timeoutMs = 90_000, intervalMs = 2_000 } = {}): Promise<IntentStatus> {
+  const deadline = Date.now() + timeoutMs;
+  let last: IntentStatus | null = null;
+  let notFound = 0;
+  for (;;) {
+    try {
+      last = await intentStatus(intentHash);
+      // A read just after publish_intent can miss the intent; only a repeated answer is final.
+      notFound = last.status === 'NOT_FOUND_OR_NOT_VALID' ? notFound + 1 : 0;
+      if (last.status === 'SETTLED' || notFound >= 3) return last;
+    } catch (error) {
+      if (Date.now() > deadline) throw error;
+    }
+    if (Date.now() > deadline) {
+      return last ?? { intent_hash: intentHash, status: 'PENDING', status_details: 'no answer before the timeout', tx_hash: null, filled_amounts: null };
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
 }
 
 /** `intents.near` balance of one asset. The sandbox and testnet stand-in answers the same method. */
 export function intentsBalance(intentsContract: string, accountId: string, tokenId: string): Promise<string> {
   return viewFunction<string>(intentsContract, 'mt_balance_of', { account_id: accountId, token_id: tokenId });
+}
+
+/** Balances of several assets, read one by one so the sandbox stand-in (no `mt_batch_balance_of`) answers too. */
+export async function intentsBalances(intentsContract: string, accountId: string, tokenIds: string[]): Promise<Record<string, string>> {
+  const values = await Promise.all(tokenIds.map((id) => intentsBalance(intentsContract, accountId, id)));
+  return Object.fromEntries(tokenIds.map((id, i) => [id, values[i] as string]));
+}
+
+/**
+ * Whether `intents.near` lists `publicKey` for `accountId`. Uses `has_public_key` and falls back
+ * to `public_keys_of`, the only one of the two the sandbox stand-in implements.
+ */
+export async function intentsHasPublicKey(intentsContract: string, accountId: string, publicKey: string): Promise<boolean> {
+  try {
+    return await viewFunction<boolean>(intentsContract, 'has_public_key', { account_id: accountId, public_key: publicKey });
+  } catch {
+    const keys = await viewFunction<string[]>(intentsContract, 'public_keys_of', { account_id: accountId });
+    return keys.includes(publicKey);
+  }
 }
