@@ -12,7 +12,14 @@ import {
   teeConfigured,
   verifyChat,
 } from '@/lib/nearAiTee';
-import { operatorAccountId, operatorCall, TransactionFailedError, TransactionPendingError } from '@/lib/operator';
+import {
+  OperatorNotConfiguredError,
+  OperatorUnavailableError,
+  operatorAccountId,
+  operatorCall,
+  TransactionFailedError,
+  TransactionPendingError,
+} from '@/lib/operator';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -29,6 +36,31 @@ const Body = z.strictObject({
 
 const inFlight = new Set<string>();
 
+interface ServedAnswer {
+  model: string;
+  inference: Awaited<ReturnType<typeof runInference>>;
+  verification: Awaited<ReturnType<typeof verifyChat>>;
+  summary: ReturnType<typeof summarizeVerification>;
+  at: number;
+}
+
+// Verified answers whose record_service_call has not landed, by vault and call id. In process
+// memory: a restart forgets them and the next retry runs inference again.
+const UNRECORDED_TTL_MS = 6 * 60 * 60 * 1000;
+const UNRECORDED_MAX = 500;
+const unrecorded = new Map<string, ServedAnswer>();
+
+function rememberUnrecorded(key: string, answer: ServedAnswer) {
+  const now = Date.now();
+  for (const [k, v] of unrecorded) if (now - v.at > UNRECORDED_TTL_MS) unrecorded.delete(k);
+  while (unrecorded.size >= UNRECORDED_MAX) {
+    const oldest = unrecorded.keys().next().value;
+    if (oldest === undefined) break;
+    unrecorded.delete(oldest);
+  }
+  unrecorded.set(key, answer);
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     enforceRateLimit(request, RATE_LIMIT);
@@ -44,26 +76,34 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!company) throw new ApiError(404, `Company ${token_id} does not exist`);
     const vault = new VaultClient(company.vault, { finality: 'optimistic' });
 
-    // Checked before inference, so an unpaid or replayed call spends no API credits.
-    const payment = await vault.getPayment(call_id);
-    if (!payment) throw new ApiError(402, `No payment for call ${call_id} on ${company.vault}`);
-    if (payment.served) throw new ApiError(409, `Call ${call_id} was already served in chat ${payment.tee_chat_id}`);
-
+    // The operator is checked before the payment. A client that probes with an unpaid call id gets
+    // 402 only when this server could record a paid call on this vault, and 409 when it could not.
     const state = await vault.getState();
     if (serviceOperator(state) !== operator) {
       throw new ApiError(409, `${company.vault} accepts service calls only from ${serviceOperator(state)}`);
     }
 
+    // Checked before inference, so an unpaid or replayed call spends no API credits.
+    const payment = await vault.getPayment(call_id);
+    if (!payment) throw new ApiError(402, `No payment for call ${call_id} on ${company.vault}`);
+    if (payment.served) throw new ApiError(409, `Call ${call_id} was already served in chat ${payment.tee_chat_id}`);
+
     const key = `${company.vault}:${call_id}`;
     if (inFlight.has(key)) throw new ApiError(409, `Call ${call_id} is already running`);
     inFlight.add(key);
     try {
-      const model = await pickDefaultModel();
-      const inference = await runInference(
-        buildChatBody({ model, system: company.service_template, user: input, maxTokens: MAX_COMPLETION_TOKENS }),
-      );
-      const verification = await verifyChat(inference);
-      const summary = summarizeVerification(verification);
+      // A verified answer whose record transaction did not land is kept here, so a retry of the
+      // same paid call re-sends only the record and does not pay for inference again.
+      let served = unrecorded.get(key);
+      if (!served) {
+        const model = await pickDefaultModel();
+        const inference = await runInference(
+          buildChatBody({ model, system: company.service_template, user: input, maxTokens: MAX_COMPLETION_TOKENS }),
+        );
+        const verification = await verifyChat(inference);
+        served = { model, inference, verification, summary: summarizeVerification(verification), at: Date.now() };
+      }
+      const { model, inference, verification, summary } = served;
 
       // A failed check leaves the payment unserved, so the customer can retry the same call id.
       if (summary.failed.length > 0) {
@@ -81,7 +121,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         );
       }
 
-      let record: { state: 'recorded' | 'pending' | 'failed'; tx_hash: string | null; error: string | null };
+      let record: { state: 'recorded' | 'pending' | 'failed' | 'not_sent'; tx_hash: string | null; error: string | null };
       try {
         const { txHash } = await operatorCall(vault.recordServiceCall(call_id, inference.chatId));
         record = { state: 'recorded', tx_hash: txHash, error: null };
@@ -91,10 +131,14 @@ export async function POST(request: Request): Promise<NextResponse> {
           record = { state: 'failed', tx_hash: error.txHash, error: error.reason };
         } else if (error instanceof TransactionPendingError) {
           record = { state: 'pending', tx_hash: error.txHash, error: error.message };
+        } else if (error instanceof OperatorUnavailableError || error instanceof OperatorNotConfiguredError) {
+          record = { state: 'not_sent', tx_hash: null, error: error.message };
         } else {
           throw error;
         }
       }
+      if (record.state === 'recorded') unrecorded.delete(key);
+      else rememberUnrecorded(key, served);
 
       return NextResponse.json({
         content: inference.content,
