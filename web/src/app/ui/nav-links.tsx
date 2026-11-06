@@ -2,15 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { APP_NAV } from './nav-items';
 import s from './shell.module.css';
 
-export const APP_NAV: { href: string; label: string }[] = [
-  { href: '/exchange', label: 'Exchange' },
-  { href: '/incorporate', label: 'Incorporate' },
-  { href: '/desk', label: 'Desk' },
-  { href: '/rob', label: 'Rob this company' },
-  { href: '/verify', label: 'Verify' },
-];
+export { APP_NAV };
 
 /** App nav links. The current route gets aria-current="page" and the amber active pill. */
 export function NavLinks({ className }: { className?: string }) {
