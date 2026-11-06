@@ -1,0 +1,635 @@
+/* Capital Markets Desk. Tokens are the --ui-* variables in globals.css; panels come from ui/glass. */
+
+.body {
+  margin-top: 48px;
+}
+
+.desk {
+  display: grid;
+  gap: 56px;
+}
+
+.code {
+  font-family: var(--ui-mono);
+  font-size: 0.92em;
+  color: var(--ui-peach);
+  overflow-wrap: anywhere;
+}
+
+.num {
+  font-family: var(--ui-mono);
+  font-weight: 450;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-cream);
+}
+
+.dim {
+  color: var(--ui-grey-2);
+}
+
+.err {
+  font-family: var(--ui-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ui-coral);
+  overflow-wrap: anywhere;
+}
+
+.k {
+  font-size: 11px;
+  font-weight: 540;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+/* ---------- Summary ---------- */
+
+.acctTitle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.readAt {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--ui-mono);
+  font-size: 12px;
+}
+
+.pending {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ui-hair);
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.sectionHead {
+  display: grid;
+  gap: 6px;
+  max-width: 48rem;
+}
+
+.sectionTitle {
+  font-family: var(--ui-font);
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 480;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.sectionText {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ui-grey-1);
+}
+
+.cards {
+  display: grid;
+  gap: 20px;
+}
+
+/* ---------- Company card ---------- */
+
+.card {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.cardTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.cardTitle h3 {
+  font-family: var(--ui-font);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.nameLink {
+  color: #fff;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.nameLink:hover {
+  color: var(--ui-amber);
+}
+
+.tokenId {
+  font-family: var(--ui-mono);
+  font-size: 12.5px;
+  color: var(--ui-grey-2);
+}
+
+.cardFacts {
+  padding: 4px 0;
+}
+
+.split {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (min-width: 1100px) {
+  .split {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+.sub {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.018);
+  box-shadow: inset 0 0 0 1px var(--ui-hair);
+}
+
+.subTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ui-font);
+  font-size: 16px;
+  font-weight: 540;
+  letter-spacing: -0.015em;
+  color: #fff;
+}
+
+.subText {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ui-grey-2);
+}
+
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(240, 162, 76, 0.12);
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  color: var(--ui-amber);
+}
+
+.empty {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ui-grey-2);
+}
+
+.inline {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+}
+
+@media (min-width: 560px) {
+  .inline {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+.blocked {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(240, 143, 125, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(240, 143, 125, 0.22);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #f3c2b8;
+  overflow-wrap: anywhere;
+}
+
+.waiting {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 0 0 1px var(--ui-hair);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ui-grey-1);
+}
+
+.ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ui-grey-1);
+  cursor: pointer;
+}
+
+.ack input {
+  margin-top: 3px;
+  accent-color: var(--ui-amber);
+  flex-shrink: 0;
+}
+
+.overdue {
+  color: var(--ui-coral);
+}
+
+/* ---------- Offers inside a card ---------- */
+
+.offers {
+  display: grid;
+  gap: 10px;
+}
+
+.offer {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(240, 162, 76, 0.03);
+  box-shadow: inset 0 0 0 1px var(--ui-amber-hair);
+  justify-items: start;
+}
+
+.offerFigures {
+  display: grid;
+  width: 100%;
+  gap: 10px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 700px) {
+  .offerFigures {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.offerFigures > span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.offerMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 13px;
+  color: var(--ui-grey-1);
+}
+
+/* ---------- Freshness report ---------- */
+
+.freshness {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(121, 212, 192, 0.035), transparent 60%),
+    rgba(255, 255, 255, 0.015);
+  box-shadow: inset 0 0 0 1px rgba(121, 212, 192, 0.14);
+}
+
+.freshHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.freshHead > div {
+  display: grid;
+  gap: 6px;
+  max-width: 44rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-family: var(--ui-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--chip, var(--ui-grey-1));
+  background: color-mix(in srgb, var(--chip, #adadad) 9%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--chip, #adadad) 35%, transparent);
+}
+
+.chip::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.chip_clean {
+  --chip: var(--ui-teal);
+}
+
+.chip_dirty {
+  --chip: var(--ui-coral);
+}
+
+.chip_unavailable {
+  --chip: var(--ui-amber);
+}
+
+.chip_not_applicable {
+  --chip: var(--ui-grey-2);
+}
+
+.report {
+  display: grid;
+  gap: 14px;
+  animation: deskFade 400ms ease-out both;
+}
+
+.reportHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.reportMeta {
+  font-family: var(--ui-mono);
+  font-size: 12px;
+  color: var(--ui-grey-2);
+}
+
+.reasons {
+  display: grid;
+  gap: 4px;
+  padding-left: 18px;
+  list-style: disc;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #f3c2b8;
+  overflow-wrap: anywhere;
+}
+
+.fList {
+  display: grid;
+  gap: 0;
+}
+
+.fRow {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-hair);
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .fRow {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+.fRowHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.fName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.fDetail {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ui-grey-1);
+  justify-items: start;
+}
+
+.evmLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.attest {
+  display: grid;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ui-hair);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ui-grey-1);
+  overflow-wrap: anywhere;
+}
+
+.attestLabel {
+  font-size: 11px;
+  font-weight: 540;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+.sha {
+  font-size: 12px;
+  color: var(--ui-grey-2);
+  overflow-wrap: anywhere;
+}
+
+.limits {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ui-grey-3);
+}
+
+/* ---------- Your open offers ---------- */
+
+.tableWrap {
+  overflow: hidden;
+}
+
+.offerRows {
+  display: grid;
+}
+
+.offerRow {
+  display: grid;
+  gap: 12px 16px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--ui-hair);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+}
+
+.offerRow:first-child {
+  border-top: 0;
+}
+
+@media (min-width: 900px) {
+  .offerRow {
+    grid-template-columns: minmax(180px, 1.6fr) repeat(4, minmax(90px, 1fr)) auto;
+  }
+}
+
+.cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.cellAction {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 900px) {
+  .cellAction {
+    grid-column: auto;
+    justify-self: end;
+  }
+}
+
+.rowOutcome {
+  grid-column: 1 / -1;
+}
+
+.rowOutcome:empty {
+  display: none;
+}
+
+/* ---------- Offer form ---------- */
+
+.offerForm {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 900px) {
+  .offerForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  .offerForm > :first-child,
+  .offerForm > label,
+  .offerForm > p,
+  .offerForm > .actions,
+  .offerForm > .outcome {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- Outcome ---------- */
+
+.outcome {
+  min-width: 0;
+}
+
+.earlier {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 6px;
+}
+
+.earlierLabel {
+  font-size: 12px;
+  color: var(--ui-grey-2);
+}
+
+.dismiss {
+  margin-top: 8px;
+  padding: 0 0 1px;
+  border-bottom: 1px solid rgba(173, 173, 173, 0.3);
+  font-size: 12.5px;
+  color: var(--ui-grey-2);
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  color: #fff;
+  border-color: var(--ui-amber);
+}
+
+@keyframes deskFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report {
+    animation: none;
+  }
+
+  .nameLink {
+    transition: none;
+  }
+}
