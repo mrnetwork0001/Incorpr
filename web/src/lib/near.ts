@@ -258,10 +258,31 @@ export interface ViewOptions {
   finality?: 'final' | 'optimistic';
 }
 
+/** One `call_function` query over JSON-RPC, never cached: Next's data cache keeps POST fetches made
+ * during a render, and a cached view showed state from before a mainnet upgrade. */
+async function callFunctionUncached(url: string, contractId: string, method: string, args: Record<string, unknown>, finality: 'final' | 'optimistic'): Promise<Uint8Array> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: 'view',
+      method: 'query',
+      params: { request_type: 'call_function', finality, account_id: contractId, method_name: method, args_base64: Buffer.from(JSON.stringify(args)).toString('base64') },
+    }),
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`RPC HTTP ${res.status}`);
+  const body = (await res.json()) as { result?: { result?: number[]; error?: string }; error?: unknown };
+  if (body.error) throw new Error(JSON.stringify(body.error));
+  if (body.result?.error) throw new Error(body.result.error);
+  if (!body.result?.result) throw new Error('RPC answered without a result');
+  return new Uint8Array(body.result.result);
+}
+
 /**
- * Read-only contract call. Returns the JSON value the method returned. Next caches fetches made
- * during a server component render, including these, so a page reading live state needs
- * `export const dynamic = 'force-dynamic'`.
+ * Read-only contract call. Returns the JSON value the method returned. Every call bypasses Next's
+ * fetch cache, so pages always show current chain state.
  *
  * Moves to the next RPC endpoint only on a transport failure. A panic or a missing account is the
  * chain's answer, and every endpoint would give the same one.
@@ -276,13 +297,8 @@ export async function viewFunction<T>(
   let last: NearViewError | null = null;
   for (const url of urls) {
     try {
-      const result = await getProvider(url).callFunctionRaw({
-        contractId,
-        method,
-        args,
-        blockQuery: { finality: options.finality ?? 'final' },
-      });
-      return JSON.parse(new TextDecoder().decode(new Uint8Array(result.result))) as T;
+      const bytes = await callFunctionUncached(url, contractId, method, args, options.finality ?? 'final');
+      return JSON.parse(new TextDecoder().decode(bytes)) as T;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       last = error instanceof NearViewError ? error : new NearViewError(classifyViewError(message), contractId, method, message);
