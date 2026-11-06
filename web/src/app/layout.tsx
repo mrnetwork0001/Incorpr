@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { siteUrl } from '@/lib/og/metadata';
 import { WalletProvider } from '@/lib/wallet';
 import './globals.css';
 
@@ -9,6 +10,8 @@ const sans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '500'], variabl
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-mono', display: 'swap' });
 
 export const metadata: Metadata = {
+  // Absolute og:image and twitter:image URLs need the public origin: set NEXT_PUBLIC_SITE_URL before sharing.
+  metadataBase: siteUrl(),
   title: 'Incorpr: companies as NEP-171 NFTs on NEAR',
   description:
     'Each token is an AI service with its own NEAR sub-account, USDC revenue ledger, and Bitcoin, Solana and EVM addresses. Borrow against it or sell it by transferring one NFT.',
