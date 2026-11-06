@@ -25,7 +25,8 @@ const DEFAULT_RPC = {
   mainnet: ['https://rpc.mainnet.fastnear.com', 'https://archival-rpc.mainnet.fastnear.com'],
   testnet: ['https://test.rpc.fastnear.com', 'https://archival-rpc.testnet.fastnear.com'],
 };
-const ESPLORA = { mainnet: 'https://mempool.space/api', testnet: 'https://mempool.space/testnet4/api', sandbox: 'https://mempool.space/testnet4/api' };
+// BTC_ESPLORA_API overrides the Esplora endpoint (same API as mempool.space), for networks that block one of them.
+const ESPLORA = { mainnet: process.env.BTC_ESPLORA_API || 'https://mempool.space/api', testnet: 'https://mempool.space/testnet4/api', sandbox: 'https://mempool.space/testnet4/api' };
 const RPC_TIMEOUT_MS = 20_000;
 
 // ------------------------------------------------------------------------------------------- RPC
@@ -135,7 +136,8 @@ function readOutcome(outcome) {
 
 /** scripts/lib/near.mjs labels a transaction the same way, so the labels must be equal. */
 function methodMatches(recorded, chainLabel) {
-  return !recorded || recorded === chainLabel;
+  // Labels may add detail in parentheses, e.g. AddKey(FunctionCall) for an AddKey action.
+  return !recorded || recorded === chainLabel || recorded.replace(/\(.*\)$/, '') === chainLabel;
 }
 
 // ----------------------------------------------------------------------------------- base58, hex
@@ -291,10 +293,10 @@ async function checkBitcoin(network, data, txRows) {
         const res = await fetch(`${ESPLORA[network]}/tx/${entry.txid}/status`, { signal: AbortSignal.timeout(RPC_TIMEOUT_MS) });
         if (res.status === 404 || res.status === 400) {
           row.checks.found = false;
-          row.mismatches.push(`Bitcoin tx ${entry.txid} not found on mempool.space`);
+          row.mismatches.push(`Bitcoin tx ${entry.txid} not found on ${ESPLORA[network]}`);
         } else if (!res.ok) {
           row.checks.found = false;
-          row.mismatches.push(`mempool.space answered HTTP ${res.status} for ${entry.txid}`);
+          row.mismatches.push(`${ESPLORA[network]} answered HTTP ${res.status} for ${entry.txid}`);
         } else {
           const status = await res.json();
           row.checks.found = true;
@@ -304,7 +306,7 @@ async function checkBitcoin(network, data, txRows) {
         }
       } catch (error) {
         row.checks.found = false;
-        row.mismatches.push(`mempool.space unreachable: ${error.message}`);
+        row.mismatches.push(`${ESPLORA[network]} unreachable: ${error.message}`);
       }
     }
     rows.push(row);

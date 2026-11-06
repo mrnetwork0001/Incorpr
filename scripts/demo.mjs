@@ -16,7 +16,7 @@
 //   borrow       owner accepts the offer; the vault freezes as Pledged and the principal is paid out
 //   rug-pledged  owner tries to claim and transfer while pledged (refused)
 //   repay        owner repays the debt; the vault returns to Free
-//   rebalance    planned BTC/SOL trade for retained earnings, priced with real 1Click dry quotes (not executed)
+//   rebalance    scripts/rebalance.mjs: USDC -> SOL through NEAR Intents; read-only a-d unless --execute
 //   dividends    owner claims retained earnings
 //   btc-send     vault signs a P2WPKH spend from its bc1/tb1 address through the MPC signer (needs UTXOs)
 
@@ -27,8 +27,7 @@ import { CliError, formatNear, formatUsdc, heading, item, log, MILLI_NEAR, ONE_N
 import { REPO_ROOT } from './lib/deps.mjs';
 import { loadAppEnv } from './lib/envfile.mjs';
 import { actions } from './lib/near.mjs';
-import { BTC_ASSET, MAINNET_USDC_ASSET, networkContext, SOL_ASSET, usdcAsset } from './lib/network.mjs';
-import { dryQuote } from './lib/oneclick.mjs';
+import { networkContext } from './lib/network.mjs';
 import { COMPANIES } from './lib/plan.mjs';
 
 const STEPS = ['actors', 'pay', 'serve', 'list', 'rug-listed', 'buy', 'lend', 'borrow', 'rug-pledged', 'repay', 'rebalance', 'dividends', 'btc-send'];
@@ -412,52 +411,29 @@ class Demo {
     return 'done';
   }
 
+  /**
+   * scripts/rebalance.mjs for this company: USDC on intents.near plus retained earnings (or
+   * --quote-usdc) sold for SOL. Without --execute it runs a-d read-only (key, deposit, balances,
+   * live solver quote and firewall pre-checks) and spends no NEAR AI call. With --execute it runs
+   * a-g: TEE approval, agent_swap_intent, and on mainnet publish_intent and settlement.
+   */
   async rebalance() {
-    if (this.args.execute) {
-      throw new CliError(
-        'rebalance execution is cut from this release and listed as future work: the script shows the planned trade and live 1Click dry quotes only.',
-        2,
-      );
-    }
-    const { company, vault, state } = await this.vault();
-    const retained = BigInt(state.retained_earnings);
-    const sizing = this.args['quote-usdc'] ? parseUsdc(this.args['quote-usdc']) : retained;
-    item('retained earnings', formatUsdc(retained));
-    item('held on intents.near', formatUsdc(state.deposited_to_intents));
-    item('target BTC/SOL/USDC', company.target_bps.map((b) => `${b / 100}%`).join(' / '));
-    if (sizing === 0n) return 'skipped: retained earnings are zero, so there is nothing to plan; pass --quote-usdc to price a size';
-    const local = usdcAsset(this.ctx);
-    const recipient = this.ctx.network === 'mainnet' ? vault : 'intents.near';
-    for (const [index, asset] of [[0, BTC_ASSET], [1, SOL_ASSET]]) {
-      const amount = (sizing * BigInt(company.target_bps[index])) / 10_000n;
-      if (amount === 0n) continue;
-      const floor = state.policy.price_floors.find((f) => f.sell_token === local && f.buy_token === asset);
-      const floorMinBuy = floor ? (amount * BigInt(floor.min_buy) + BigInt(floor.per_sell) - 1n) / BigInt(floor.per_sell) : null;
-      const entry = {
-        token_id: this.token,
-        vault,
-        planned: `agent_deposit_to_intents ${amount} then agent_swap_intent ${local} -> ${asset}`,
-        origin_asset: MAINNET_USDC_ASSET,
-        destination_asset: asset,
-        amount_in: amount.toString(),
-        floor_min_buy: floorMinBuy?.toString() ?? null,
-        note: this.ctx.network === 'mainnet' ? 'not executed' : `priced as mainnet USDC; ${local} is Test USDC. Not executed`,
-      };
-      try {
-        const quote = await dryQuote({ originAsset: MAINNET_USDC_ASSET, destinationAsset: asset, amount, recipient });
-        entry.amount_out = quote.quote.amountOut;
-        entry.min_amount_out = quote.quote.minAmountOut ?? quote.quote.amountOut;
-        entry.amount_out_usd = quote.quote.amountOutUsd;
-        entry.passes_floor = floorMinBuy === null ? null : BigInt(entry.min_amount_out) >= floorMinBuy;
-        entry.note += entry.passes_floor === false ? '; quote is below the vault price floor, the vault would refuse it' : '';
-        item(`quote USDC -> ${asset}`, `${formatUsdc(amount)} -> ${entry.amount_out} (min ${entry.min_amount_out}, floor ${entry.floor_min_buy}, $${entry.amount_out_usd})`);
-      } catch (error) {
-        entry.error = `1Click: ${error.message}`;
-        item(`quote USDC -> ${asset}`, `1Click refused: ${error.message}`);
-      }
-      this.ctx.evidence.addQuote(entry);
-    }
-    return 'done';
+    if (this.ctx.network === 'testnet') return 'skipped: intents.near and the solver relay exist on mainnet only; the sandbox runs a stand-in';
+    const { Rebalancer } = await import('./rebalance.mjs');
+    const { intentsBalances } = await import('./lib/intents.mjs');
+    const { vault, state } = await this.vault();
+    const usdc = `nep141:${this.ctx.usdc}`;
+    const onIntents = (await intentsBalances(this.near, this.ctx.intents, vault, [usdc]))[usdc];
+    const sizing = this.args['quote-usdc'] ? parseUsdc(this.args['quote-usdc']) : onIntents + BigInt(state.retained_earnings);
+    if (sizing === 0n) return 'skipped: no USDC on intents.near and no retained earnings; pass --quote-usdc to size a swap';
+    const rebalancer = new Rebalancer(this.ctx, {
+      token: this.token,
+      sellAmount: sizing,
+      to: 'sol',
+      dryRun: !this.args.execute,
+      approve: this.args.execute,
+    });
+    return rebalancer.run();
   }
 
   async dividends() {
