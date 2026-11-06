@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Landing page container: side margins are one variable so they can be tuned in one place. */
+:root {
+  --content-max: 1680px;
+  --gutter: 20px;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --gutter: max(48px, 4.2vw);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #a9c1ec;
+  outline-offset: 2px;
+}
+
+@layer components {
+  .label {
+    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-dim;
+  }
+
+  .data {
+    @apply font-mono tabular-nums;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-paper px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-white;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center border border-line px-5 py-2.5 text-sm text-paper transition-colors hover:border-dim;
+  }
+}
+
+/* App design kit tokens, used by web/src/app/ui. Same palette as the landing page. */
+:root {
+  --ui-bg: #0d0d0d;
+  --ui-amber: #f0a24c;
+  --ui-amber-bright: #f7b866;
+  --ui-peach: #f6c9a2;
+  --ui-lilac: #c9b3ff;
+  --ui-teal: #79d4c0;
+  --ui-coral: #f08f7d;
+  --ui-cream: #e9d3bb;
+  --ui-white: #fff;
+  --ui-grey-1: #adadad;
+  --ui-grey-2: #7d7d7d;
+  --ui-grey-3: #717171;
+  --ui-hair: rgba(255, 255, 255, 0.07);
+  --ui-amber-hair: rgba(240, 162, 76, 0.16);
+  --ui-font: 'Google Sans Flex', var(--font-sans), system-ui, sans-serif;
+  --ui-mono: var(--font-mono), ui-monospace, monospace;
+  --ui-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
