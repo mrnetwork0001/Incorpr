@@ -1,0 +1,133 @@
+{
+  "note": "Written by scripts/rebalance.mjs. One entry per run; nothing here is edited by hand.",
+  "runs": [
+    {
+      "started_at": "2026-11-06T18:00:08.373Z",
+      "network": "mainnet",
+      "token_id": "1",
+      "vault": "c-1.incorpr.near",
+      "sell_token": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+      "sell_amount": "500000",
+      "buy_token": "nep141:sol.omft.near",
+      "status": "settled",
+      "txs": [
+        {
+          "step": "key",
+          "method": "setup_intents_key",
+          "tx_hash": "6riRRm81h8Ptzqd9YtU4z9AA6gVRKZjN8jv94G6wmFkQ",
+          "explorer_url": "https://nearblocks.io/txns/6riRRm81h8Ptzqd9YtU4z9AA6gVRKZjN8jv94G6wmFkQ",
+          "gas_attached": "80000000000000",
+          "gas_burnt": "17257904955185"
+        },
+        {
+          "step": "fund",
+          "method": "ft_transfer",
+          "tx_hash": "4Gkbx6QjLvMZWaAmoPFZZWquDfsdJmpy1JFho4brtwFx",
+          "explorer_url": "https://nearblocks.io/txns/4Gkbx6QjLvMZWaAmoPFZZWquDfsdJmpy1JFho4brtwFx",
+          "gas_attached": "30000000000000",
+          "gas_burnt": "2872025759739"
+        },
+        {
+          "step": "fund",
+          "method": "ft_transfer_call",
+          "tx_hash": "G4ypF62jpoeNcacqwGLpcmMoDmQBwh82M7RxVrELCdiQ",
+          "explorer_url": "https://nearblocks.io/txns/G4ypF62jpoeNcacqwGLpcmMoDmQBwh82M7RxVrELCdiQ",
+          "gas_attached": "80000000000000",
+          "gas_burnt": "11027634216191"
+        },
+        {
+          "step": "deposit",
+          "method": "agent_deposit_to_intents",
+          "tx_hash": "856Sf7uijk8wz7odxtET1L594cp5Ph6hsWupjVRatFCM",
+          "explorer_url": "https://nearblocks.io/txns/856Sf7uijk8wz7odxtET1L594cp5Ph6hsWupjVRatFCM",
+          "gas_attached": "120000000000000",
+          "gas_burnt": "17700463397199"
+        },
+        {
+          "step": "sign",
+          "method": "agent_swap_intent",
+          "tx_hash": "4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+          "explorer_url": "https://nearblocks.io/txns/4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+          "gas_attached": "90000000000000",
+          "gas_burnt": "14694728358130"
+        }
+      ],
+      "funding": {
+        "payer": "demo-buyer.incorpr.near",
+        "source": "demo-customer.incorpr.near",
+        "amount": "574999",
+        "call_id": "71149d8da1bcb7be1276d646456119c4f11d0721a328ad3d5929566b5e826930",
+        "related_party": true
+      },
+      "quote": {
+        "defuse_asset_identifier_in": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+        "defuse_asset_identifier_out": "nep141:sol.omft.near",
+        "amount_in": "500000",
+        "amount_out": "5545636",
+        "expiration_time": "2026-11-06T18:03:28.673Z",
+        "quote_hash": "Dn88zwthQXfvSJkm8ac4uwtPnMhHKKQ2e9FwWLkMeMTj",
+        "source": "solver_relay",
+        "floor_min_buy": "4956169",
+        "passes_floor": true
+      },
+      "tee": {
+        "model": "Qwen/Qwen3-VL-30B-A3B-Instruct",
+        "host": "https://qwen3-vl-30b.completions.near.ai/v1",
+        "chat_id": "chatcmpl-9925e457-37a6-4ed5-a159-88a88116f9cf",
+        "created": 1793988029,
+        "proposal_hash": "342e8eb41c029791caa40de78c4b4d0f0677fe04166edb360ef16716816a630b",
+        "signer": "0x2665cce942fa427ef30d87f4b0bff67fb7645462",
+        "signed_text": "Qwen/Qwen3-VL-30B-A3B-Instruct:b0e909da6c0c34d17a66697270083205ac7edf135e889b2cfb3b09dec80152b3:c48f2c9bbf90fd8a46ad667706e04e0c38b6abcbc08e614b0475012e1455b9e7",
+        "checks": {
+          "signedTextIsModelRequestResponse": true,
+          "recoversToSigningAddress": true,
+          "signerInVaultPolicy": true,
+          "approvalAgeSeconds": 1
+        }
+      },
+      "signed_intent": {
+        "standard": "nep413",
+        "payload": {
+          "message": "{\"signer_id\":\"c-1.incorpr.near\",\"deadline\":\"2026-11-06T18:05:31.973Z\",\"intents\":[{\"intent\":\"token_diff\",\"diff\":{\"nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1\":\"-500000\",\"nep141:sol.omft.near\":\"5545636\"}}]}",
+          "nonce": "Vij2xgAlKBKzQLGhGm2H5RgxSkg4oX0KxnAiOrW7530=",
+          "recipient": "intents.near"
+        },
+        "public_key": "ed25519:B6BrxvWsAqduvmCdx9Ygs4VLBZDdNayvrX68fdhCqqoa",
+        "signature": "ed25519:36zsj21p1BbcPmL4KywMMmiFavPQX7jTe2R5yQTWtn96iodTKUQoujiJbAePDyxpkrEQegaUCwC2zrh637a31iuu"
+      },
+      "sign_tx": "4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+      "before": {
+        "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "500000",
+        "nep141:sol.omft.near": "0"
+      },
+      "updated_at": "2026-11-06T18:00:40.611Z",
+      "publish": {
+        "params_quote_hashes": [
+          "Dn88zwthQXfvSJkm8ac4uwtPnMhHKKQ2e9FwWLkMeMTj"
+        ],
+        "result": {
+          "status": "OK",
+          "intent_hash": "3D6TdJdL4cWB6QzUGGnNwyYDsymZfaZmMJPMPj4vVDjS"
+        },
+        "at": "2026-11-06T18:00:38.064Z"
+      },
+      "intent_hash": "3D6TdJdL4cWB6QzUGGnNwyYDsymZfaZmMJPMPj4vVDjS",
+      "settlement": {
+        "intent_hash": "3D6TdJdL4cWB6QzUGGnNwyYDsymZfaZmMJPMPj4vVDjS",
+        "status": "SETTLED",
+        "status_details": null,
+        "tx_hash": "6iuhhDuDJ2z3pSzKyuhQNzWX2pxKxyM7itBtL73EwUZP",
+        "filled_amounts": null,
+        "explorer_url": "https://nearblocks.io/txns/6iuhhDuDJ2z3pSzKyuhQNzWX2pxKxyM7itBtL73EwUZP"
+      },
+      "after": {
+        "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "0",
+        "nep141:sol.omft.near": "5545636"
+      },
+      "diff": {
+        "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1": "-500000",
+        "nep141:sol.omft.near": "5545636"
+      }
+    }
+  ]
+}
