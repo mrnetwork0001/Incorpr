@@ -32,6 +32,8 @@ The dry run sends no transactions and writes no key files. Before the first depl
 - live 1Click prices for the caps and price floors;
 - the deployer's balance against the plan.
 
+With `--companies 1` the deployer pays 14.15 NEAR (9.50 registry funding, 4.59454 for one `incorporate_company`, USDC registrations and the gas upper bound; dry run on 2026-11-06 at protocol 88). The mainnet deploy of 2026-11-06 used one company.
+
 Measured on 2026-11-06, protocol 88, gas price 1e8 yocto/gas, 3 companies:
 
 | Item | NEAR |
@@ -104,6 +106,18 @@ node scripts/demo.mjs --network mainnet --confirm-mainnet --all --token 1
 
 Every transaction, including the refused ones, goes to `docs/evidence/mainnet.json`, and `docs/MAINNET_EVIDENCE.md` is regenerated from it after each write. Neither file is edited by hand. Demo salts and call ids are kept in `~/.near-credentials/mainnet/incorpr-demo-incorpr.near.json`.
 
+## 4b. Turn on /rob
+
+`/rob` sends its attempts from two keys: the operator (`NEAR_OPERATOR_*`, written by `deploy.mjs`) and a stranger account that owns nothing. Without the stranger key the page shows "Attempts are off" and `POST /api/rob/attempt` answers 503 `attempts_disabled`. On mainnet it also answers 503 until `ROB_ATTEMPTS_ENABLED=true` is set, because every attempt spends real NEAR.
+
+```bash
+node scripts/rob-setup.mjs --network mainnet --dry-run
+node scripts/rob-setup.mjs --network mainnet --confirm-mainnet   # creates rob.incorpr.near with 0.2 NEAR, writes ROB_ACCOUNT_ID / ROB_PRIVATE_KEY to web/.env.local
+# then add ROB_ATTEMPTS_ENABLED=true to web/.env.local and restart the app
+```
+
+Each attempt prepays 30 TGas (60 for the two TEE-proof swaps) and stops when a signer falls below `ROB_MIN_BALANCE_NEAR` (default 0.1) plus its largest prepaid gas. The operator was funded with 0.3 NEAR at deploy and also pays for `record_service_call`; top it up before opening `/rob` to visitors.
+
 ## 5. Not in this release
 
 - Rebalance execution: `agent_deposit_to_intents`, the TEE approval and `agent_swap_intent` with solver settlement. Quotes only.
@@ -112,7 +126,7 @@ Every transaction, including the refused ones, goes to `docs/evidence/mainnet.js
 
 ## 6. Notes and limits
 
-- `near-sdk` is pinned to 5.29.1 (contracts agent). On protocol 87, mainnet had `universal_accounts = false`, and a wasm importing `promise_batch_action_universal_state_init` deployed but then failed every call with `Link Error: unknown or invalid import`. Mainnet moved to protocol 88 on 2026-11-06 (`universal_accounts = true`). The 5.29.1 wasm only drops that import. Both scripts were rehearsed end to end on a protocol-88 sandbox as well as on 87. The `cargo test` suite still pins 87.
+- `near-sdk` is pinned to 5.29.1 (contracts agent). On protocol 87, mainnet had `universal_accounts = false`, and a wasm importing `promise_batch_action_universal_state_init` deployed but then failed every call with `Link Error: unknown or invalid import`. Mainnet moved to protocol 88 on 2026-11-06 (`universal_accounts = true`). The 5.29.1 wasm only drops that import. Both scripts were rehearsed end to end on a protocol-88 sandbox as well as on 87. The `cargo test` sandbox suite pins 87 by default; `INCORPR_SANDBOX_PROTOCOL=88 cargo test -p integration-tests --test sandbox` runs it at 88, where the link-error test checks that the gated import links instead.
 - `incorpr.near` keeps a full access key on the deployer's machine. It is the registry `owner`, which `set_default_policy` requires, and the key can redeploy the registry. The vaults have no keys and no upgrade method. To make the registry immutable, delete that key once the policy is final.
 - The demo accounts are controlled by the same person as the founder. The sale and the loan are real contract executions, not trades between independent parties. Payments from `demo-customer` count toward `revenue_30d`, because only the current shareholder's own payments are excluded (ARCHITECTURE.md section 4).
 - `v1.signer`'s sign fee was not read on chain. `btc-send` attaches `--sign-deposit-yocto`, default 1. The vault forwards the whole deposit to the signer.
