@@ -1,0 +1,528 @@
+/* /rob: chat, attempts, vault checks and recent attempts. Tokens from globals.css (--ui-*). */
+
+.mono {
+  font-family: var(--ui-mono);
+  font-size: 12px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.introNote {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--ui-grey-2);
+}
+
+.target {
+  min-width: min(100%, 360px);
+}
+
+.notice {
+  margin-bottom: 24px;
+}
+
+.notice code {
+  font-family: var(--ui-mono);
+  font-size: 12.5px;
+  color: var(--ui-peach);
+}
+
+.layout,
+.lower {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+
+.layout {
+  margin-top: 36px;
+}
+
+.lower {
+  margin-top: 24px;
+  margin-bottom: 72px;
+}
+
+@media (min-width: 1000px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  /* The attempt list is long; the chat stays in view beside it. */
+  .layout > .panel:first-child {
+    position: sticky;
+    top: 88px;
+  }
+
+  .lower {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.hint {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ui-grey-3);
+}
+
+.inlineNotice {
+  margin-top: 14px;
+}
+
+/* ---------- Chat ---------- */
+
+.chatLog {
+  display: flex;
+  min-height: 240px;
+  max-height: 520px;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px 4px 2px 2px;
+}
+
+.empty {
+  display: grid;
+  gap: 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ui-grey-2);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  max-width: 100%;
+  padding: 8px 13px;
+  border-radius: 14px;
+  background: #1d1510;
+  box-shadow: inset 0 0 0 1px rgba(240, 162, 76, 0.22);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+  color: var(--ui-peach);
+  transition:
+    box-shadow 200ms ease,
+    color 200ms ease;
+}
+
+.chip:hover:not(:disabled) {
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 162, 76, 0.45),
+    0 0 22px -10px rgba(240, 162, 76, 0.6);
+  color: #fff;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--ui-amber);
+  outline-offset: 2px;
+}
+
+.bubble {
+  max-width: 90%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  animation: bubbleIn 360ms var(--ui-ease) both;
+}
+
+.user {
+  align-self: flex-end;
+  background: linear-gradient(180deg, rgba(240, 162, 76, 0.16), rgba(240, 162, 76, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(240, 162, 76, 0.28);
+}
+
+.agent {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 0 0 1px var(--ui-hair);
+}
+
+.who {
+  margin-bottom: 6px;
+  font-family: var(--ui-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+.bubbleText {
+  font-size: 14.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--ui-grey-1);
+}
+
+.user .bubbleText {
+  color: #fff;
+}
+
+.typing {
+  font-size: 14px;
+  color: var(--ui-grey-2);
+}
+
+.tee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-hair);
+  font-size: 12px;
+  color: var(--ui-grey-2);
+  overflow-wrap: anywhere;
+}
+
+.badge,
+.badgeWarn {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--ui-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+
+.badge {
+  color: var(--ui-teal);
+  box-shadow: inset 0 0 0 1px rgba(121, 212, 192, 0.32);
+}
+
+.badgeWarn {
+  color: var(--ui-amber);
+  box-shadow: inset 0 0 0 1px rgba(240, 162, 76, 0.35);
+}
+
+.composer {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.composerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* ---------- Attempts ---------- */
+
+.attemptForm {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.attemptForm > :first-child {
+  width: 100%;
+}
+
+.attemptList {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.idle {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.015);
+  box-shadow: inset 0 0 0 1px var(--ui-hair);
+}
+
+.notSent {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.idleHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.step {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #1d1510;
+  box-shadow: inset 0 0 0 1px rgba(240, 162, 76, 0.3);
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  color: var(--ui-amber);
+}
+
+.idleTitle {
+  min-width: 0;
+  flex: 1;
+  font-size: 15px;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+
+.notSentLabel {
+  flex-shrink: 0;
+  font-family: var(--ui-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+.idleStory {
+  margin-top: 8px;
+  padding-left: 40px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ui-grey-2);
+}
+
+.idleCall {
+  margin-top: 8px;
+  padding-left: 40px;
+}
+
+.callLine {
+  font-family: var(--ui-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--ui-grey-2);
+  overflow-wrap: anywhere;
+}
+
+.callSigner {
+  color: var(--ui-peach);
+}
+
+.callReceiver {
+  color: var(--ui-grey-1);
+}
+
+.callMethod {
+  color: var(--ui-lilac);
+}
+
+.callArgs {
+  color: var(--ui-grey-3);
+}
+
+.position {
+  font-size: 13px;
+  color: var(--ui-grey-2);
+}
+
+.evidence {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  margin: 12px 0 0 40px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px var(--ui-hair);
+}
+
+.evidenceLabel {
+  font-family: var(--ui-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+.evidenceText {
+  font-size: 13.5px;
+  color: var(--ui-grey-1);
+}
+
+@media (max-width: 479px) {
+  .idleStory,
+  .idleCall {
+    padding-left: 0;
+  }
+
+  .evidence {
+    margin-left: 0;
+  }
+}
+
+/* ---------- Vault checks ---------- */
+
+.lead {
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ui-grey-1);
+}
+
+.tabLabel {
+  font-family: var(--ui-mono);
+  font-size: 12px;
+}
+
+.checks {
+  display: grid;
+  list-style: none;
+}
+
+.checkRow {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 6px 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--ui-hair);
+}
+
+.checkRow:first-child {
+  border-top: 0;
+}
+
+.checkNum {
+  padding-top: 1px;
+  font-family: var(--ui-mono);
+  font-size: 12px;
+  color: var(--ui-amber);
+}
+
+.checkWhat {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ui-grey-1);
+}
+
+.checkCodes {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 2;
+  gap: 6px;
+}
+
+.codeChip {
+  max-width: 100%;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: rgba(246, 201, 162, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(246, 201, 162, 0.18);
+  font-family: var(--ui-mono);
+  font-size: 11.5px;
+  color: var(--ui-peach);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Recent ---------- */
+
+.subhead {
+  margin: 24px 0 8px;
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+.recentList {
+  display: grid;
+  list-style: none;
+}
+
+.recentRow {
+  display: grid;
+  gap: 8px 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-hair);
+}
+
+.recentRow:first-child {
+  border-top: 0;
+}
+
+@media (min-width: 600px) {
+  .recentRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+.recentMain {
+  min-width: 0;
+}
+
+.recentTitle {
+  font-size: 14px;
+  line-height: 1.45;
+  color: #fff;
+}
+
+.recentMeta {
+  margin-top: 2px;
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  color: var(--ui-grey-3);
+  overflow-wrap: anywhere;
+}
+
+.recentSide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-width: 0;
+}
+
+@media (min-width: 600px) {
+  .recentSide {
+    justify-content: flex-end;
+  }
+}
+
+.recentStatus {
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--ui-grey-2);
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+  }
+
+  .chip {
+    transition: none;
+  }
+}
