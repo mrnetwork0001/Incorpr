@@ -217,3 +217,10 @@ details[open] .chevron {
     transition: none;
   }
 }
+
+/* Touch: the wallet pill reaches a 36px tap target on phones and tablets. */
+@media (max-width: 900px) {
+  .pill {
+    min-height: 36px;
+  }
+}

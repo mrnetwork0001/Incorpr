@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getNetworkConfig } from '@/lib/near';
-import { Handoff, Mark } from '../hero/hero';
 import s from './shell.module.css';
+import { BrandLogo } from './brand-logo';
 
 const APP_LINKS: [string, string][] = [
   ['/exchange', 'Exchange'],
@@ -30,12 +30,10 @@ function liveNetwork(): { network: string; mpcContract: string; registryId: stri
 export type SiteFooterProps = {
   /** On the landing page the protocol links are in-page anchors; elsewhere they go to /#section. */
   onLanding?: boolean;
-  /** The seller-to-buyer hand-off image and wordmark under the footer. Default true. */
-  handoff?: boolean;
 };
 
 /** Footer shared by the landing page and every app screen. */
-export function SiteFooter({ onLanding = false, handoff = true }: SiteFooterProps) {
+export function SiteFooter({ onLanding = false }: SiteFooterProps) {
   const live = liveNetwork();
   const anchor = (id: string) => (onLanding ? `#${id}` : `/#${id}`);
   return (
@@ -44,8 +42,7 @@ export function SiteFooter({ onLanding = false, handoff = true }: SiteFooterProp
         <div className={s.footGrid}>
           <div>
             <Link href="/" className={s.footBrand}>
-              <Mark className={s.mark} />
-              incorpr
+              <BrandLogo height={40} />
             </Link>
             <p className={s.footBlurb}>Companies as NEP-171 NFTs on NEAR, each with its own keyless vault and treasury.</p>
           </div>
@@ -101,7 +98,6 @@ export function SiteFooter({ onLanding = false, handoff = true }: SiteFooterProp
           <span>NEAR Hackathon 2026</span>
         </div>
       </footer>
-      {handoff && <Handoff />}
     </div>
   );
 }

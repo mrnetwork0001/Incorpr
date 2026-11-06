@@ -81,19 +81,15 @@
   display: none;
 }
 
-.navMobile {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  padding: 0 var(--gutter) 10px;
-  scrollbar-width: none;
-  /* Fade the right edge so a cut-off link reads as scrollable. */
-  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
-  mask-image: linear-gradient(90deg, #000 85%, transparent);
+/* The network badge leaves the bar on small phones; the drawer shows it instead. */
+.badgeInBar {
+  display: none;
 }
 
-.navMobile::-webkit-scrollbar {
-  display: none;
+@media (min-width: 600px) {
+  .badgeInBar {
+    display: inline-flex;
+  }
 }
 
 .link {
@@ -267,6 +263,21 @@
   color: var(--ui-grey-3);
 }
 
+/* Footer links get a taller tap target on phones and tablets. */
+@media (max-width: 900px) {
+  .footLinks {
+    gap: 2px;
+  }
+
+  .footLinks a {
+    padding: 8px 0;
+  }
+
+  .brand {
+    min-height: 40px;
+  }
+}
+
 /* ---------- Breakpoints ---------- */
 
 @media (min-width: 700px) {
@@ -297,10 +308,6 @@
     align-items: center;
     gap: 2px;
     margin-right: 10px;
-  }
-
-  .navMobile {
-    display: none;
   }
 
   .footGrid {
