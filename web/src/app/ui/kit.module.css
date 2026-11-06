@@ -356,16 +356,7 @@
   width: 100%;
 }
 
-.arrow {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  transition: transform 200ms ease;
-}
 
-.btn:not(:disabled):hover .arrow {
-  transform: translateX(3px);
-}
 
 .spinner {
   width: 14px;
@@ -1094,6 +1085,35 @@ a.addressText:hover {
   }
 }
 
+/* ---------- Touch: phones and tablets ----------
+   16px text stops iOS Safari zooming on focus. Tap targets reach 36px; primary actions 44px. */
+@media (max-width: 900px) {
+  .input,
+  .select,
+  .textarea,
+  .inputMono {
+    font-size: 16px;
+  }
+
+  .iconBtn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn {
+    min-height: 40px;
+  }
+
+  .primary {
+    min-height: 46px;
+  }
+
+  .sm.secondary,
+  .sm.quiet {
+    min-height: 36px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .eyebrow,
   .titleLine,
@@ -1118,9 +1138,7 @@ a.addressText:hover {
   .hover:hover,
   .primary,
   .primary:not(:disabled):not([aria-disabled='true']):hover,
-  .primary::after,
-  .arrow,
-  .btn:not(:disabled):hover .arrow {
+  .primary::after {
     transition: none;
     transform: none;
   }

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { forwardRef, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } from 'react';
-import { ArrowIcon } from './icons';
 import k from './kit.module.css';
 
 /** primary: glossy amber glass. quiet: dark glass pill for actions inside panels. secondary: underlined grey text link. */
@@ -10,7 +9,7 @@ export type ButtonSize = 'sm' | 'md';
 type Common = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Trailing arrow that nudges right on hover. */
+  /** Ignored: buttons carry no arrows. Kept so older call sites still type-check. */
   arrow?: boolean;
   full?: boolean;
 };
@@ -27,7 +26,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant, size, arrow, full, busy, busyLabel, className, children, disabled, type = 'button', ...rest },
+  { variant, size, arrow: _arrow, full, busy, busyLabel, className, children, disabled, type = 'button', ...rest },
   ref,
 ) {
   return (
@@ -41,7 +40,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     >
       {busy && <span className={k.spinner} aria-hidden />}
       {busy && busyLabel ? busyLabel : children}
-      {arrow && !busy && <ArrowIcon className={k.arrow} />}
     </button>
   );
 });
@@ -53,14 +51,9 @@ export type ButtonLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
     external?: boolean;
   };
 
-export function ButtonLink({ href, variant, size, arrow, full, external, className, children, ...rest }: ButtonLinkProps) {
+export function ButtonLink({ href, variant, size, arrow: _arrow, full, external, className, children, ...rest }: ButtonLinkProps) {
   const cls = classes({ variant, size, full }, className);
-  const content = (
-    <>
-      {children}
-      {arrow && <ArrowIcon className={k.arrow} />}
-    </>
-  );
+  const content = children;
   if (external) {
     return (
       <a href={href} target="_blank" rel="noreferrer" className={cls} {...rest}>

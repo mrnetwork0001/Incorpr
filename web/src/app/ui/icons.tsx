@@ -10,13 +10,6 @@ const stroke = {
   strokeLinejoin: 'round' as const,
 };
 
-export function ArrowIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 16 16" className={className} aria-hidden>
-      <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" {...stroke} />
-    </svg>
-  );
-}
 
 export function ExternalIcon({ className }: IconProps) {
   return (

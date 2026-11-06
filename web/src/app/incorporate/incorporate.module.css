@@ -488,3 +488,11 @@
   align-items: center;
   gap: 16px;
 }
+
+/* Touch: presets reach a 36px tap target on phones and tablets. */
+@media (max-width: 900px) {
+  .preset {
+    min-height: 36px;
+    padding: 8px 14px;
+  }
+}
