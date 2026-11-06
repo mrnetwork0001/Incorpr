@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import type { TreasuryAddresses } from '@/lib/contracts';
 import { treasuryPath } from '@/lib/mpcAddresses';
+import { MobileNav } from '../ui/mobile-nav';
+import { APP_NAV } from '../ui/nav-items';
 import styles from './hero.module.css';
+import { BrandLogo } from '../ui/brand-logo';
 
 type HeroProps = {
   vaultAccount: string;
@@ -106,8 +109,7 @@ export function HeroNav() {
     <header className={styles.header}>
       <nav className={styles.nav} aria-label="Main">
         <Link href="/" className={styles.brand}>
-          <Mark />
-          incorpr
+          <BrandLogo height={34} />
         </Link>
         <div className={styles.navRight}>
           <div className={styles.navLinks}>
@@ -115,9 +117,22 @@ export function HeroNav() {
             <a href="#security">Security</a>
             <a href="#status">Status</a>
           </div>
-          <Link href="/exchange" className={`${styles.cta} ${styles.ctaSmall}`}>
-            Launch App
-          </Link>
+          <MobileNav
+            hideFrom={900}
+            groups={[
+              {
+                title: 'On this page',
+                links: [
+                  { href: '#how-it-works', label: 'How it works' },
+                  { href: '#states', label: 'Company state' },
+                  { href: '#security', label: 'Security model' },
+                  { href: '#status', label: 'Build status' },
+                ],
+              },
+              { title: 'App', links: APP_NAV },
+            ]}
+            cta={{ href: '/exchange', label: 'Launch App' }}
+          />
         </div>
       </nav>
     </header>
@@ -144,16 +159,6 @@ export function Hero(props: HeroProps) {
           <div className={styles.actions}>
             <Link href="/exchange" className={styles.cta}>
               Launch App
-              <svg viewBox="0 0 16 16" className={styles.ctaArrow} aria-hidden>
-                <path
-                  d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
             </Link>
             <a href="#how-it-works" className={styles.secondary}>
               How it works
@@ -162,26 +167,6 @@ export function Hero(props: HeroProps) {
         </div>
         <CharterEditor {...props} />
       </section>
-    </div>
-  );
-}
-
-/** Closing image for the page footer: the hand-off between seller and buyer, over the wordmark. */
-export function Handoff() {
-  return (
-    <div className={styles.handoff}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- static transparent PNG, the image optimizer is disabled */}
-      <img src="/hero/hand-left.png" alt="" width={582} height={290} className={styles.handLeft} />
-      <p className={styles.handoffText}>
-        <span>Seller to buyer</span>
-        <span className={styles.handoffStrong}>ownership moves on-chain</span>
-        <span>No key changes hands.</span>
-      </p>
-      {/* eslint-disable-next-line @next/next/no-img-element -- static transparent PNG, the image optimizer is disabled */}
-      <img src="/hero/hand-right.png" alt="" width={558} height={328} className={styles.handRight} />
-      <p className={styles.wordmark} aria-hidden>
-        Incorpr
-      </p>
     </div>
   );
 }

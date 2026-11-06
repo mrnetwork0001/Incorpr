@@ -1,9 +1,8 @@
-/* Landing hero. Near-black and warm: amber glass, a tilted charter editor, marble hands handing over one NFT.
+/* Landing hero. Near-black and warm: amber glass and a tilted charter editor.
    --u scales the 1280px reference artboard to the viewport, capped at 1440px. */
 
 .hero,
-.header,
-.handoff {
+.header {
   --u: calc(min(100vw, 1440px) / 1280);
   --bg: #0d0d0d;
   --amber: #f0a24c;
@@ -257,15 +256,7 @@
   font-size: 14px;
 }
 
-.ctaArrow {
-  width: 16px;
-  height: 16px;
-  transition: transform 200ms ease;
-}
 
-.cta:hover .ctaArrow {
-  transform: translateX(3px);
-}
 
 .secondary {
   font-size: 15px;
@@ -477,93 +468,6 @@
   font-style: italic;
 }
 
-/* ---------- Hand-off and wordmark ---------- */
-
-.handoff {
-  position: relative;
-  overflow: hidden;
-  height: clamp(220px, calc(380 * var(--u)), 428px);
-  margin-top: 8px;
-  color: #fff;
-}
-
-.handLeft,
-.handRight {
-  position: absolute;
-  z-index: 2;
-  height: auto;
-  filter: drop-shadow(0 0 22px rgba(240, 162, 76, 0.16)) drop-shadow(0 18px 30px rgba(0, 0, 0, 0.6));
-  pointer-events: none;
-  user-select: none;
-}
-
-.handLeft {
-  left: 0;
-  top: 4%;
-  width: clamp(196px, calc(548 * var(--u)), 616px);
-}
-
-.handRight {
-  right: 0;
-  top: 0;
-  width: clamp(186px, calc(520 * var(--u)), 585px);
-}
-
-.handoff::before {
-  /* Light in the gap between the fingertips. */
-  content: '';
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  top: 40%;
-  width: clamp(120px, calc(220 * var(--u)), 260px);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 196, 120, 0.42), rgba(240, 162, 76, 0.12) 40%, transparent 70%);
-}
-
-.handoffText {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  top: 56%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  transform: translateX(-50%);
-  font-size: 12.5px;
-  line-height: 1.35;
-  text-align: center;
-  white-space: nowrap;
-  color: var(--grey-3);
-}
-
-.handoffStrong {
-  font-size: 14px;
-  font-weight: 520;
-  color: #e9d3bb;
-}
-
-.wordmark {
-  position: absolute;
-  z-index: 0;
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 34%);
-  font-size: clamp(120px, calc(330 * var(--u)), 380px);
-  font-weight: 160;
-  line-height: 1;
-  letter-spacing: -0.055em;
-  white-space: nowrap;
-  background: linear-gradient(180deg, #7a4a24 0%, var(--wordmark) 45%, rgba(90, 52, 24, 0) 92%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  user-select: none;
-}
-
 /* ---------- Wide screens ---------- */
 
 @media (min-width: 900px) {
@@ -599,9 +503,6 @@
     font-size: 13px;
   }
 
-  .handoff {
-    margin-top: calc(-10 * var(--u));
-  }
 
   .line1,
   .line2 {
@@ -625,9 +526,6 @@
     word-break: break-all;
   }
 
-  .handoffText {
-    top: 50%;
-  }
 }
 
 /* Side by side only when the panel column is wide enough for a full address. */
@@ -815,68 +713,10 @@
   }
 }
 
-@keyframes from-left {
-  from {
-    opacity: 0;
-    transform: translateX(-12%);
-  }
-}
 
-@keyframes from-right {
-  from {
-    opacity: 0;
-    transform: translateX(12%);
-  }
-}
 
-@keyframes sink {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 55%);
-  }
-}
-
-/* The hand-off sits at the end of the page, so it animates as it scrolls into view. */
-@supports (animation-timeline: view()) {
-  .handLeft,
-  .handRight,
-  .handoff::before,
-  .handoffText,
-  .wordmark {
-    animation-timeline: view();
-    animation-fill-mode: both;
-    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .handLeft {
-    animation-name: from-left;
-    animation-range: entry 10% cover 45%;
-  }
-
-  .handRight {
-    animation-name: from-right;
-    animation-range: entry 10% cover 45%;
-  }
-
-  .handoff::before {
-    animation-name: fade;
-    animation-range: cover 30% cover 55%;
-  }
-
-  .handoffText {
-    animation-name: fade;
-    animation-range: cover 35% cover 55%;
-  }
-
-  .wordmark {
-    animation-name: sink;
-    animation-range: entry 0% cover 50%;
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .handoff *,
-  .handoff::before,
   .hero *,
   .hero *::before,
   .hero *::after {
