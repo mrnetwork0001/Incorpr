@@ -271,7 +271,7 @@ export function ServicePanel({ tokenId, registryId, vault, system, priceMicro, u
                       refunds in full.
                     </p>
                     <WalletGate action="pay for a call">
-                      <Button onClick={() => void payAndRun()} disabled={!canPay} busy={busy} busyLabel="Working" arrow>
+                      <Button onClick={() => void payAndRun()} disabled={!canPay} busy={busy} busyLabel="Working">
                         Pay {formatUsdc(priceMicro)} USDC and run
                       </Button>
                     </WalletGate>

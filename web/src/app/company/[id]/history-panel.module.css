@@ -1,0 +1,253 @@
+/* History panel: holders and the per-token timeline. Phone first; columns from 760px. */
+
+.panel {
+  display: grid;
+  /* One track that cannot grow past the panel: the tab list and long ids would widen an auto track. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+  min-width: 0;
+}
+
+.panel > * {
+  min-width: 0;
+}
+
+.intro {
+  max-width: 78ch;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ui-grey-1);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tapButton {
+  min-height: 36px;
+}
+
+.ok {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ui-teal);
+  overflow-wrap: anywhere;
+}
+
+.diffTable {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  font-family: var(--ui-mono);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+.sectionTitle {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 540;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-grey-3);
+}
+
+/* ---------- Holders ---------- */
+
+.holders {
+  display: grid;
+  min-width: 0;
+}
+
+.holder {
+  display: grid;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--ui-hair);
+  min-width: 0;
+}
+
+.holder:last-child {
+  border-bottom: 1px solid var(--ui-hair);
+}
+
+@media (min-width: 760px) {
+  .holder {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+.holderHow {
+  font-size: 13.5px;
+  color: #e9e3dc;
+}
+
+.current {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-teal);
+  box-shadow: inset 0 0 0 1px rgba(121, 212, 192, 0.35);
+}
+
+/* ---------- Timeline ---------- */
+
+.timeline {
+  display: grid;
+  min-width: 0;
+}
+
+.row {
+  display: grid;
+  gap: 4px 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--ui-hair);
+  min-width: 0;
+}
+
+.row:last-child {
+  border-bottom: 1px solid var(--ui-hair);
+}
+
+@media (min-width: 760px) {
+  .row {
+    grid-template-columns: 150px minmax(0, 1fr) minmax(0, auto);
+    align-items: start;
+  }
+}
+
+.time {
+  font-family: var(--ui-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  color: var(--ui-grey-2);
+}
+
+.main {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 14.5px;
+  font-weight: 520;
+  color: #fff;
+}
+
+.title::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot, var(--ui-grey-2));
+}
+
+.g_earned {
+  --dot: var(--ui-teal);
+}
+.g_paid {
+  --dot: var(--ui-peach);
+}
+.g_market {
+  --dot: var(--ui-amber);
+}
+.g_credit {
+  --dot: var(--ui-lilac);
+}
+.g_treasury {
+  --dot: var(--ui-cream);
+}
+.g_refused {
+  --dot: var(--ui-coral);
+}
+.g_admin {
+  --dot: var(--ui-grey-2);
+}
+
+.body {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ui-grey-1);
+  overflow-wrap: anywhere;
+}
+
+.body :global(a) {
+  color: inherit;
+}
+
+.detail {
+  font-family: var(--ui-mono);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ui-grey-2);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.code {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: var(--ui-mono);
+  font-size: 11.5px;
+  font-weight: 450;
+  color: var(--ui-coral);
+  box-shadow: inset 0 0 0 1px rgba(240, 143, 125, 0.35);
+  overflow-wrap: anywhere;
+}
+
+.side {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .side {
+    justify-items: end;
+    text-align: right;
+  }
+}
+
+.amount {
+  font-family: var(--ui-mono);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.amountIn {
+  color: var(--ui-teal);
+}
+
+.amountOut {
+  color: var(--ui-peach);
+}
+
+.more {
+  padding-top: 14px;
+}
+
+.note {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ui-grey-2);
+  overflow-wrap: anywhere;
+}

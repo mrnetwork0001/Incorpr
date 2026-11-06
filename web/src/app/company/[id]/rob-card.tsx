@@ -55,7 +55,7 @@ export function RobCard({ tokenId, vault, ownerId, label, retainedMicro }: RobCa
           ? `It is ${label}. The owner's claim, signing and policy rights are frozen in the vault, and the registry refuses transfers.`
           : 'List or pledge it, then try to drain it as the owner, sign a held transaction, or rush the sale. Each attempt is a real transaction with a real error.'}
       </p>
-      <ButtonLink href="/rob" arrow full>
+      <ButtonLink href="/rob" full>
         {tokenId === HOUSE_COMPANY_ID ? 'Open the robbery walkthrough' : `Rob the house company (#${HOUSE_COMPANY_ID}) on /rob`}
       </ButtonLink>
 

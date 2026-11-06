@@ -5,9 +5,11 @@
 import { Suspense } from 'react';
 import { serviceOperator } from '@/lib/contracts';
 import { Address, ButtonLink, EncumbrancePill, Glass, GlassHeader, KeyValue, Notice, PageHeader, Stat, StatGrid } from '../../ui';
+import { HireOnMarket } from '../../ui/hire-on-market';
 import { AgentPanel } from './agent-panel';
 import s from './cockpit.module.css';
 import { bpsToPercent, encumbranceLabel, formatTime, formatUsdc, TOKEN_ID } from './format';
+import { HistoryPanel } from './history-panel';
 import { LedgerPanel } from './ledger-panel';
 import { loadCockpit, viewOptions, type ChainSource, type CockpitData } from './load';
 import { RobCard } from './rob-card';
@@ -74,7 +76,17 @@ function Facts({ data }: { data: CockpitData }) {
       <KeyValue
         items={[
           { label: 'State', value: <StateDetail data={data} /> },
-          { label: 'Owner', value: <Address value={company.owner_id} /> },
+          {
+            label: 'Owner',
+            value: (
+              <span className={s.stackTight}>
+                <Address value={company.owner_id} />
+                <ButtonLink href={`/company/${company.token_id}/owner`} variant="secondary" size="sm">
+                  Owner room, holder only
+                </ButtonLink>
+              </span>
+            ),
+          },
           { label: 'Vault', value: <Address value={company.vault} /> },
           {
             label: 'Vault keys',
@@ -140,6 +152,9 @@ function Ready({ data, source }: { data: CockpitData; source: ChainSource }) {
         <RobCard tokenId={tokenId} vault={company.vault} ownerId={company.owner_id} label={label} retainedMicro={state.retained_earnings} />
       </div>
 
+      {/* Renders only while the company's Agent Market listing is live. */}
+      <HireOnMarket tokenId={tokenId} />
+
       <ServicePanel
         tokenId={tokenId}
         registryId={data.registryId}
@@ -184,6 +199,8 @@ function Ready({ data, source }: { data: CockpitData; source: ChainSource }) {
         intentsKeyRegistered={state.intents_key_registered}
         latestIntentDeadlineMs={state.latest_intent_deadline_ms}
       />
+
+      <HistoryPanel tokenId={tokenId} usdcToken={state.usdc_token} />
 
       <p className={s.footnote}>
         Read from {data.rpcUrl} on {data.network}.{' '}

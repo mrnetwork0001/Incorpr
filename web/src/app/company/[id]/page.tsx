@@ -13,7 +13,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function CompanyPage({ params }: Props) {
   return (
-    <AppShell handoff={false}>
+    <AppShell>
       <CockpitScreen tokenId={params.id} />
     </AppShell>
   );

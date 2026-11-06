@@ -189,7 +189,7 @@ function AnyTokenForm({ tokenId, registryId, vault, usdcToken, input, disabled, 
             ]}
           />
           {plan.depositCalls ? (
-            <Button onClick={() => void execute()} busy={outcome?.status === 'pending'} busyLabel={status ?? 'Working'} arrow>
+            <Button onClick={() => void execute()} busy={outcome?.status === 'pending'} busyLabel={status ?? 'Working'}>
               Send {origin.symbol} and pay
             </Button>
           ) : (
@@ -201,7 +201,7 @@ function AnyTokenForm({ tokenId, registryId, vault, usdcToken, input, disabled, 
               <Field label="Deposit transaction hash" htmlFor="any-external" optional>
                 <Input id="any-external" mono value={externalTx} onChange={(event) => setExternalTx(event.target.value)} />
               </Field>
-              <Button onClick={() => void execute()} busy={outcome?.status === 'pending'} busyLabel={status ?? 'Tracking'} arrow>
+              <Button onClick={() => void execute()} busy={outcome?.status === 'pending'} busyLabel={status ?? 'Tracking'}>
                 I sent it: track the deposit
               </Button>
             </>
