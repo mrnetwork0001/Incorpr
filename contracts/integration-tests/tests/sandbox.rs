@@ -4,7 +4,7 @@
 
 use std::path::PathBuf;
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Context, Result};
 use base64::engine::general_purpose::STANDARD as BASE64;
 use base64::Engine;
 use ed25519_dalek::Verifier;
@@ -122,6 +122,10 @@ async fn setup() -> Result<Env> {
 }
 
 async fn setup_with_auction(auction_ms: u64) -> Result<Env> {
+    setup_with(auction_ms, &wasm("incorpr_registry")?).await
+}
+
+async fn setup_with(auction_ms: u64, registry_wasm: &[u8]) -> Result<Env> {
     let (node, worker) = mainnet_runtime_sandbox().await?;
     let root = worker.root_account()?;
 
@@ -139,7 +143,7 @@ async fn setup_with_auction(auction_ms: u64) -> Result<Env> {
 
     let tee_key = SigningKey::random(&mut OsRng);
     let registry =
-        account(&root, "registry", 50).await?.deploy(&wasm("incorpr_registry")?).await?.into_result()?;
+        account(&root, "registry", 50).await?.deploy(registry_wasm).await?.into_result()?;
     registry
         .call("new")
         .args_json(json!({"args": {
@@ -607,9 +611,9 @@ async fn test_incorporate_spawns_subaccount_and_mints_nep171() -> Result<()> {
     assert!(svg.starts_with("<svg"), "not an SVG: {svg}");
     assert!(svg.contains("Acme &lt;Translate&gt;"), "name missing or unescaped: {svg}");
     assert!(svg.contains(vault.as_str()));
-    assert!(svg.contains("FREE") && svg.contains("#16a34a"));
+    assert!(svg.contains(">FREE</text>") && svg.contains("<g fill=\"#79D4C0\">"), "{svg}");
     assert!(svg.contains("40% BTC / 30% SOL / 30% USDC"));
-    assert!(svg.contains("$0.10 USDC"));
+    assert!(svg.contains(">0.10 USDC<") && !svg.contains('$'), "{svg}");
 
     // The vault holds a USDC account, so customers can pay it immediately.
     let registered: Value = env
@@ -707,7 +711,7 @@ async fn test_atomic_ma_acquisition_flips_shareholder_and_pays_royalty() -> Resu
     assert_eq!(listing["seller"], seller.id().as_str());
     assert_eq!(listing["ask"], ask.to_string());
     let svg = env.charter_svg(&token_id).await?;
-    assert!(svg.contains("LISTED") && svg.contains("#d97706"));
+    assert!(svg.contains(">LISTED</text>") && svg.contains("<g fill=\"#F0A24C\">"), "{svg}");
 
     // Overpays by 5 USDC: the excess returns through ft_resolve_transfer.
     let outcome = env
@@ -1265,7 +1269,7 @@ async fn test_revenue_split_refunds_and_related_party() -> Result<()> {
     assert_eq!(u128_of(&company["revenue_30d"]), amount);
     let svg_after = env.charter_svg(&token_id).await?;
     assert_ne!(svg_before, svg_after);
-    assert!(svg_after.contains("$1.00"), "30d revenue not on charter: {svg_after}");
+    assert!(svg_after.contains(">1.00 USDC as of "), "30d revenue not on charter: {svg_after}");
 
     // Duplicate call_id: full refund, no booking.
     let balance = env.balance(customer.id()).await?;
@@ -1657,7 +1661,7 @@ async fn test_credit_offer_accept_repay_cycle() -> Result<()> {
     assert_eq!(state["encumbrance"]["Pledged"]["lender"], lender.id().as_str());
     assert_eq!(u128_of(&state["encumbrance"]["Pledged"]["debt"]), debt);
     let svg = env.charter_svg(&token_id).await?;
-    assert!(svg.contains("PLEDGED") && svg.contains("#7c3aed"));
+    assert!(svg.contains(">PLEDGED</text>") && svg.contains("<g fill=\"#C9B3FF\">"), "{svg}");
 
     // Pledged: no transfer, no signature, no listing, no second loan.
     assert_failed(&env.transfer_nft(&env.founder, stranger.id(), &token_id).await?, "ERR_TOKEN_ENCUMBERED");
@@ -3949,7 +3953,7 @@ async fn test_registry_metrics_follow_deposits_and_are_dated() -> Result<()> {
     assert!(!svg.contains("as of incorporation"), "{svg}");
     let block = env.block_ms().await?;
     let days = block / 86_400_000;
-    assert!(svg.contains("$1.00 as of 20"), "{svg}");
+    assert!(svg.contains(">1.00 USDC as of 20"), "{svg}");
     let company = env.company_view(&token_id).await?;
     assert_eq!(company["metrics_ms"].as_u64().unwrap() / 86_400_000, days);
 
@@ -3983,6 +3987,137 @@ async fn test_media_hash_is_the_hash_of_the_rendered_charter() -> Result<()> {
     }
     let listed: Vec<Value> = env.registry.view("nft_tokens").args_json(json!({})).await?.json()?;
     assert!(listed[0]["metadata"]["media_hash"].is_string());
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_charter_shortens_long_owner_and_service() -> Result<()> {
+    let env = setup().await?;
+    let service = "Audit this smart contract & list each bug, its severity, a fix.";
+    assert!(service.len() <= 64, "incorporate_company accepts at most 64 bytes");
+    let outcome = env
+        .founder
+        .call(env.registry.id(), "incorporate_company")
+        .args_json(json!({"args": {
+            "name": "Ledgerline Audit",
+            "service_template": service,
+            "price_micro_usdc": "50000",
+            "target_bps": [4000, 3000, 3000],
+            "founder_royalty_bps": ROYALTY_BPS as u16,
+            "compute_reserve_bps": RESERVE_BPS as u16,
+        }}))
+        .deposit(env.incorporation_cost().await?)
+        .gas(MAX_GAS)
+        .transact()
+        .await?;
+    assert_ok(&outcome);
+    let token_id: String = outcome.json::<Option<String>>()?.ok_or_else(|| anyhow!("no token"))?;
+    let holder = account(&env.root, "a-shareholder-with-a-long-account-id", 10).await?;
+    assert_ok(&env.transfer_nft(&env.founder, holder.id(), &token_id).await?);
+
+    let svg = env.charter_svg(&token_id).await?;
+    let owner = holder.id().as_str();
+    assert!(owner.len() > 29);
+    let shortened = format!("{}…{}", &owner[..20], &owner[owner.len() - 8..]);
+    assert!(svg.contains(&format!(">{shortened}<")), "{svg}");
+    assert!(!svg.contains(owner), "{svg}");
+    assert!(svg.contains(">Audit this smart contract &amp; list each bug, its<tspan x=\"200\" dy=\"17\">severity, a fix.</tspan>"), "{svg}");
+    assert!(svg.contains(">0.05 USDC<") && !svg.contains('$'), "{svg}");
+    assert!(svg.contains("<clipPath id=\"f\">") && svg.contains("clip-path=\"url(#f)\""), "{svg}");
+
+    let token: Value = env.registry.view("nft_token").args_json(json!({"token_id": token_id})).await?.json()?;
+    assert_eq!(token["metadata"]["media_hash"], BASE64.encode(Sha256::digest(svg.as_bytes())));
+    Ok(())
+}
+
+/// The registry code first deployed on mainnet as incorpr.near (code hash
+/// EZ4ZuzRAMPYv5rdU2kYj78FaecPSMY8rZHYTptTHEnqK): contracts/res/incorpr_registry.wasm at commit
+/// 776418c, kept as a fixture so the test also runs from a zip or a shallow clone.
+const MAINNET_REGISTRY_FIXTURE: &str = "fixtures/incorpr_registry-776418c.wasm";
+const MAINNET_REGISTRY_SHA256: &str = "c95e8cb88fb4d213f24a8535155596826276fecf01e749c0d910f746591ccdce";
+
+fn mainnet_registry_wasm() -> Result<Vec<u8>> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(MAINNET_REGISTRY_FIXTURE);
+    let bytes = std::fs::read(&path).with_context(|| format!("reading {}", path.display()))?;
+    let sha = hex::encode(Sha256::digest(&bytes));
+    anyhow::ensure!(sha == MAINNET_REGISTRY_SHA256, "{} has sha256 {sha}, want {MAINNET_REGISTRY_SHA256}", path.display());
+    Ok(bytes)
+}
+
+/// Deploying the current registry over the mainnet code, with no migration call, keeps every
+/// stored byte and every view, and the next sale and incorporation run on the new code.
+#[tokio::test]
+async fn test_upgrade_from_the_mainnet_registry_keeps_state() -> Result<()> {
+    let old_wasm = mainnet_registry_wasm()?;
+    let env = setup_with(AUCTION_MS, &old_wasm).await?;
+    let (token_id, vault) = env.company().await?;
+    let customer = env.funded("customer", 5_000_000).await?;
+    assert_ok(&env.pay(&customer, &vault, 1_000_000, "c1").await?);
+    assert_ok(&env.list(&env.founder, &token_id, 2_000_000).await?);
+    let old_svg = env.charter_svg(&token_id).await?;
+    assert!(old_svg.contains("#d97706") && old_svg.contains("$1.00 as of"), "not the mainnet renderer: {old_svg}");
+
+    let views = |env: &Env| {
+        let registry = env.registry.clone();
+        let token_id = token_id.clone();
+        async move {
+            let mut out = Vec::new();
+            for (method, args) in [
+                ("get_company", json!({"token_id": token_id})),
+                ("get_listing", json!({"token_id": token_id})),
+                ("get_loan", json!({"token_id": token_id})),
+                ("nft_total_supply", json!({})),
+                ("nft_metadata", json!({})),
+                ("list_companies", json!({})),
+                ("incorporation_cost", json!({})),
+                ("offer_storage_cost", json!({})),
+                ("storage_balance_bounds", json!({})),
+                ("nft_payout", json!({"token_id": token_id, "balance": "1000000", "max_len_payout": 5})),
+            ] {
+                // A view that panics (nft_payout while listed) must panic the same way afterwards.
+                let value = match registry.view(method).args_json(args).await {
+                    Ok(result) => result.json::<Value>()?,
+                    Err(error) => Value::String(format!("{error:#}")),
+                };
+                out.push((method, value));
+            }
+            Ok::<_, anyhow::Error>(out)
+        }
+    };
+    let state_before = env.worker.view_state(env.registry.id()).await?;
+    let views_before = views(&env).await?;
+    let owner_before = env.owner_of(&token_id).await?;
+
+    // One DeployContract action from the registry's own key, as scripts/upgrade-registry.mjs sends.
+    env.registry.as_account().deploy(&wasm("incorpr_registry")?).await?.into_result()?;
+    let code = env.worker.view_code(env.registry.id()).await?;
+    assert_eq!(code, wasm("incorpr_registry")?);
+    assert_ne!(code, old_wasm);
+
+    assert_eq!(env.worker.view_state(env.registry.id()).await?, state_before, "stored bytes changed");
+    assert_eq!(views(&env).await?, views_before);
+    assert_eq!(env.owner_of(&token_id).await?, owner_before);
+    let company = env.company_view(&token_id).await?;
+    assert_eq!(company["vault"], vault.as_str());
+    assert_eq!(company["revenue_30d"], "1000000");
+    assert_eq!(company["encumbrance"]["Listed"]["ask"], "2000000");
+
+    let svg = env.charter_svg(&token_id).await?;
+    assert!(svg.contains(">LISTED</text>") && svg.contains("<g fill=\"#F0A24C\">"), "{svg}");
+    assert!(svg.contains(">1.00 USDC as of 20") && !svg.contains('$'), "{svg}");
+    let token: Value = env.registry.view("nft_token").args_json(json!({"token_id": token_id})).await?.json()?;
+    assert_eq!(token["metadata"]["media_hash"], BASE64.encode(Sha256::digest(svg.as_bytes())));
+
+    // A sale listed under the old code settles under the new one.
+    let buyer = env.funded("buyer", 2_000_000).await?;
+    env.register(env.founder.id()).await?;
+    assert_ok(&env.ft_call(&buyer, env.registry.id(), 2_000_000, env.acquire_msg(&token_id).await?).await?);
+    assert_eq!(env.owner_of(&token_id).await?, buyer.id().as_str());
+    assert_eq!(env.vault_state(&vault).await?["shareholder"], buyer.id().as_str());
+
+    // The embedded vault code did not change, so a new incorporation deploys the same bytes.
+    let (_, second_vault) = env.incorporate(&env.founder, "After upgrade").await?;
+    assert_eq!(env.worker.view_code(&second_vault).await?, wasm("company_vault")?);
     Ok(())
 }
 
