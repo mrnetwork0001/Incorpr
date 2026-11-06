@@ -27,3 +27,4 @@ video/out/
 video/.cache/
 video/footage/
 video/.env
+.next-build/
