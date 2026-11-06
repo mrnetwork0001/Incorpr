@@ -97,6 +97,41 @@ req GET /api/rob/recent
 if [ "$CODE" = 200 ] && has 288ZLY6r; then pass "api rob recent" "refusal evidence served"
 else fail "api rob recent" "HTTP $CODE $(snippet)"; fi
 
+# Environment variables, seen from the outside.
+req GET /api/market/status
+if [ "$CODE" = 200 ]; then
+  has '"near_ai":true'     && pass "env NEAR_AI_API_KEY" "set"        || fail "env NEAR_AI_API_KEY" "not set"
+  has '"cron_secret":true' && pass "env CRON_SECRET" "set"            || fail "env CRON_SECRET" "not set"
+  if has '"token":true' && has '"webhook_secret":true' && has '"handle":true'; then pass "env AGENT_MARKET_*" "set"
+  else warn "env AGENT_MARKET_*" "not set yet (expected until the listing exists)"; fi
+else fail "api market status" "HTTP $CODE"; fi
+
+req POST /api/owner/challenge '{"token_id":"1"}'
+if [ "$CODE" = 200 ] && has "\"recipient\":\"$HOST\""; then pass "env NEXT_PUBLIC_SITE_URL" "sign-in recipient is $HOST"
+elif [ "$CODE" = 200 ]; then fail "env NEXT_PUBLIC_SITE_URL" "recipient is not $HOST: $(snippet 220)"
+else fail "env NEXT_PUBLIC_SITE_URL" "challenge HTTP $CODE $(snippet)"; fi
+
+req GET "/api/owner/session?token_id=1"
+if [ "$CODE" = 401 ] && has signed_out; then pass "env OWNER_SESSION_SECRET" "session route works (signed out)"
+else fail "env OWNER_SESSION_SECRET" "HTTP $CODE $(snippet)"; fi
+
+req GET /api/owner/credential-key
+[ "$CODE" = 200 ] && has '"public_key":"ed25519:' && pass "env OWNER_CREDENTIAL_KEY" "public key served" || fail "env OWNER_CREDENTIAL_KEY" "HTTP $CODE $(snippet)"
+
+req GET /api/market/poll
+case "$CODE" in
+  401) pass "cron poll auth" "refuses without CRON_SECRET" ;;
+  503) fail "cron poll auth" "CRON_SECRET not set" ;;
+  *)   fail "cron poll auth" "HTTP $CODE $(snippet)" ;;
+esac
+
+req POST /api/market/webhook '{"event":"check"}' -H 'X-Market-Signature: sha256=00' -H "X-Market-Timestamp: $(date +%s)"
+case "$CODE" in
+  401) pass "market webhook" "refuses a bad signature" ;;
+  503) warn "market webhook" "not configured yet (AGENT_MARKET_WEBHOOK_SECRET)" ;;
+  *)   fail "market webhook" "HTTP $CODE $(snippet)" ;;
+esac
+
 echo "-----------------------------------------------------------------------------"
 echo "PASS $PASS   WARN $WARN   FAIL $FAIL"
 [ "$FAIL" = 0 ]
