@@ -167,9 +167,11 @@ The Cockpit's Execute button (`POST /api/rebalance`) runs the same steps a, b an
 
 ## 5. Not in this release
 
-- Rebalance execution has run on the sandbox through signing, with a real NEAR AI approval. On the sandbox the intents double does not settle. `publish_intent` and settlement on `intents.near` have not run on mainnet yet (section 4d).
-- The L1 freshness check (BTC UTXOs, SOL/EVM nonces unchanged) before a sale or loan.
+- An EVM or Solana spend from a company address. Bitcoin has run on mainnet: a held signature made listing refuse, then the spend was broadcast and confirmed (README, "What is real and what is simulated").
+- An L1 freshness gate inside the contract. `/api/verify-l1` reads BTC UTXOs and SOL/EVM nonces, and the desk blocks List and Accept on a dirty report, but the contract does not wait for it. The contract-side rule is `ERR_RAW_SIGNATURES_THIS_EPOCH`.
 - A customer payment from a token on another chain, end to end. Customers pay in USDC on NEAR with `ft_transfer_call` (on testnet, Test USDC). A wNEAR payment swapped through 1Click has run on mainnet (`scripts/pay-in-any-token.mjs`).
+
+Treasury rebalance execution, including `publish_intent` and settlement on `intents.near`, has run on mainnet (section 4d, `docs/evidence/rebalance-mainnet.json`).
 
 ## 6. Notes and limits
 

@@ -68,8 +68,8 @@ Refused transactions are recorded on purpose. A different error than the expecte
 
 - Real: the contracts, `v1.signer`, NEAR AI Cloud inference and attestation, USDC payments on NEAR, the refused robbery transactions.
 - Controlled by the deployer: `demo-customer`, `demo-buyer` and `demo-lender`. The sale and loan are real contract executions, not trades between independent parties.
-- Built, not yet run on mainnet: rebalance execution through `intents.near` (`scripts/rebalance.mjs`). On the sandbox it ran through the vault's signed intent with a real NEAR AI approval.
-- Not in this release: a customer payment from a token on another chain run end to end (a wNEAR payment through 1Click has run), an on-chain L1 freshness gate.
+- Run on mainnet: one treasury rebalance through `intents.near` (`scripts/rebalance.mjs`, 0.5 USDC to SOL), one Bitcoin spend signed by `v1.signer` for the vault, and the function-call operator key.
+- Not in this release: a customer payment from a token on another chain run end to end (a wNEAR payment through 1Click has run), an EVM or Solana spend, an on-chain L1 freshness gate.
 - Testnet has no `intents.near` and no 1Click.
 - The local sandbox uses labelled test doubles for the signer, intents and USDC.
 
