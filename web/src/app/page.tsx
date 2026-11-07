@@ -123,7 +123,7 @@ const PRIMITIVES: [string, string, string][] = [
     'v1.signer',
     'Secp256k1 for Bitcoin and EVM, Ed25519 for Solana and intents. The vault composes every derivation path.',
   ],
-  ['NEAR Intents', 'intents.near, 1Click', 'Treasury swaps signed under a key only the vault can use, priced against live 1Click quotes. Swap execution is not in this release.'],
+  ['NEAR Intents', 'intents.near, 1Click', 'Treasury swaps signed under a key only the vault can use, priced against live 1Click quotes. One swap settled on mainnet: 0.5 USDC to SOL.'],
   [
     'NEAR AI Cloud',
     'cloud-api.near.ai',

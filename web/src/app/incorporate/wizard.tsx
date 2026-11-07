@@ -326,7 +326,7 @@ export function IncorporateWizard({
           {step === 2 && (
             <StepBody
               title="Set the treasury target"
-              intro="The target split of retained earnings across Bitcoin, Solana and USDC. It is stored on-chain and printed on the charter. Rebalance execution is not in this release: the app shows dry 1Click quotes against it."
+              intro="The target split of retained earnings across Bitcoin, Solana and USDC. It is stored on-chain and printed on the charter. The treasury agent swaps toward it under the vault firewall; the hosted app shows dry 1Click quotes against it."
             >
               <div className={s.threeCol}>
                 {(['btc', 'sol', 'usdc'] as const).map((key) => (
