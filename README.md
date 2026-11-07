@@ -320,9 +320,10 @@ Requirements: Rust with `cargo-near`, Node 22.18 or later.
 scripts/build-contracts.sh
 
 # Contract tests: 100 passing (company-vault 12, incorpr-registry 11 plus 1 ignored sample writer, sandbox integration 64, transfer races 13)
-cd contracts && cargo test --workspace
+(cd contracts && cargo test --workspace)
 
-# Web: typecheck, lint, tests
+# Web: typecheck, lint, tests. Run after the contract tests: the web sandbox tests use the nearcore
+# binary that cargo test downloads, and skip without it.
 cd web && npm ci
 npx tsc --noEmit
 npx next lint
