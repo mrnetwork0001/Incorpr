@@ -33,7 +33,7 @@ req() {
   CODE="${out%% *}"; TYPE="${out#* }"
 }
 has() { grep -q -- "$1" "$BODY"; }
-snippet() { tr -d '\n' < "$BODY" | cut -c1-"${1:-160}"; }
+snippet() { LC_ALL=C tr -d '\n' < "$BODY" | cut -c1-"${1:-160}"; }
 
 echo "Incorpr deploy check: $BASE"
 echo "-----------------------------------------------------------------------------"
