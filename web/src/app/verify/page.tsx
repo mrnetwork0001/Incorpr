@@ -478,7 +478,8 @@ function realityRows(report: LiveReport, evidence: EvidenceLoad, tests: TestInde
     {
       component: 'NEAR Intents',
       real: 'intents.near settles on mainnet. 1Click quotes are real API calls.',
-      simulated: 'Sandbox tests use intents_double. Testnet has no intents deployment. Rebalance execution is not in this release: dry quotes only.',
+      simulated:
+        'Sandbox tests use intents_double. Testnet has no intents deployment. One treasury swap settled on mainnet (docs/evidence/rebalance-mainnet.json). This hosted app only quotes rebalances unless INCORPR_ALLOW_MAINNET_REBALANCE is true.',
       status: intents?.status === 'pass' ? 'pass' : 'info',
       statusText: intents?.accountId ? `${intents.accountId}: ${intents.detail}` : (intents?.detail ?? 'Not configured'),
     },
@@ -498,17 +499,19 @@ function realityRows(report: LiveReport, evidence: EvidenceLoad, tests: TestInde
     },
     {
       component: 'Bitcoin spend',
-      real: 'request_shareholder_signature returns a v1.signer signature over a BIP-143 sighash; scripts/demo.mjs broadcasts to mempool.space.',
-      simulated: 'Rehearsed only on a sandbox with the signer double and synthetic inputs. Nothing was broadcast there.',
+      real: 'request_shareholder_signature returns a v1.signer signature over a BIP-143 sighash; scripts/demo.mjs broadcasts it to an Esplora node.',
+      simulated:
+        'One mainnet spend so far: 9,523 sats from the epoch 0 address, signed and held (listing was then refused), then broadcast and confirmed. No EVM or Solana spend has been broadcast.',
       status: ev && ev.bitcoin.length ? 'pass' : 'info',
       statusText: ev && ev.bitcoin.length ? `${ev.bitcoin.length} Bitcoin entries recorded` : 'No live Bitcoin spend recorded yet',
     },
     {
       component: 'L1 freshness check',
       real: '/api/verify-l1 reads BTC UTXOs and SOL/EVM nonces.',
-      simulated: 'Not wired into the sale or loan flow in this release (docs/DEPLOY.md section 5).',
+      simulated:
+        'Advisory. The desk runs it before List and Accept and blocks both when it is dirty, but the contract does not wait for it. The on-chain rule is ERR_RAW_SIGNATURES_THIS_EPOCH.',
       status: 'info',
-      statusText: 'Route only',
+      statusText: 'Desk gate, not a contract gate',
     },
   ];
 }

@@ -148,7 +148,8 @@ export const CLAIMS: Claim[] = [
       'test_sale_paths_refuse_dirty_keys_and_owner_transfer_rotates',
       'test_pledge_obeys_the_same_freeze_rules_as_listing',
     ],
-    evidence: { steps: ['btc-send'] },
+    evidence: { steps: ['btc-send', 'presigned-list', 'rotate'] },
+    note: 'On mainnet the vault refused the listing with ERR_RAW_SIGNATURES_THIS_EPOCH; the registry then reports ERR_VAULT_FREEZE_FAILED and ERR_SETTLEMENT_FAILED, which is the error the evidence log keeps.',
   },
   {
     id: 'intent-deadline',
@@ -202,8 +203,8 @@ export const CLAIMS: Claim[] = [
       'test_firewall_tokens_and_epoch_caps',
       'test_price_floor_bounds_a_swap_even_with_a_valid_approval',
     ],
-    evidence: { steps: ['rebalance'], quotes: true },
-    note: 'Rebalance execution is not in this release. The live record holds dry 1Click quotes only.',
+    evidence: { steps: ['rebalance:deposit', 'rebalance:sign'], quotes: true },
+    note: 'One treasury swap ran on mainnet: 0.5 USDC to 0.005545636 SOL, settled by the solver relay (docs/evidence/rebalance-mainnet.json). The quotes below are dry 1Click quotes.',
   },
   {
     id: 'tee',
@@ -216,7 +217,7 @@ export const CLAIMS: Claim[] = [
       'test_only_an_exact_approve_message_counts',
       'test_approval_lifetime_binding_to_vault_epoch_and_owner',
     ],
-    evidence: { teeDeploy: true },
+    evidence: { teeDeploy: true, steps: ['rebalance:sign'] },
     note: 'A compromised operator can resubmit until a nondeterministic model approves. The epoch cap and price floor bound the loss per window.',
   },
   {
@@ -312,9 +313,9 @@ export const CLAIMS: Claim[] = [
       'allowance: only burnt gas is deducted, and a call is refused when the allowance cannot cover its prepaid gas',
       '--replace that stops before its transaction leaves the key files matching the chain, and a rerun still deletes the old key',
     ],
-    evidence: {},
+    evidence: { steps: ['operator-key', 'serve'] },
     note:
-      'Vitest tests in web/tests/operatorKey.sandbox.e2e.test.ts, run against a local sandbox. Not yet switched on mainnet: operator.incorpr.near holds one full access key, and the web server signs with it until scripts/operator-key.mjs --network mainnet --confirm-mainnet runs.',
+      'Vitest tests in web/tests/operatorKey.sandbox.e2e.test.ts, run against a local sandbox at protocols 87 and 88. On mainnet the key was added by scripts/operator-key.mjs, the chain refused the four forbidden probes before inclusion, and the web server now signs operator calls with it. The full access key stays off the server.',
   },
   {
     id: 'runtime',
@@ -367,7 +368,7 @@ export const KEY_HOLDERS: KeyRow[] = [
       'Report revenue, or use the agent methods while encumbered',
     ],
     trust:
-      'On mainnet operator.incorpr.near holds one full access key, which can also move the USDC it receives as compute_payee. scripts/operator-key.mjs adds a function-call key for the web server, limited to one vault and the operator methods; it has been rehearsed on a sandbox and not yet run on mainnet (docs/OPERATOR_KEY.md).',
+      'On mainnet operator.incorpr.near holds one full access key, which can also move the USDC it receives as compute_payee. scripts/operator-key.mjs adds a function-call key for the web server, limited to one vault and the operator methods; it is live on mainnet and the web server signs with it (docs/OPERATOR_KEY.md).',
   },
   {
     holder: 'Registry',
