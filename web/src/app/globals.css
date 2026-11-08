@@ -14,10 +14,19 @@
   }
 }
 
+/* clip, not hidden: hidden makes html and body scroll containers, which stops the sticky header.
+   hidden stays as the fallback for browsers without clip. */
 @media (max-width: 900px) {
   html,
   body {
     overflow-x: hidden;
+  }
+
+  @supports (overflow-x: clip) {
+    html,
+    body {
+      overflow-x: clip;
+    }
   }
 }
 
