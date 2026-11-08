@@ -2,7 +2,7 @@
 
 **A company you can sell in one NFT transfer: each NEP-171 token on NEAR is an AI service with its own keyless vault account, its own Bitcoin, Solana and EVM addresses, and a revenue ledger that only customer payments can write to.**
 
-A founder incorporates a company by minting its NFT. Customers pay it per call in USDC, a model running in a NEAR AI Cloud trusted execution environment (TEE) serves the call, and the vault books the income. The holder can claim dividends, pledge the company for a USDC loan, or list it and sell it in one transaction. While it is listed or pledged, the holder's own signing is frozen by the contract. Everything is measured by what the chain will confirm: booked revenue, settled sales, and the transactions the vault refuses. On 2026-11-06 (UTC), **58 mainnet transactions are recorded and re-checked against the chain, including 11 that the vault refused**, and the company's treasury agent has made its first swap through NEAR Intents.
+A founder incorporates a company by minting its NFT. Customers pay it per call in USDC, a model running in a NEAR AI Cloud trusted execution environment (TEE) serves the call, and the vault books the income. The holder can claim dividends, pledge the company for a USDC loan, or list it and sell it in one transaction. While it is listed or pledged, the holder's own signing is frozen by the contract. Everything is measured by what the chain will confirm: booked revenue, settled sales, and the transactions the vault refuses. On 2026-11-08 (UTC), **67 mainnet transactions are recorded and re-checked against the chain, including 11 that the vault refused**; the company's treasury agent has made its first swap through NEAR Intents, and the hosted app has served a paid call, opened the owner room for the holder, and shown a sale and a loan as they settled.
 
 Built for the NEAR Hackathon 2026 (Nov 1 to 14) · Track: NFTs That Do Something · App: [tryincorpr.vercel.app](https://tryincorpr.vercel.app) · Demo: `<VIDEO_URL>` · Code: [github.com/mrnetwork0001/Incorpr](https://github.com/mrnetwork0001/Incorpr) · Mainnet registry: [`incorpr.near`](https://nearblocks.io/address/incorpr.near)
 
@@ -26,7 +26,7 @@ No wallet is needed for steps 1 to 5. The app is hosted at https://tryincorpr.ve
 6. **Do:** open [tryincorpr.vercel.app/verify](https://tryincorpr.vercel.app/verify).
    **See:** each claim from the landing page next to its contract method, the test that proves it and its mainnet transaction, plus live checks read on page load (vault access keys `0`, registry code hash `BD1oUGVm…`, protocol 88).
 7. **Do (repository):** run `node scripts/evidence.mjs --network mainnet` from the repository root.
-   **See:** a table of every recorded mainnet transaction re-read from RPC, ending with "58/58 transactions match the chain, 11 expected refusals confirmed" (set `BTC_ESPLORA_API=https://blockstream.info/api` if mempool.space is blocked on your network).
+   **See:** a table of every recorded mainnet transaction re-read from RPC, ending with "67/67 transactions match the chain, 11 expected refusals confirmed" (set `BTC_ESPLORA_API=https://blockstream.info/api` if mempool.space is blocked on your network).
 8. **Do (repository):** run `cd contracts && cargo test --workspace`.
    **See:** the contract suite pass on a local NEAR sandbox at protocol 87 (see [Build and test](#build-and-test) for the current counts).
 
@@ -43,7 +43,7 @@ The house company is **Ledgerline Audit**, token 1, vault [`c-1.incorpr.near`](h
 | **Rob** | **Rob this company.** Chat with the treasury agent and try to talk it into moving the money. Whatever it says, the server then sends real transactions from the agent's operator key and from a stranger account, and the vault checks each one against its firewall and its TEE approval rule. On mainnet the agent replied "APPROVE" to a request to send the whole treasury to an outside address, and the vault refused it. *The agent can be talked into it. The vault cannot.* | `/rob`: chat, then **Try to move the money**. Rate limited per address, with a daily cap. | [`4wbpoEEW…`](https://nearblocks.io/txns/4wbpoEEWMcZhDZfy8shDsdZdosX2evq6TJa4Epj6efhE) `ERR_TEE_NOT_APPROVED`, [`9yHuadXB…`](https://nearblocks.io/txns/9yHuadXBoMuFqhBGeP8rK96xnggvZ8UPyPqDnWoS2AyL) `ERR_FIREWALL_BLOCKED_UNWHITELISTED_DESTINATION` |
 | **Sell** | The owner lists at an ask in USDC. From that moment the vault refuses the owner's dividend claims, raw signatures and NFT transfers. A buyer pays the ask with one USDC transfer: the registry moves the vault's shareholder, the NFT and the payment together, pays the founder royalty, or refunds the buyer if any step fails. | `/exchange` lists every company with state, 30-day revenue, retained earnings and ask. Buying needs a wallet. | [`4au7synM…`](https://nearblocks.io/txns/4au7synMju7cwkrDPqYRpiDQp2ffa96aV7mF4HTfAiKz) listed, [`DwLfepti…`](https://nearblocks.io/txns/DwLfeptiuLwzLMZwVLuUFqXsopso5PPM6wXP2ZHVxEXG) owner refused, [`4Tu3Xabc…`](https://nearblocks.io/txns/4Tu3Xabccsft9qvowKovMZ4oeqW99urm9CcYS8xCkcKZ) sold |
 | **Borrow** | A lender escrows a USDC offer against a named company. When the owner accepts, the vault freezes first and the principal is paid second. Repayment unfreezes it; after a default, a Dutch auction runs from 200% down to 50% of the debt, and with no bid the lender can claim the company. | `/exchange` shows open lender offers; `/desk` is where owners and lenders act, with a wallet. | [`7m656gNJ…`](https://nearblocks.io/txns/7m656gNJoB4hEF5QT53mAAwtDJTp9vE4CdSxgLP5PWdR) offer, [`3gA99cMd…`](https://nearblocks.io/txns/3gA99cMdWigv4RGgopmXnNZK7C7QWqS5VAT5XCvQB5fj) borrowed, [`Du7yUNyx…`](https://nearblocks.io/txns/Du7yUNyxL9HHXzDexUy9VMpvfiqjfFnEfsgToyMSSQbE) owner refused, [`69jjS9Ss…`](https://nearblocks.io/txns/69jjS9SsTgYKZnTM57QUUGr822pRYLfDECcbeafeVMcY) repaid |
-| **Verify** | Every claim on the landing page, with the contract method that implements it, the test that proves it, and the live mainnet evidence. On load the page reads the chain: vault access keys, code hashes, the signer and the protocol version. `scripts/evidence.mjs` re-checks every recorded transaction against the chain. | `/verify` | 58 of 58 transactions match the chain, 11 refusals confirmed |
+| **Verify** | Every claim on the landing page, with the contract method that implements it, the test that proves it, and the live mainnet evidence. On load the page reads the chain: vault access keys, code hashes, the signer and the protocol version. `scripts/evidence.mjs` re-checks every recorded transaction against the chain. | `/verify` | 67 of 67 transactions match the chain, 11 refusals confirmed |
 
 ### More to explore
 
@@ -214,6 +214,87 @@ Mainnet accounts (`incorpr.near`, `c-1.incorpr.near`, `operator.incorpr.near` an
 | `intents.near` | NEAR Intents verifier | Settles intents signed with a vault-only key |
 | `17208628…33a1` | Native USDC on NEAR | Transfers |
 
+### System overview
+
+```mermaid
+flowchart LR
+  subgraph People
+    J["Visitor or judge<br/>no wallet"]
+    H["Holder, buyer, lender<br/>NEAR wallet"]
+    C["Customer<br/>NEAR wallet"]
+  end
+  subgraph App["Next.js app on Vercel"]
+    P["Pages<br/>exchange, company, desk, rob, verify"]
+    RS["/api/run-service"]
+    RB["/api/rebalance"]
+    OW["/api/owner/*"]
+    L1["/api/verify-l1"]
+    MK["/api/market/*"]
+  end
+  subgraph Services
+    AI["NEAR AI Cloud<br/>TEE inference"]
+    OC["1Click and<br/>solver relay"]
+    ESP["Esplora, Solana<br/>and EVM RPCs"]
+    AM["market.near.ai"]
+  end
+  subgraph Chain["NEAR mainnet"]
+    REG["incorpr.near<br/>registry and NFTs"]
+    V["c-1.incorpr.near<br/>vault, no keys"]
+    MPC["v1.signer"]
+    INT["intents.near"]
+    USDC["native USDC"]
+  end
+  J -->|"view calls"| P
+  H -->|"list, buy, lend, borrow, repay"| REG
+  C -->|"ft_transfer_call with call_id"| USDC
+  USDC -->|"ft_on_transfer books revenue"| V
+  RS -->|"chat plus ECDSA signature"| AI
+  RS -->|"record_service_call<br/>operator key"| V
+  RB -->|"dry quotes"| OC
+  L1 -->|"UTXOs and nonces"| ESP
+  OW -->|"nft_token, view_access_key"| REG
+  AM -->|"webhook, HMAC signed"| MK
+  REG -->|"owner and encumbrance"| V
+  V -->|"sign, own paths only"| MPC
+  V -->|"token_diff intent"| INT
+```
+
+Wallets talk to the contracts directly; the app server never holds a holder's key. The server holds two NEAR keys: the operator's function-call key, which can reach only the vault's five operator methods, and the `rob.incorpr.near` key that sends the robbery attempts. Every arrow into the vault is checked by the vault's own code, which is why the robbery attempts on `/rob` come back as refused transactions instead of moved funds.
+
+### Trust boundaries
+
+```mermaid
+flowchart LR
+  subgraph Keys["Keys outside the chain"]
+    OWN["Holder wallet key"]
+    OPK["Operator function-call key<br/>on the web server"]
+    RK["rob.incorpr.near key<br/>on the web server"]
+    DEP["incorpr.near full access key<br/>deployer machine"]
+    TEE["NEAR AI TEE signing key<br/>inside the enclave"]
+  end
+  subgraph Contracts["Contracts"]
+    REG["Registry"]
+    V["Vault, no keys"]
+  end
+  OWN -->|"claim, sign, list, pledge<br/>only while FREE"| V
+  OPK -->|"5 methods, no deposit,<br/>one receiver"| V
+  RK -->|"attempts, all refused"| V
+  TEE -->|"APPROVE, checked with ecrecover"| V
+  DEP -->|"redeploy, sync_owner"| REG
+  REG -->|"ownership state"| V
+```
+
+The vault accepts each of these inputs only inside its rules: the holder's own signing stops while the company is listed or pledged, the operator can only ask for swaps the firewall allows and that the attested TEE key approved, and a stranger's key gets nothing. The one key with wide power is the registry's full access key, kept on the deployer's machine and described in [Who holds which key](#who-holds-which-key).
+
+| Key | Lives in | Can | Can never |
+|---|---|---|---|
+| Holder wallet key | The holder's wallet | Claim dividends, sign raw L1 payloads, list, pledge, while `FREE` | Sign or claim while listed or pledged |
+| Operator function-call key | `NEAR_OPERATOR_PRIVATE_KEY` on the web server | `record_service_call`, `setup_intents_key`, `agent_deposit_to_intents`, `agent_swap_intent`, `agent_withdraw_intent` on `c-1.incorpr.near` | Transfer NEAR, attach a deposit, add or delete keys, call another contract |
+| Operator full access key | `~/.near-credentials` on the deployer's machine | Top up the function-call key, move the USDC it receives as `compute_payee` | Act for the vault beyond the operator methods |
+| `rob.incorpr.near` key | `ROB_PRIVATE_KEY` on the web server | Send the robbery attempts on `/rob` | Pass any vault check: every recorded attempt failed |
+| NEAR AI TEE key | Inside the NEAR AI Cloud enclave | Sign answers and `APPROVE` replies the vault can recover with `ecrecover` | Move funds by itself: the vault still applies its firewall and price floor |
+| `incorpr.near` full access key | The deployer's machine | Redeploy the registry, `sync_owner`, `apply_encumbrance` | Change vault code or sign for a vault |
+
 The full design is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Where it disagrees with `RUST_CONTRACTS_SPEC.md` or `BACKEND_AND_INTENTS_SPEC.md`, it wins; those two files are the original drafts.
 
 ## NEAR primitives used
@@ -258,7 +339,7 @@ Run them with `cargo test -p integration-tests --test transfer_races`.
 - **Every request:** the page and each `/api/owner/*` call read `nft_token` and `view_access_key` again at `final`. After a sale the seller's next request is refused (403), with no logout step, and deleting the key that signed in ends the session.
 - **Credential:** the room can issue an ed25519-signed holder credential: "<account> holds Incorpr token <id> as of block <height>". The public key is at `/api/owner/credential-key`.
 - **Tests:** `web/tests/ownerAuth.test.ts` uses real NEP-413 signatures and a mocked chain, including "opens for the holder and refuses the same cookie once nft_token names someone else". `web/tests/ownerAuth.live.test.ts` reads mainnet.
-- **Limits:** the settings the room groups are public through `get_state`. Production needs `NEXT_PUBLIC_SITE_URL`, `OWNER_SESSION_SECRET` and `OWNER_CREDENTIAL_KEY`. A wallet sign-in by the mainnet holder has not been run yet.
+- **Limits:** the settings the room groups are public through `get_state`. Production needs `NEXT_PUBLIC_SITE_URL`, `OWNER_SESSION_SECRET` and `OWNER_CREDENTIAL_KEY`. On 2026-11-08 the mainnet holder, `demo-buyer.incorpr.near`, signed in to the hosted app six times in a row with `scripts/live-wallet-check.mjs --only owner`, which signs the same NEP-413 payload a wallet signs, from the holder's key file. Each time the app set the session cookie, opened the room, issued a holder credential and refused the same request without the cookie. A sign-in through a browser wallet extension has not been recorded.
 
 ## Per-company history
 
@@ -309,7 +390,11 @@ The same check runs on every path that changes the shareholder, including `nft_t
 
 ## Live evidence
 
-Every transaction the scripts send, including the refused ones, is recorded in `docs/evidence/mainnet.json`, and [docs/MAINNET_EVIDENCE.md](docs/MAINNET_EVIDENCE.md) is regenerated from it. Neither file is edited by hand. As of 2026-11-06 20:30 UTC they hold 58 transactions: the deploy, the demo accounts, the full company lifecycle (payment, served call, listing, sale, loan, repayment, dividends), a payment in wNEAR through 1Click, the registry upgrade, the first treasury swap through NEAR Intents, the switch to a function-call operator key, the Bitcoin funding, the held signature, the epoch rotation and the list that followed, and 11 refusals (five from the owner while listed or pledged, five Rob attempts, and the listing refused while a signed Bitcoin transaction was held). The Bitcoin spend itself is checked against an Esplora API. The treasury swap's run log, including the TEE approval, is in `docs/evidence/rebalance-mainnet.json`. `node scripts/evidence.mjs --network mainnet` re-reads every recorded transaction from RPC and reports any mismatch. [docs/JUDGES.md](docs/JUDGES.md) explains what to look for in them.
+Every transaction the scripts send, including the refused ones, is recorded in `docs/evidence/mainnet.json`, and [docs/MAINNET_EVIDENCE.md](docs/MAINNET_EVIDENCE.md) is regenerated from it. Neither file is edited by hand. As of 2026-11-08 they hold 67 transactions: the deploy, the demo accounts, the full company lifecycle (payment, served call, listing, sale, loan, repayment, dividends), a payment in wNEAR through 1Click, the registry upgrade, the first treasury swap through NEAR Intents, the switch to a function-call operator key, the Bitcoin funding, the held signature, the epoch rotation and the list that followed, the 2026-11-08 checks of the hosted app (a paid call served by the hosted API, a sale, a loan and repayment, and the sale back to `demo-buyer`), and 11 refusals (five from the owner while listed or pledged, five Rob attempts, and the listing refused while a signed Bitcoin transaction was held). The Bitcoin spend itself is checked against an Esplora API. The treasury swap's run log, including the TEE approval, is in `docs/evidence/rebalance-mainnet.json`. `node scripts/evidence.mjs --network mainnet` re-reads every recorded transaction from RPC and reports any mismatch. [docs/JUDGES.md](docs/JUDGES.md) explains what to look for in them.
+
+## Tech stack
+
+Rust contracts on `near-sdk` 5.29.1 with `near-contract-standards`, tested with `near-workspaces` 0.23 on nearcore 2.14.0 · Next.js 14.2 (App Router), React 18, TypeScript, Tailwind CSS, hosted on Vercel · `near-api-js` 7 and `@near-wallet-selector` (Meteor, MyNearWallet) · Chain Signatures through `v1.signer` · NEAR Intents through `intents.near`, the 1Click API and the solver relay · NEAR AI Cloud with `Qwen/Qwen3-VL-30B-A3B-Instruct`, Intel TDX quotes checked with `@phala/dcap-qvl` and NVIDIA GPU attestation through NRAS · `@noble/curves`, `@noble/hashes`, `bitcoinjs-lib`, `zod` · Vitest · Remotion for the demo film.
 
 ## Build and test
 
@@ -330,7 +415,9 @@ npx next lint
 npx vitest run   # 27 files, 419 passed, 3 skipped (2026-11-06, without NEAR_AI_API_KEY)
 ```
 
-Notes on the counts, from the last full runs on 2026-11-06:
+> **Test status, 2026-11-07, fresh clone of `main`:** `scripts/build-contracts.sh` rebuilt every wasm byte for byte (same sha256 as `contracts/res`, which are the code hashes deployed on `incorpr.near` and `c-1.incorpr.near`). `cargo test --workspace`: `test result: ok. 12 passed` (company-vault), `ok. 11 passed; 0 failed; 1 ignored` (incorpr-registry), `ok. 64 passed` (sandbox, 253.72 s), `ok. 13 passed` (transfer races, 70.74 s). Web: `tsc --noEmit` clean, `next lint` "No ESLint warnings or errors", `vitest run` "Test Files 26 passed | 1 skipped (27)", "Tests 419 passed | 3 skipped (422)", `next build` succeeded.
+
+Notes on the counts, from the full runs on 2026-11-06 and 2026-11-07:
 - The 64 sandbox tests in `sandbox.rs` and the 13 in `transfer_races.rs` run on a nearcore 2.14.0 node pinned to protocol 87 by default; they take about 5 minutes. Mainnet moved to protocol 88 on 2026-11-06. `INCORPR_SANDBOX_PROTOCOL=88` runs the same suite at 88 (they pass there too; the link-error test checks the 88 behaviour, where the gated import links). The deploy and demo scripts were rehearsed end to end on both 87 and 88 sandboxes.
 - The web suite includes live tests against public endpoints (testnet signer, 1Click, NEAR AI Cloud attestation, L1 RPCs) and sandbox end-to-end tests that start a local node. The skipped test runs real inference and needs `NEAR_AI_API_KEY` in the environment.
 - `near-sdk` is pinned to 5.29.1. Wasm built with 5.30 imports `promise_batch_action_universal_state_init`. On protocol 87 such a contract deploys, then every call fails with `Link Error: unknown or invalid import`. `scripts/check-wasm-imports.py` runs inside `scripts/build-contracts.sh` and fails the build on that import.
@@ -342,7 +429,21 @@ cp .env.example web/.env.local   # paste NEAR_AI_API_KEY; deploy.mjs fills in th
 cd web && npm run dev
 ```
 
-Next reads `web/.env.local` at startup, so restart the dev server after changing it. `web/.env.local` is in `.gitignore`.
+Next reads `web/.env.local` at startup, so restart the dev server after changing it. `web/.env.local` is in `.gitignore`. [.env.example](.env.example) documents every variable; the ones that change behaviour:
+
+| Variable | What it does | Unset |
+|---|---|---|
+| `NEXT_PUBLIC_NEAR_NETWORK` | `mainnet`, `testnet` or `sandbox` | `testnet` |
+| `NEXT_PUBLIC_REGISTRY_CONTRACT_ID` | The registry the app reads, `incorpr.near` on mainnet | Pages show "not deployed" |
+| `NEAR_OPERATOR_ACCOUNT_ID`, `NEAR_OPERATOR_PRIVATE_KEY` | The operator that books served calls and sends agent intents. Use the function-call key from `scripts/operator-key.mjs` | Paid calls cannot be booked |
+| `NEAR_AI_API_KEY` | NEAR AI Cloud inference for served calls, `/rob` chat and rebalance approvals | TEE routes answer HTTP 503; nothing is synthesized |
+| `INCORPR_ALLOW_MAINNET_REBALANCE` | Lets `/api/rebalance` move real funds on mainnet | `false`: dry quotes only |
+| `ROB_ACCOUNT_ID`, `ROB_PRIVATE_KEY`, `ROB_ATTEMPTS_ENABLED` | The stranger account `/rob` sends attempts from | Attempts are not sent |
+| `NEXT_PUBLIC_SITE_URL` | Public origin: NEP-413 recipient for owner sign-in, absolute URLs for share cards | Owner sign-in answers 503 in production |
+| `OWNER_SESSION_SECRET`, `OWNER_CREDENTIAL_KEY` | Holder session cookie key and the ed25519 key that signs holder credentials | Owner routes answer 503 in production |
+| `FASTNEAR_API_KEY` | Avoids the public rate limit on `/api/history` | Falls back to NearBlocks and archival RPC |
+| `AGENT_MARKET_*`, `CRON_SECRET` | Agent Market listing, webhook and poll ([docs/AGENT_MARKET.md](docs/AGENT_MARKET.md)) | Market routes answer 503 |
+| `BTC_MEMPOOL_API`, `SOLANA_RPC_URL`, `BASE_RPC_URL` and others | L1 endpoints for `/api/verify-l1` | Network-correct public endpoints |
 
 Local sandbox rehearsal of the whole deploy and demo:
 
@@ -355,7 +456,20 @@ node scripts/lib/sandbox.mjs stop --reset
 
 ## Deployment
 
-The runbook, costs and step list are in [docs/DEPLOY.md](docs/DEPLOY.md). In short: `node scripts/deploy.mjs --network mainnet --dry-run` prices the deploy (14.15 NEAR from the deployer for the registry and one company, measured on 2026-11-06 at protocol 88; 23.43 NEAR for three companies), then `--confirm-mainnet` sends it, and `scripts/demo.mjs` runs one company through pay, serve, list, refused robbery, sale, loan, refused robbery, repayment, quotes and dividends. The mainnet deploy with one company has run; the demo steps after `actors` have not. `/rob` sends attempts only after `node scripts/rob-setup.mjs` has created the stranger account and, on mainnet, `ROB_ATTEMPTS_ENABLED=true` is set.
+The runbook, costs and step list are in [docs/DEPLOY.md](docs/DEPLOY.md).
+
+1. **Contracts.** `node scripts/deploy.mjs --network mainnet --dry-run` prices the deploy (14.15 NEAR from the deployer for the registry and one company, measured on 2026-11-06 at protocol 88; 23.43 NEAR for three companies). `--confirm-mainnet` sends it. This created `incorpr.near` and `c-1.incorpr.near`; the registry was later upgraded in place with `scripts/upgrade-registry.mjs`.
+2. **Lifecycle.** `node scripts/demo.mjs --network mainnet --confirm-mainnet --step <step>` runs one company through pay, serve, list, refused robbery, sale, loan, refused robbery, repayment and dividends. Every step has run on mainnet; the hashes are in [docs/MAINNET_EVIDENCE.md](docs/MAINNET_EVIDENCE.md).
+3. **Operator key.** `node scripts/operator-key.mjs --network mainnet --confirm-mainnet --probe` adds the function-call key and writes it to `web/.env.local` ([docs/OPERATOR_KEY.md](docs/OPERATOR_KEY.md)).
+4. **`/rob`.** `node scripts/rob-setup.mjs` creates `rob.incorpr.near`; set `ROB_ATTEMPTS_ENABLED=true`.
+5. **Hosting.** Vercel project with Root Directory `web`, the variables from the table above, and `NEXT_PUBLIC_SITE_URL=https://tryincorpr.vercel.app`. `next.config.mjs` traces `docs/evidence` and the contract sources into the build so `/verify` and `/rob` can read them. `web/vercel.json` schedules the Agent Market poll daily, the most Vercel Hobby allows; [docs/AGENT_MARKET.md](docs/AGENT_MARKET.md) adds a 10-minute outside scheduler.
+6. **Check the hosted app.** `bash scripts/check-deploy.sh https://tryincorpr.vercel.app` checks every page, image, API route and production variable with curl only (`--live` adds one `/rob` chat and one refused attempt). `node scripts/live-wallet-check.mjs --confirm-mainnet` signs in to the owner room as the holder and pays and serves one call through the hosted API.
+
+**First live runs on the hosted app.** On 2026-11-07, `check-deploy.sh --live` passed 31 of 31 checks and the hosted server sent a Rob attempt that the vault refused ([`82Uu6rYt…`](https://nearblocks.io/txns/82Uu6rYtkfTaC67xA2xncPv2B77bKUiLw5ZqLtJSyaw6)). On 2026-11-08:
+
+- **Owner room:** six sign-ins by the holder, all accepted, with the room refusing requests without the cookie.
+- **Paid call:** `demo-customer` paid 0.05 USDC ([`Hjw6vDyd…`](https://nearblocks.io/txns/Hjw6vDyd8AKBjU9cL8rgk9YSs2ahaWhnuBF1xHtEkPfN)), the hosted `/api/run-service` answered in 12 s with an audit that found the reentrancy bug in the sample contract, and booked the call ([`31nzebmL…`](https://nearblocks.io/txns/31nzebmLhQH24saTnmKpULXsPcfY7o9sfZkCL3WD7yV5)); the vault's `api_calls_served` went from 2 to 3.
+- **Market flows**, with the hosted pages read after each step: list at 0.50 USDC ([`648kaf3J…`](https://nearblocks.io/txns/648kaf3JKEy9X8M4F9JLYNUhNMX9YSUx4r14vo8jSzsA), the company page showed "Listed for sale: shareholder rights are frozen"), atomic sale ([`GYEdkNAo…`](https://nearblocks.io/txns/GYEdkNAoUoBTvrd1UfptvUrmEj8MPewz2AeFPa3YoKVi)), loan offer ([`BsLLprHG…`](https://nearblocks.io/txns/BsLLprHGbUjo8pF26erheQcysuCqSmVGN7YHeb5qv2ji)), borrow ([`Dou1FfkV…`](https://nearblocks.io/txns/Dou1FfkVbDZEsMdq8gb8evo378uvMAGfXrocb3ydo92o), "Pledged as loan collateral"), repay ([`3VndCyS7…`](https://nearblocks.io/txns/3VndCyS7HhJ3dCzSqrE3HQqVLoHeP9jYZ4GZxqqVV7N8)), then a second listing and sale that returned the company to `demo-buyer.incorpr.near` ([`2nphj5uh…`](https://nearblocks.io/txns/2nphj5uh6YKdRH7GDe2eZ1yUpYVoiRkqMUJp4Jiw2uCe), [`34uDSJQv…`](https://nearblocks.io/txns/34uDSJQvhDZJDbJf9jtnSswEwiNz8FLRinRwpUwu6PrQ)). These were signed by `scripts/demo.mjs` with the demo accounts' key files, not by clicking the desk in a browser wallet; they are the same contract calls the desk builds.
 
 ## Repository map
 
@@ -363,22 +477,39 @@ The runbook, costs and step list are in [docs/DEPLOY.md](docs/DEPLOY.md). In sho
 contracts/
   company-vault/          vault deployed to c-<id>.<registry>: revenue, encumbrance, firewall, Chain Signatures
   incorpr-registry/       NEP-171 registry, factory, listings, offers, loans, Dutch auction, SVG charter
-  integration-tests/      near-workspaces sandbox tests
+  integration-tests/      near-workspaces sandbox tests: sandbox.rs (64), transfer_races.rs (13)
   test-doubles/           sandbox-only signer, intents and Test USDC contracts
   res/                    built wasm and ABI files (the registry embeds the vault wasm)
 scripts/
   build-contracts.sh      builds all wasm and runs check-wasm-imports.py
-  deploy.mjs, demo.mjs    deploy and demo runner for sandbox, testnet and mainnet; writes docs/evidence
-  lib/                    RPC, sandbox, attestation, 1Click, BTC and evidence helpers
+  deploy.mjs, demo.mjs    deploy and lifecycle runner for sandbox, testnet and mainnet; writes docs/evidence
+  evidence.mjs            re-reads every recorded transaction from the chain
+  rebalance.mjs           treasury swap through NEAR Intents with a TEE approval
+  operator-key.mjs        adds the function-call operator key
+  upgrade-registry.mjs    in-place registry upgrade with a state comparison
+  rob-setup.mjs           creates the /rob stranger account
+  pay-in-any-token.mjs    pays a call in wNEAR through 1Click
+  fund-treasury-btc.mjs   funds the company's Bitcoin address through 1Click
+  market-poll.mjs, market-forward.mjs   Agent Market poll and local webhook forwarder
+  check-deploy.sh         curl-only check of a deployed app
+  live-wallet-check.mjs   owner sign-in and paid call against a deployed app
+  lib/                    RPC, sandbox, attestation, 1Click, intents, BTC and evidence helpers
 web/
-  src/app/                landing, /exchange, /incorporate, /company/[id], /desk, /rob, /verify, API routes
-  src/lib/                contract clients, wallet, actions, MPC derivation, TEE verifier, Intents client
-  tests/                  vitest: unit, ABI, live endpoint and sandbox end-to-end tests
+  src/app/                landing, /exchange, /incorporate, /company/[id] and its owner room, /desk, /rob, /verify
+  src/app/api/            run-service, rebalance, intents, verify-l1, attestation, history, owner, rob, market
+  src/lib/                contract clients, wallet, MPC derivation, TEE verifier, Intents client, owner auth, history
+  tests/                  vitest: unit, ABI, live endpoint and sandbox end-to-end tests (27 files)
+  vercel.json             daily Agent Market poll
 video/                    demo film (Remotion); hashes come only from docs/evidence
 docs/
   ARCHITECTURE.md         authoritative design
+  THREAT_MODEL.md         17 ways a seller or borrower could try to keep the money, and what stops each
   DEPLOY.md               deploy runbook
   JUDGES.md               judge guide
+  OPERATOR_KEY.md         function-call operator key
+  AGENT_MARKET.md         Agent Market listing setup
+  MAINNET_EVIDENCE.md     every mainnet transaction, generated from docs/evidence/mainnet.json
+  evidence/               raw evidence: mainnet.json, its verification, rebalance, 1Click and BTC run logs
 ```
 
 ## Prior work and credits
@@ -393,3 +524,7 @@ docs/
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+---
+
+Incorpr is a hackathon build. The demo customer, buyer and lender are accounts the deployer controls, so the sales and loans on mainnet are real contract executions but not trades between independent parties, and the amounts are small. Nothing here is investment advice or an offer to sell anything.
