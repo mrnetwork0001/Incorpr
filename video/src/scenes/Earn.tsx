@@ -20,7 +20,7 @@ export const Earn: React.FC = () => {
   return (
     <Fill>
       {f < marketIn + 20 ? (
-        <>
+        <div style={{ opacity: interpolate(f, [marketIn - 8, marketIn + 2], [1, 0], clamp) }}>
           <div style={{ position: "absolute", left: 90, top: 120, width: 560 }}>
             <Kicker>A real payment from a wallet</Kicker>
             <Head size={64} style={{ marginTop: 22 }}>Pay <Em>per call.</Em></Head>
@@ -43,10 +43,10 @@ export const Earn: React.FC = () => {
               <Row k="calls served" v={<><span style={{ color: C.grey2 }}>4 →</span> <span style={{ color: C.ok }}>{D.vault.state.api_calls_served}</span></>} />
             </div>
           </Card>
-        </>
+        </div>
       ) : null}
-      {f >= marketIn ? (
-        <div style={{ opacity: interpolate(f, [marketIn, marketIn + 14], [0, 1], clamp) }}>
+      {f >= marketIn + 2 ? (
+        <div style={{ opacity: interpolate(f, [marketIn + 2, marketIn + 16], [0, 1], clamp) }}>
           <div style={{ position: "absolute", left: 90, top: 120, width: 600 }}>
             <Kicker>Also hired on</Kicker>
             <Head size={64} style={{ marginTop: 22 }}>NEAR's <Em>Agent Market</Em></Head>
