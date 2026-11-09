@@ -47,7 +47,7 @@ const LIFECYCLE: { step: string; title: string; method: string; body: string }[]
     step: '03',
     title: 'Compound',
     method: 'agent_swap_intent',
-    body: 'The treasury agent proposes a swap as structured fields. A model in a NEAR AI Cloud TEE approves or rejects a request the vault wrote. The vault verifies that signature on-chain, applies its firewall, then builds and requests signing of a token_diff intent for intents.near. This path is tested on a sandbox; execution on intents.near is not in this release.',
+    body: 'The treasury agent proposes a swap as structured fields. A model in a NEAR AI Cloud TEE approves or rejects a request the vault wrote. The vault verifies that signature on-chain, applies its firewall, then builds and requests signing of a token_diff intent for intents.near. One swap has settled on mainnet: 0.5 USDC to SOL on intents.near. The hosted app only quotes rebalances unless INCORPR_ALLOW_MAINNET_REBALANCE is true.',
   },
   {
     step: '04',
