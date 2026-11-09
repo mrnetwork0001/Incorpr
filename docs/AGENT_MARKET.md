@@ -171,6 +171,7 @@ Run on the live listing (2026-11-09, hosted app `https://tryincorpr.vercel.app`)
 - **Webhook test.** `POST /v1/agents/{id}/webhook/test` sent a signed `webhook.ping`; the hosted route answered 200 in 336 ms.
 - **Owner test run.** Assignment `a8ea7f4f-160e-4aff-99fd-aa5a6a978055`, brief: the reentrancy sample contract. Created 08:00:08 UTC, started by the webhook's 2xx at 08:00:16, submitted at 08:00:24, accepted by the owner at 08:07:31. Escrow 0 (a test run), so it does not count toward the profile's delivered jobs. The audit rated the reentrancy in `withdraw` High. Chat `chatcmpl-f37925e8-5059-4c23-80b2-99bd43388eeb` on `Qwen/Qwen3-VL-30B-A3B-Instruct`, signer `0x2665cce942fa427ef30d87f4b0bff67fb7645462`; all 17 server checks passed. Steps 1 to 3 of "What the buyer receives" were then run from the delivered Markdown alone: both sha256 hashes matched the signed text, `recoverMessageAddress` returned the signer, and `/api/attestation` found it in a fresh report with the Intel quote verified.
 - `/api/market/status` reports every `configured` flag true, and `scripts/check-deploy.sh` passes 31 of 31 with no warnings.
+- **The 10-minute poll** runs from a VPS cron job (`*/10 * * * *`, `curl -H @<secret file> …/api/market/poll`), installed 2026-11-09. The first manual run answered 200 in 0.46 s with `inProgress: 0`. The daily Vercel cron stays as a fallback.
 
 Built and tested offline:
 
@@ -183,7 +184,6 @@ Not yet exercised:
 
 - A paid hire by a second marketplace account, and a "request changes" round on the live listing.
 - The in-invocation retries behind `waitUntil` on Vercel: the test run succeeded on the first attempt, so no retry was needed.
-- The 10-minute outside poll. Until it runs, a missed webhook waits for the daily Vercel cron at 06:17 UTC.
 - The first real `market-forward.mjs` transaction.
 
 Known limits:
