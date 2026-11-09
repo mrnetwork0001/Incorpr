@@ -24,7 +24,7 @@ const cache = existsSync(CACHE) ? JSON.parse(readFileSync(CACHE, "utf8")) : { li
 // Per-line performance direction (overrides merged over the voice settings).
 const OVERRIDES = {
   // The hook and the close: unhurried.
-  hook_0: { stability: 0.55, style: 0.25, speed: 0.95 },
+  open_0: { stability: 0.55, style: 0.25, speed: 0.95 },
   rob_0: { speed: 0.98 },
   close_0: { stability: 0.6, style: 0.25, speed: 0.92 },
 };

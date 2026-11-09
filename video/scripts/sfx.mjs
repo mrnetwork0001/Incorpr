@@ -18,6 +18,9 @@ const SFX = {
   typing: ["Fast soft keyboard typing on a laptop, close, dry, a few seconds, no music", 2.5],
   lock: ["Heavy metal vault bolt sliding shut, single, clean, close", 1.0],
   link: ["Soft magnetic click as two pieces lock together, satisfying, clean, short", 0.6],
+  glitch: ["Short digital glitch stutter, a voice-like synth breaking up, clean, no music", 0.8],
+  sign: ["Quick confident pen signature scratch on paper, close, dry", 0.8],
+  slide: ["Smooth heavy object sliding across a table then settling, satisfying, short", 1.0],
 };
 
 const dir = join(ROOT, "public/audio/sfx");
