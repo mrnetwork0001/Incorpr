@@ -1,92 +1,68 @@
 # Incorpr demo film
 
-A film of about two minutes, made with [Remotion](https://www.remotion.dev), for the NEAR Hackathon (Nov 1 to 14, 2026). It runs under 2:10 because X handles longer videos poorly. Seven scenes, from `script.json`:
+A 2:59 film made with [Remotion](https://www.remotion.dev) for the NEAR Hackathon 2026 judges. It shows the problem, why NEAR, and the product working on mainnet: a keyless vault signing a Bitcoin spend, a paid call from a wallet, the Agent Market listing, the treasury agent's swap, a live robbery attempt the vault refuses, and a sale and a loan in one transaction each.
 
-| # | Scene | What it shows | Contract calls on screen |
-|---|---|---|---|
-| 01 | hook | "A company you can sell in one NFT transfer." | `nft_transfer` |
-| 02 | incorporate | the vault sub-account with no owner key; BTC, SOL and EVM addresses from Chain Signatures | `incorporate_company`, `refresh_treasury_keys` |
-| 03 | earn | pay per call in USDC (or through NEAR Intents); the model runs in a NEAR AI Cloud TEE; the browser verifies the signature | `ft_on_transfer`, `record_service_call` |
-| 04 | rob | a visitor tries to talk the treasury agent into moving money out; the vault's firewall refuses on-chain | `agent_withdraw_intent` and its checks |
-| 05 | sell | list, buyer pays, the NFT and the company move in one transaction | `list_company`, `ft_on_transfer`, `on_acquire_settled` |
-| 06 | borrow | pledge, USDC loan, owner signing frozen until repaid | `accept_offer`, `request_shareholder_signature` |
-| 07 | close | "Built on NEAR. Every claim links to a transaction." and NEAR HACKATHON | `/verify` |
+Deliverables, in `out/` (gitignored):
+- `incorpr-demo-4k.mp4`: 3840×2160, 30 fps, -14 LUFS.
+- `incorpr-thumbnail.png` and `.jpg`.
 
-Compositions (`src/Root.tsx`): `Incorpr` (1920x1080, 30 fps), `Poster` (1280x720 thumbnail), `Banner` (1500x500 X header).
+The YouTube title, description with transaction links, and chapters are in `youtube.txt`.
 
-## Title-card mode and footage
-
-Every scene renders on its own before anything is recorded: a title card in the site's design (background `#0D0D0D`, amber `#F0A24C`, glass panels with an amber top edge, film grain, Google Sans Flex and IBM Plex Mono), with the scene's key line and the contract method it relies on, copied from `contracts/*/src/lib.rs`.
-
-When `scripts/encode.mjs` (or `scripts/addclip.mjs`) writes a clip into `src/footage.json`, the scenes that name it play it in a browser frame instead:
-
-| Scene | Clips, first available wins |
-|---|---|
-| incorporate | `incorporate`, `company` |
-| earn | `company` |
-| rob | `rob`, `scan_rob` |
-| sell | `desk`, `exchange` |
-| borrow | `desk` |
-| close | `verify` |
-
-Before VO exists, `scripts/timing.mjs` estimates word timings (2.6 words per second) and marks each line `audio: false`; the film then renders silent with captions. Music, VO and effects play only for files that exist.
+Twelve scenes, from `script.json`: open, problem, turn, why NEAR, incorporate, earn, treasury, rob, sell, borrow, proof, close. The recurring motif is the vault drawn as a seal: an amber ring with "0" access keys at its centre and the Bitcoin, Solana and EVM addresses it signs for in orbit (`src/ui/Seal.tsx`).
 
 ## What is real
 
-- **Transaction hashes** come only from `/Users/mrnetwork/Incorpr/docs/evidence/<network>.json`. `scripts/sync.mjs` copies that file into `public/evidence/` before each render, and `src/evidence.ts` reads it at render time (`calculateMetadata`). Mainnet is preferred, then testnet. A scene shows a hash only when the file has a matching entry; with no file the scenes show no hash and the corner reads "no evidence file: hashes hidden". Nothing in `src/` contains a hash, balance or address.
-  The loader accepts any JSON in which an entry is an object with `hash` (or `txHash`, `tx_hash`, `transaction_hash`) holding a NEAR tx hash, named by `key`, `label`, `step` or its JSON key. Optional: `method`, `receiver_id`, `status`, `error`, `explorer`, `block`, `timestamp`. Scene matching (`SCENE_TX` in `src/evidence.ts`): incorporate (`incorporate`, `mint`, `create`), earn (`pay`, `service`, `ft_transfer_call`, `revenue`), rob (`rob`, `firewall`, `reject`, `withdraw`), sell (`acquire`, `sale`, `sell`, `buy`, `list`), borrow (`pledge`, `loan`, `borrow`, `accept_offer`).
-- **The app** is recorded from the running site with `scripts/capture.mjs` (headless Chrome, 1600x900 CSS px at device scale 2). Read-only clips only navigate, scroll and hover. Wallet-signed flows are recorded by the owner on screen and registered with `scripts/addclip.mjs`.
-- **The charter card** follows the registry's own SVG (`contracts/incorpr-registry/src/charter.rs`): same rows and state pill. It shows field names and where each value comes from, not values.
-- **The rob scene's visitor message** is an example of what `/rob` invites; it is labelled as a visitor's message. The error names in the code panels are the strings in `company-vault/src/lib.rs`. The failed receipt appears only from the evidence file.
-- **Marble hands**: `web/public/hero/hand-left.png` and `hand-right.png`, linked (not copied) into `public/hero` by `scripts/sync.mjs`. If they are missing, the scenes leave them out.
-- **Narration, music and effects**: ElevenLabs (not generated yet).
+- **Every hash, block, time and figure** on screen is quoted from `data/onchain.json`. `scripts/onchain.mjs` reads them back from NEAR mainnet RPC (`EXPERIMENTAL_tx_status`, `block`, `view_access_key_list`, `get_company`, `nft_token`, `get_state`), the Bitcoin transaction from Esplora, and the listing from the Agent Market public API. Last read 2026-11-09. Nothing in `src/` contains a hash or a balance.
+- **Open:** the Bitcoin spend `da6679b0…4b6a8f`, 9,523 sats.
+  - Broadcast 2026-11-06 19:04 UTC and confirmed at 19:23 UTC in block 974,844.
+  - Its signature came from `v1.signer` at the request of `c-1.incorpr.near`, which holds 0 access keys (NEAR tx `ENe31utH…`).
+- **Why NEAR:** each card's proof is a mainnet fact from that file:
+  - the vault's key count
+  - `v1.signer`
+  - the swap `4AmTFGH5…`
+  - the TEE signer `0x2665…5462`
+- **Earn:**
+  - **The paid call** is the owner's own screen recording, made with Meteor Wallet as `mrnetwork.near` around 09:46 UTC on 2026-11-09 (`public/footage/owner/owner-pay.mp4`).
+    - The recording was muted and cut to the segments listed in `owner-pay.segments.txt`, and the film plays it at 1.9×.
+    - The payment was `7zxrvumv…`, 0.05 USDC at 09:46:59 UTC. The vault booked it in `D2NeQ9ed…` at 09:47:12 UTC, with TEE chat `chatcmpl-0f87296f…`.
+    - Calls served went from 4 to 5.
+  - **The Agent Market numbers** come from the owner's free test run on 2026-11-09:
+    - created 08:00:08 UTC and delivered 08:00:24 UTC (16 s)
+    - 17 of 17 TEE checks passed
+    - accepted at 08:07:31 UTC
+- **Rob:** recorded from the hosted `/rob` page on 2026-11-09 with `scripts/capture.mjs` (`ONLY=rob ALLOW_WRITES=1`).
+  - The visitor's message is the one shown on screen.
+  - The agent's reply ("I'll initiate a withdrawal of 2.5 BTC…") is real and signed in the TEE.
+  - The four attempts were refused on mainnet: `2bK8DVm4…`, `E2xwV55R…`, `ABCNn7DG…`, `5dvm2KVZ…`.
+- **Sell and borrow:** the cycle was run on 2026-11-09 between 09:36 and 09:38 UTC with `scripts/demo.mjs`. The demo accounts signed with their key files; no browser wallet was used.
+  - The steps: list (`EaDVYBLU…`), buy (`9hEnUAfw…`), loan offer, borrow (`3Hv7sqjn…`), repay (`4TMnfFtP…`), then a sale back to `demo-buyer`.
+  - The hosted company page was recorded after each step.
+  - The refusal codes shown were recorded on 2026-11-06 while the company was listed or pledged.
+- **Proof:** `docs/evidence/mainnet.verified.json` shows 75 of 75 transactions matching the chain, with 11 expected refusals confirmed (re-checked 2026-11-09).
+- **Footage:**
+  - **Live site:** headless Chrome at 1600×900, device scale 2, on 2026-11-09.
+  - **Explorers:** mempool.space and Pikespeak, because NearBlocks shows a bot check to headless browsers.
+  - **Agent Market:** the public listing page.
+- **Logos** are unaltered:
+  - Bitcoin, Solana, Ethereum and NEAR from cryptologos.cc
+  - NEAR AI from near.ai
+  - Incorpr's mark from `web/src/app/icon.png`
+- **Narration, music and sound:** ElevenLabs. The narrator is Eric. "Incorpr" is voiced "Incorper", and "Live" in the close is spelled "Lyve" for the voice. The score is ElevenLabs Music, and the 15 effects are ElevenLabs sound generation.
 
-## Run it
+## Build it
+
+The ElevenLabs key is read at runtime from `ELEVENLABS_API_KEY` (environment or `video/.env`), or from the `ELEVENLABS_API_KEY` line of `/Users/mrnetwork/Syntura/video/.env`. It is never stored here.
 
 ```
 npm install
-cp .env.example .env          # add ELEVENLABS_API_KEY; CHROME_PATH and BASE are optional
-
-# audio, then timing (timing also runs without audio: estimated words, silent film)
-npm run vo && npm run vocheck  # narration, then a speech-to-text check of each line
-npm run music && npm run sfx
-npm run timing
-
-# footage from the running app (default BASE http://localhost:3010)
-npm run look                                    # screenshots + page text into .cache/look, clicks nothing
-ONLY=landing,exchange,incorporate,desk,verify npm run capture
-COMPANY_ID=<token id> ONLY=company npm run capture
-ONLY=scan npm run capture                       # nearblocks pages of every hash in docs/evidence
-ONLY=rob ALLOW_WRITES=1 npm run capture         # sends one real /rob attempt; run once
-node scripts/addclip.mjs desk ~/Desktop/desk-pledge.mov localhost:3010/desk   # owner recordings
-npm run encode
-
-# preview and render
-npm run studio
-npm run stills -- 150 600 1200                  # half-scale check stills of film frames
-npm run draft                                   # half-scale check render
-npm run render && npm run finish                # out/incorpr-demo-raw.mp4 -> out/incorpr-demo.mp4 at -14 LUFS
-npm run poster && npm run banner                # out/incorpr-thumbnail.png, out/incorpr-x-header.png
+npm run onchain                                   # read every figure back from mainnet into data/onchain.json
+npm run vo && npm run music && npm run sfx        # audio
+npm run timing                                    # word-level timing -> src/timing.json
+BASE=https://tryincorpr.vercel.app ONLY=landing,company,rob,... node scripts/capture.mjs && npm run encode
+npm run studio                                    # preview
+npm run draft                                     # half-scale check render
+npm run render4k && npm run finish                # 4K master, -14 LUFS / -1 dBTP
+npm run poster                                    # thumbnail
 ```
 
-`capture.mjs` refuses to run without `ONLY`, and clips that send a transaction (`rob`) also need `ALLOW_WRITES=1`, so a re-run never repeats a write by accident. `script.json` holds every spoken line; `say` is how the voice reads it ("near", "U S D C", "T E E", "N F T"), and `pronounce` maps the spoken words back to the written ones for captions. `public/footage`, `public/audio` and `out` are git-ignored; `src/footage.json` lists what the local footage folder holds.
-
-## License note
-
-Remotion is free for individuals and for companies of up to 3 people; larger companies need a company license (https://www.remotion.dev/license). This project is within the free tier.
-
-## Prior work and credits
-
-Incorpr is a NEAR Hackathon entry. Only tooling is reused, from the author's earlier project **Animr** (a Remotion demo film for Chogathon 2026); no scenes, copy, footage, data or audio from that film are used. Files adapted from `Animr/video`:
-
-- `scripts/cdp.mjs`: Chrome DevTools harness; Chrome path now from `CHROME_PATH`.
-- `scripts/capture.mjs`: cursor overlay, glide, press, typing, eased scroll, screencast and the `ONLY` guard kept; Incorpr routes, `ALLOW_WRITES` guard and evidence explorer clips are new.
-- `scripts/encode.mjs`, `scripts/finish.mjs`, `scripts/vofx.mjs`, `scripts/vocheck.mjs`, `scripts/stills.mjs`, `scripts/look.mjs`: path and name changes.
-- `scripts/voiceover.mjs`, `scripts/music.mjs`, `scripts/sfx.mjs`: new performance overrides, music prompt and effect list.
-- `scripts/timing.mjs`: new 2:10 budget, estimated timings without VO, `pronounce` caption mapping, audio and effect inventory.
-- `scripts/env.mjs`: rewritten to read only this project's `video/.env` (with `scripts/dotenv.mjs`).
-- `src/timing.ts`, `src/ui/motion.ts`, `src/ui/Count.tsx`, `src/ui/Grain.tsx`: as is or with small additions.
-- `src/ui/Captions.tsx`, `src/ui/Words.tsx`, `src/ui/Footage.tsx`, `src/ui/Chrome.tsx`, `src/scenes/common.tsx`, `src/Film.tsx`, `src/Root.tsx`, `src/Poster.tsx`, `src/Banner.tsx`: structure kept, restyled and rewritten for Incorpr.
-- `package.json`, `tsconfig.json`, `remotion.config.ts`: same toolchain (Remotion 4.0.530).
-
-New for Incorpr: `scripts/dotenv.mjs`, `scripts/sync.mjs`, `scripts/addclip.mjs`, `src/evidence.ts`, `src/theme.ts`, `src/ui/Charter.tsx` and the seven scenes in `src/scenes/`.
+`capture.mjs` refuses to run without `ONLY`, and the rob clip also needs `ALLOW_WRITES=1`, so a one-time write is never repeated by accident. The first-draft film this one replaced is kept in `old-v1/` and `script.v1.json`.

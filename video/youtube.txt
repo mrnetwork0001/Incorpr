@@ -1,0 +1,37 @@
+Incorpr: every NFT is an AI company (NEAR Hackathon 2026)
+
+Each NEP-171 NFT on Incorpr is an AI company with its own NEAR account that holds zero keys. Through Chain Signatures it controls its own Bitcoin, Solana and EVM addresses. Customers pay it per call, a NEAR AI Cloud TEE model does the work and signs the answer, and the owner can sell the whole company or borrow USDC against it in one transaction. Everything in this film happened on NEAR mainnet.
+
+App: https://tryincorpr.vercel.app
+Code: https://github.com/mrnetwork0001/Incorpr
+Agent Market: https://market.near.ai/a/ledgerline-audit
+Verify every claim: https://tryincorpr.vercel.app/verify
+
+Transactions shown in the film
+- Bitcoin spend signed for the keyless vault (9,523 sats): https://mempool.space/tx/da6679b0adaae2bf9beace1eab248c8800e674d703d59062c2bb65224a4b6a8f
+- The vault's signature request on NEAR: https://nearblocks.io/txns/ENe31utHVK4j8RHiDBjG1QAxThs1m26tHexUQquEFQ1R
+- Incorporation of company #1: https://nearblocks.io/txns/2xPK7TCGCM2q6ZrxH8FK1uwfcS4KaDFs6N4vPg2oTJHX
+- A paid call from a wallet (0.05 USDC): https://nearblocks.io/txns/7zxrvumv3DksQCYt5npuKkM4ymjbNLQZAaVZWZVq92ir
+- The vault booking that call: https://nearblocks.io/txns/D2NeQ9edcvMErYoPEgq3WUqVYCRFXwmSzVtSxSnQWR9P
+- Treasury swap, 0.50 USDC to SOL on intents.near: https://nearblocks.io/txns/4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi
+- Rob attempts refused on mainnet: https://nearblocks.io/txns/2bK8DVm4cvpqsmXjXYefzwWzZKatKALfstBEcDrkHYdM, https://nearblocks.io/txns/E2xwV55RRmb82mNo6rwUPucE43yPzZ2MKuGG3itfVoeJ, https://nearblocks.io/txns/ABCNn7DG6z2BmhRG5mSWyoRGth4gbPZbuQYrSp6gX4tu, https://nearblocks.io/txns/5dvm2KVZZ42he2EsU8AkuqXWVzAeGf8aknT1QZG4f1GC
+- Listing at 0.45 USDC: https://nearblocks.io/txns/EaDVYBLUTZ129skDdKgkkUqczh1UYsND9jDz7yn439Av
+- Sale in one transaction: https://nearblocks.io/txns/9hEnUAfwe245Q7szmxX4Mowby1WEUr4tkT4yDSipp6VL
+- Loan taken against the company: https://nearblocks.io/txns/3Hv7sqjnoXfcDzrEASNFZZBvsBJs3FkHQ5cJNmF47RtB
+- Loan repaid: https://nearblocks.io/txns/4TMnfFtPsQHmrC799pmcYG7rGNCWzGmmvSvc4gSyjuhX
+
+Chapters
+0:00 A Bitcoin spend from an account with no key
+0:11 The problem: one hot key
+0:27 Incorpr
+0:37 Why NEAR
+0:59 Incorporate in one mint
+1:12 Pay per call, and Agent Market
+1:32 The treasury agent
+1:47 Try to rob it
+2:08 Sell in one transaction
+2:24 Borrow against it
+2:38 Every claim links to a transaction
+2:48 Live on NEAR mainnet
+
+#NEARHackathon @NEARProtocol
