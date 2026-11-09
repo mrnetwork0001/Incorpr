@@ -4,7 +4,7 @@
 
 A founder incorporates a company by minting its NFT. Customers pay it per call in USDC, a model running in a NEAR AI Cloud trusted execution environment (TEE) serves the call, and the vault books the income. The holder can claim dividends, pledge the company for a USDC loan, or list it and sell it in one transaction. While it is listed or pledged, the holder's own signing is frozen by the contract. Everything is measured by what the chain will confirm: booked revenue, settled sales, and the transactions the vault refuses. On 2026-11-09 (UTC), **75 mainnet transactions are recorded and re-checked against the chain, including 11 that the vault refused**. The company's treasury agent has made its first swap through NEAR Intents. The hosted app has served paid calls from a browser wallet, opened the owner room for the holder, and shown sales and loans as they settled. The same company is a **live agent on NEAR's Agent Market**, where it can be hired per job.
 
-Built for the NEAR Hackathon 2026 (Nov 1 to 14) · Track: NFTs That Do Something · App: [tryincorpr.vercel.app](https://tryincorpr.vercel.app) · Demo: `<VIDEO_URL>` · Code: [github.com/mrnetwork0001/Incorpr](https://github.com/mrnetwork0001/Incorpr) · Mainnet registry: [`incorpr.near`](https://nearblocks.io/address/incorpr.near)
+Built for the NEAR Hackathon 2026 (Nov 1 to 14) · Track: NFTs That Do Something · App: [tryincorpr.vercel.app](https://tryincorpr.vercel.app) · Demo: [youtu.be/4DQpNI57V9w](https://youtu.be/4DQpNI57V9w) · Code: [github.com/mrnetwork0001/Incorpr](https://github.com/mrnetwork0001/Incorpr) · Mainnet registry: [`incorpr.near`](https://nearblocks.io/address/incorpr.near)
 
 ### Live now (read from mainnet, 2026-11-09)
 
@@ -66,7 +66,7 @@ The house company is **Ledgerline Audit**, token 1, vault [`c-1.incorpr.near`](h
 | **Share cards** | 1200×630 preview images for the site, each company, and each refused robbery, read live from the chain. A refused attempt has its own card at `/rob/refused/<tx>`. | any page link |
 | **Evidence** | Every mainnet transaction the scripts sent, with purpose, signer, status and error code, re-verified by `scripts/evidence.mjs`. | [docs/MAINNET_EVIDENCE.md](docs/MAINNET_EVIDENCE.md) |
 | **Agent Market** | Ledgerline Audit is a live, hireable agent on NEAR's marketplace. A hire arrives by signed webhook (with a 10-minute poll as backup), runs the same NEAR AI Cloud skill as an on-chain call, and delivers the audit with its TEE signature and the steps to verify it. | [market.near.ai/a/ledgerline-audit](https://market.near.ai/a/ledgerline-audit), [docs/AGENT_MARKET.md](docs/AGENT_MARKET.md) |
-| **Demo film** | A 2:59 Remotion film recorded from the live app and the owner's wallet; every hash and figure on screen is read back from mainnet into `video/data/onchain.json`. | `video/` |
+| **Demo film** | A 2:59 Remotion film recorded from the live app and the owner's wallet; every hash and figure on screen is read back from mainnet into `video/data/onchain.json`. | [Watch on YouTube](https://youtu.be/4DQpNI57V9w) · `video/` |
 
 The landing page and the app share one header: brand, section or app links, the network badge and **Connect wallet** (NEAR Wallet Selector with Meteor and MyNearWallet). On phones and tablets the links fold into a left drawer, opened from the burger and closed by tapping outside, Esc or any link. Visitors who ask their system for reduced motion get a still page.
 
