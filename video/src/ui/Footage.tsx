@@ -45,8 +45,8 @@ function camAt(f: number, cams: Cam[], name: string) {
 export const Browser: React.FC<{
   name: string; url: string; width: number; left: number; top: number;
   startFrom?: number; cams?: Cam[]; enter?: number; exit?: number; tilt?: number; style?: React.CSSProperties; hold?: number; light?: boolean;
-  /** Clip frame to freeze on. */ stopAt?: number;
-}> = ({ name, url, width, left, top, startFrom = 0, cams = [], enter = 0, exit, tilt = 0, style, hold = 0, light, stopAt }) => {
+  /** Clip frame to freeze on. */ stopAt?: number; /** Playback speed. */ rate?: number;
+}> = ({ name, url, width, left, top, startFrom = 0, cams = [], enter = 0, exit, tilt = 0, style, hold = 0, light, stopAt, rate = 1 }) => {
   const f = useCurrentFrame();
   const c = clip(name);
   const bar = 42;
@@ -60,9 +60,9 @@ export const Browser: React.FC<{
   const inP = interpolate(f, [enter, enter + 20], [0, 1], { ...clamp, easing: soft });
   const outP = exit != null ? interpolate(f, [exit, exit + 14], [0, 1], { ...clamp, easing: soft }) : 0;
   const last = Math.min(c ? c.durationFrames - 2 : 0, stopAt ?? Infinity);
-  const pos = Math.max(0, f - hold) + startFrom;
-  const video = c ? <OffthreadVideo src={staticFile(c.file)} startFrom={startFrom} muted style={{ width: PAGE.w, height: PH }} /> : null;
-  const player = f < hold ? <Freeze frame={0}>{video}</Freeze> : pos >= last ? <Freeze frame={last - startFrom}>{video}</Freeze> : <Sequence from={hold} layout="none">{video}</Sequence>;
+  const pos = Math.max(0, f - hold) * rate + startFrom;
+  const video = c ? <OffthreadVideo src={staticFile(c.file)} startFrom={startFrom} playbackRate={rate} muted style={{ width: PAGE.w, height: PH }} /> : null;
+  const player = f < hold ? <Freeze frame={0}>{video}</Freeze> : pos >= last ? <Freeze frame={Math.floor((last - startFrom) / rate)}>{video}</Freeze> : <Sequence from={hold} layout="none">{video}</Sequence>;
   return (
     <div style={{
       position: "absolute", left, top, width, height: vh + bar, borderRadius: 18, overflow: "hidden", background: C.bg,

@@ -1,29 +1,10 @@
 {
-  "title": "Incorpr: a company you can sell in one NFT transfer",
+  "title": "Incorpr: every NFT is an AI company",
   "model": "eleven_multilingual_v2",
-  "pronounce": {
-    "NFT": "N F T",
-    "NFT.": "N F T.",
-    "USDC": "U S D C",
-    "USDC,": "U S D C,",
-    "TEE": "T E E",
-    "TEE,": "T E E,",
-    "NEAR": "near",
-    "NEAR.": "near.",
-    "NEAR,": "near,",
-    "Incorpr": "Incorper",
-    "Incorpr,": "Incorper,",
-    "Incorpr.": "Incorper.",
-    "EVM": "E V M",
-    "API": "A P I",
-    "nearblocks.": "near blocks.",
-    "AI": "A I",
-    "NFT,": "N F T,"
-  },
   "voices": {
     "narrator": {
-      "name": "Sarah",
-      "id": "EXAVITQu4vr4xnSDxMaL",
+      "name": "Eric",
+      "id": "cjVigY5qzO86Huf0OWal",
       "settings": {
         "stability": 0.5,
         "similarity_boost": 0.8,
@@ -34,57 +15,101 @@
   },
   "scenes": [
     {
-      "id": "hook",
-      "seconds": 10,
+      "id": "open",
+      "seconds": 11,
       "lines": [
         {
           "voice": "narrator",
-          "text": "A company you can sell in one NFT transfer. This is Incorpr, on NEAR.",
-          "say": "A company you can sell in one N F T transfer. This is Incorper, on near."
+          "text": "November sixth, seven oh four PM UTC. A Bitcoin transaction goes out. It was signed for a NEAR account that has no private key. Nobody holds one. Not even us.",
+          "say": "November sixth, seven oh four P M U T C. A Bitcoin transaction goes out. It was signed for a near account that has no private key. Nobody holds one. Not even us."
+        }
+      ]
+    },
+    {
+      "id": "problem",
+      "seconds": 16,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "AI agents already earn money. But that money sits behind one hot key. Leak the key, or talk the model into it, and the treasury is gone. And you can't sell an AI business, or borrow against it, without handing over keys and trusting a stranger.",
+          "say": "A I agents already earn money. But that money sits behind one hot key. Leak the key, or talk the model into it, and the treasury is gone. And you can't sell an A I business, or borrow against it, without handing over keys and trusting a stranger."
+        }
+      ]
+    },
+    {
+      "id": "turn",
+      "seconds": 9,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Meet Incorpr. Every NFT is an AI company. It owns its treasury, earns per call, and sells in one transaction.",
+          "say": "Meet Incorper. Every N F T is an A I company. It owns its treasury, earns per call, and sells in one transaction."
+        }
+      ]
+    },
+    {
+      "id": "whynear",
+      "seconds": 21,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "This needs four things, and NEAR has all four. Accounts that hold zero keys and only run code. Chain Signatures, so one NEAR contract controls Bitcoin, Solana and EVM addresses. NEAR Intents, to swap across chains in one settlement. And NEAR AI Cloud, where the model runs in a TEE and signs every answer.",
+          "say": "This needs four things, and near has all four. Accounts that hold zero keys and only run code. Chain Signatures, so one near contract controls Bitcoin, Solana and E V M addresses. near Intents, to swap across chains in one settlement. And near A I Cloud, where the model runs in a T E E and signs every answer."
         }
       ]
     },
     {
       "id": "incorporate",
-      "seconds": 19,
+      "seconds": 15,
       "lines": [
         {
           "voice": "narrator",
-          "text": "Incorporate a company, and NEAR creates its vault: a sub-account with no owner key. Chain Signatures give that vault its own Bitcoin, Solana and EVM addresses. There is no seed phrase to leak.",
-          "say": "Incorporate a company, and near creates its vault: a sub-account with no owner key. Chain Signatures give that vault its own Bitcoin, Solana and E V M addresses. There is no seed phrase to leak."
+          "text": "Incorporate in one mint. The NFT gets its own vault account, with zero access keys. The vault derives its Bitcoin, Solana and EVM addresses straight from the NEAR signer.",
+          "say": "Incorporate in one mint. The N F T gets its own vault account, with zero access keys. The vault derives its Bitcoin, Solana and E V M addresses straight from the near signer."
         }
       ]
     },
     {
       "id": "earn",
-      "seconds": 19,
+      "seconds": 21,
       "lines": [
         {
           "voice": "narrator",
-          "text": "Customers pay per API call in USDC, or from another chain through NEAR Intents. The vault books revenue only when the tokens arrive. The model runs in a NEAR AI Cloud TEE, and the browser verifies its signature.",
-          "say": "Customers pay per A P I call in U S D C, or from another chain through near Intents. The vault books revenue only when the tokens arrive. The model runs in a near A I Cloud T E E, and the browser verifies its signature."
+          "text": "Customers pay per call, in USDC or any token through NEAR Intents. The model runs in a TEE, the answer comes back signed, and the vault books the revenue. The same company is listed on NEAR's Agent Market. Its first test job was delivered in sixteen seconds, with all seventeen TEE checks passing.",
+          "say": "Customers pay per call, in U S D C or any token through near Intents. The model runs in a T E E, the answer comes back signed, and the vault books the revenue. The same company is listed on near's Agent Market. Its first test job was delivered in sixteen seconds, with all seventeen T E E checks passing."
+        }
+      ]
+    },
+    {
+      "id": "treasury",
+      "seconds": 15,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Profit goes to work. The treasury agent asks the model, the model signs its approval, and the vault checks that signature on-chain before it moves a cent. Half a USDC became Solana through NEAR Intents.",
+          "say": "Profit goes to work. The treasury agent asks the model, the model signs its approval, and the vault checks that signature on-chain before it moves a cent. Half a U S D C became Solana through near Intents."
         }
       ]
     },
     {
       "id": "rob",
-      "seconds": 23,
+      "seconds": 21,
       "lines": [
         {
           "voice": "narrator",
-          "text": "An AI can be talked into anything. So try it: ask the treasury agent to send the money out. It may agree. The vault does not. Its firewall runs on-chain, and NEAR rejects the transaction. The failed receipt is on nearblocks.",
-          "say": "An A I can be talked into anything. So try it: ask the treasury agent to send the money out. It may agree. The vault does not. Its firewall runs on-chain, and near rejects the transaction. The failed receipt is on near blocks."
+          "text": "So we invited people to rob it. Tell the agent to drain the treasury. Forge the AI's approval. Sell for one satoshi. Every attempt is a real mainnet transaction, and the vault refuses each one. The AI can be fooled. The vault can't.",
+          "say": "So we invited people to rob it. Tell the agent to drain the treasury. Forge the A I's approval. Sell for one satoshi. Every attempt is a real mainnet transaction, and the vault refuses each one. The A I can be fooled. The vault can't."
         }
       ]
     },
     {
       "id": "sell",
-      "seconds": 17,
+      "seconds": 16,
       "lines": [
         {
           "voice": "narrator",
-          "text": "To sell, the owner lists the company. The buyer pays, and the NFT and the company move to the buyer in one transaction. Listing freezes the owner's signing, so nothing leaves on the way.",
-          "say": "To sell, the owner lists the company. The buyer pays, and the N F T and the company move to the buyer in one transaction. Listing freezes the owner's signing, so nothing leaves on the way."
+          "text": "Now the business part. List the company, and the buyer pays. The NFT, the vault, the revenue and the Bitcoin, Solana and EVM treasury change hands in one transaction. While it is listed, even the owner is frozen.",
+          "say": "Now the business part. List the company, and the buyer pays. The N F T, the vault, the revenue and the Bitcoin, Solana and E V M treasury change hands in one transaction. While it is listed, even the owner is frozen."
         }
       ]
     },
@@ -94,19 +119,30 @@
       "lines": [
         {
           "voice": "narrator",
-          "text": "Or keep it and borrow. Pledge the NFT, receive a USDC loan, and owner signing stays frozen until the loan is repaid.",
-          "say": "Or keep it and borrow. Pledge the N F T, receive a U S D C loan, and owner signing stays frozen until the loan is repaid."
+          "text": "Or keep it, and borrow. Pledge the company, take a USDC loan, and repay. Until it is repaid, the owner can't sign, sell, or pay themselves.",
+          "say": "Or keep it, and borrow. Pledge the company, take a U S D C loan, and repay. Until it is repaid, the owner can't sign, sell, or pay themselves."
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "seconds": 10,
+      "lines": [
+        {
+          "voice": "narrator",
+          "text": "Every claim links to a transaction. Seventy-five on mainnet, re-checked against the chain, including eleven refusals.",
+          "say": "Every claim links to a transaction. Seventy-five on mainnet, re-checked against the chain, including eleven refusals."
         }
       ]
     },
     {
       "id": "close",
-      "seconds": 14,
+      "seconds": 10,
       "lines": [
         {
           "voice": "narrator",
-          "text": "Built on NEAR. Every claim links to a transaction. Incorpr, for the NEAR Hackathon.",
-          "say": "Built on near. Every claim links to a transaction. Incorper, for the near Hackathon."
+          "text": "Incorpr. AI companies you can own, sell, and borrow against. Live on NEAR mainnet.",
+          "say": "Incorper. A I companies you can own, sell, and borrow against. Lyve on near mainnet."
         }
       ]
     }

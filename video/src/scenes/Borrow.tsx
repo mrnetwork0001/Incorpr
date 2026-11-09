@@ -1,48 +1,44 @@
 import React from "react";
 import { C, mono } from "../theme";
-import { Charter } from "../ui/Charter";
-import { Words } from "../ui/Words";
-import { In, Panel, Stage, useCue } from "./common";
+import { D, short, tx } from "../data";
+import { Browser } from "../ui/Footage";
+import { Card, Em, Fill, Head, Kicker, Pill, Row, useCue } from "./common";
 
-/** 06: borrow. accept_offer pledges the NFT; the vault refuses owner signatures until repay. */
+/** 10. Borrow: the live page as Pledged, the loan, and what the owner cannot do until repaid. */
 export const Borrow: React.FC = () => {
   const { f, rel } = useCue("borrow");
-  const tPledge = rel("Pledge", 50);
-  const tLoan = rel("loan,", 90);
-  const tFrozen = rel("frozen", 140);
+  const borrow = tx("film_borrow"), repay = tx("film_repay");
+  const tPledge = rel("Pledge", 53), tRepay = rel("repay.", 126), tUntil = rel("Until", 152);
+  const blocked = [
+    { at: rel("sign,", 215), k: "sign", e: tx("rug_sign_listed").errors[0] },
+    { at: rel("sell,", 233), k: "sell", e: tx("rug_transfer_pledged").errors[0] },
+    { at: rel("pay", 252), k: "pay themselves", e: tx("rug_claim_pledged").errors[0] },
+  ];
+  void D;
   return (
-    <Stage
-      id="borrow"
-      kicker="Borrow"
-      head={<Words text="Borrow USDC against the company." at={6} every={3} accent={{ "USDC": C.amber }} />}
-      sub="While the loan is open, the vault refuses the owner's signing requests."
-      footage={[{ name: "desk", url: "localhost:3010/desk" }]}
-      codeAt={tFrozen - 6}
-      code={[
-        { t: "// incorpr-registry", c: "dim" },
-        { t: "accept_offer(offer_id)", c: "amber" },
-        { t: "vault: apply_encumbrance(Pledged)", c: "dim", indent: 1 },
-        { t: "// company-vault", c: "dim" },
-        { t: "request_shareholder_signature(..)", c: "amber" },
-        { t: "ERR_ACCOUNT_ENCUMBERED_SIGNING_FROZEN", c: "danger", indent: 1 },
-      ]}
-    >
-      <Panel at={tPledge - 6} left={1010} top={190} width={790} height={300} glow={0.9}>
-        <div style={{ transform: "scale(0.62)", transformOrigin: "0 0", position: "absolute", left: 32, top: 30 }}>
-          <Charter width={600} state={f < tPledge + 4 ? "FREE" : "PLEDGED"} glow={0.4} />
-        </div>
-        <div style={{ position: "absolute", left: 430, top: 40, width: 330 }}>
-          <In at={tLoan - 2}>
-            <div style={{ fontFamily: mono, fontSize: 16, letterSpacing: "0.12em", color: C.grey2, textTransform: "uppercase" }}>lender to owner</div>
-            <div style={{ fontSize: 34, fontWeight: 500, color: C.amber, marginTop: 6 }}>USDC principal</div>
-          </In>
-          <In at={tFrozen - 2} style={{ marginTop: 34 }}>
-            <div style={{ fontFamily: mono, fontSize: 16, letterSpacing: "0.12em", color: C.grey2, textTransform: "uppercase" }}>until repaid</div>
-            <div style={{ fontSize: 30, fontWeight: 500, marginTop: 6 }}>Owner signing frozen</div>
-            <div style={{ fontSize: 22, color: C.grey1, marginTop: 6 }}>Treasury agent frozen</div>
-          </In>
-        </div>
-      </Panel>
-    </Stage>
+    <Fill>
+      <div style={{ position: "absolute", left: 90, top: 110, width: 640 }}>
+        <Kicker>Or keep it</Kicker>
+        <Head size={70} style={{ marginTop: 20 }}>Borrow <Em>against it.</Em></Head>
+      </div>
+      <Browser name={f < tUntil + 120 ? "state_pledged" : "state_final"} url="tryincorpr.vercel.app/company/1" width={1060} left={780} top={150} enter={4} startFrom={20}
+        cams={[{ f: 0, z: 1 }, { f: 50, rect: { x: 450, y: 90, w: 720, h: 320 }, z: 1.55 }]} />
+      <Card at={tPledge - 4} left={90} top={360} width={640}>
+        <Kicker color={C.grey1}>accept_offer · pledged</Kicker>
+        <Row k="loan" v="1.00 USDC" color={C.amber} />
+        <Row k="repay" v="1.01 USDC to demo-lender" />
+        <Row k="tx" v={short(borrow.hash, 8, 6)} />
+        <Row k="repaid" v={f >= tRepay - 4 ? short(repay.hash, 8, 6) : "…"} color={f >= tRepay - 4 ? C.ok : C.grey2} />
+      </Card>
+      <div style={{ position: "absolute", left: 90, top: 660 }}>
+        <div style={{ fontFamily: mono, fontSize: 15, letterSpacing: "0.14em", color: C.grey2, marginBottom: 14, opacity: f >= tUntil - 4 ? 1 : 0 }}>REFUSED ON MAINNET WHILE LISTED OR PLEDGED</div>
+        {blocked.map((b) => (
+          <div key={b.k} style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12, opacity: f >= b.at - 4 ? 1 : 0 }}>
+            <span style={{ fontFamily: mono, fontSize: 22, width: 200, color: C.ink }}>can't {b.k}</span>
+            <Pill tone="danger" size={14}>{b.e}</Pill>
+          </div>
+        ))}
+      </div>
+    </Fill>
   );
 };

@@ -2,20 +2,23 @@ import React from "react";
 import { AbsoluteFill, Audio, Freeze, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { T, scene, wordAtOr } from "./timing";
 import { C } from "./theme";
-import { EvidenceCtx, type FilmProps } from "./evidence";
 import { Captions } from "./ui/Captions";
-import { Chrome } from "./ui/Chrome";
 import { Grain } from "./ui/Grain";
 import { clamp } from "./ui/motion";
-import { Hook } from "./scenes/Hook";
+import { Open } from "./scenes/Open";
+import { Problem } from "./scenes/Problem";
+import { Turn } from "./scenes/Turn";
+import { WhyNear } from "./scenes/WhyNear";
 import { Incorporate } from "./scenes/Incorporate";
 import { Earn } from "./scenes/Earn";
+import { Treasury } from "./scenes/Treasury";
 import { Rob } from "./scenes/Rob";
 import { Sell } from "./scenes/Sell";
 import { Borrow } from "./scenes/Borrow";
+import { Proof } from "./scenes/Proof";
 import { Close } from "./scenes/Close";
 
-const SCENES: Record<string, React.FC> = { hook: Hook, incorporate: Incorporate, earn: Earn, rob: Rob, sell: Sell, borrow: Borrow, close: Close };
+const SCENES: Record<string, React.FC> = { open: Open, problem: Problem, turn: Turn, whynear: WhyNear, incorporate: Incorporate, earn: Earn, treasury: Treasury, rob: Rob, sell: Sell, borrow: Borrow, proof: Proof, close: Close };
 const OVERLAP = 12; // frames each scene starts early, to dissolve over the last
 
 /** Each scene eases in (a short rise, un-blur and settle) over the tail of the previous one, holding its first frame. */
@@ -51,25 +54,32 @@ function effects(): Fx[] {
   const sc = (id: string) => scene(id).from;
   const w = (id: string, word: string, local: number) => wordAtOr(id, word, sc(id) + local);
   const fx: Fx[] = [
-    { file: "tick", at: 6, vol: 0.3 },
-    { file: "link", at: w("hook", "transfer.", 40) - 2, vol: 0.45 },
-    { file: "whoosh", at: sc("incorporate") - 8, vol: 0.3 },
-    { file: "lock", at: w("incorporate", "key.", 110) - 2, vol: 0.4 },
-    ...["Bitcoin,", "Solana", "EVM"].map((x, i) => ({ file: "tick", at: w("incorporate", x, 200 + i * 15) - 2, vol: 0.4 })),
-    { file: "whoosh", at: sc("earn") - 8, vol: 0.3 },
-    { file: "coin", at: w("earn", "pay", 20) + 4, vol: 0.35 },
-    { file: "chime", at: w("earn", "verifies", 300) + 2, vol: 0.35 },
-    { file: "riser", at: sc("rob") - 70, vol: 0.3 },
-    { file: "typing", at: w("rob", "ask", 70), vol: 0.22 },
-    { file: "denied", at: w("rob", "not.", 210) - 2, vol: 0.5 },
-    { file: "stamp", at: w("rob", "not.", 210) + 6, vol: 0.55 },
-    { file: "whoosh", at: sc("sell") - 8, vol: 0.3 },
-    { file: "click", at: w("sell", "lists", 40), vol: 0.4 },
-    { file: "link", at: w("sell", "one", 190) - 2, vol: 0.45 },
-    { file: "whoosh", at: sc("borrow") - 8, vol: 0.3 },
-    { file: "lock", at: w("borrow", "frozen", 140) - 2, vol: 0.45 },
-    { file: "whoosh", at: sc("close") - 8, vol: 0.3 },
-    { file: "chime", at: w("close", "Incorpr,", 90) - 2, vol: 0.4 },
+    { file: "tick", at: w("open", "November", 8), vol: 0.3 },
+    { file: "coin", at: w("open", "Bitcoin", 117) + 8, vol: 0.3 },
+    { file: "lock", at: w("open", "Nobody", 265) - 6, vol: 0.45 },
+    { file: "glitch", at: w("problem", "talk", 163) + 4, vol: 0.3 },
+    { file: "denied", at: w("problem", "gone.", 229) - 2, vol: 0.35 },
+    { file: "riser", at: sc("turn") - 80, vol: 0.32 },
+    { file: "impact", at: w("turn", "Incorpr.", 18) - 8, vol: 0.5 },
+    ...["Accounts", "Chain", "Intents,", "Cloud,"].map((x, i) => ({ file: "click", at: w("whynear", x, 100 + i * 140) - 6, vol: 0.35 })),
+    { file: "link", at: w("incorporate", "vault", 119) - 4, vol: 0.4 },
+    ...["Bitcoin,", "Solana", "EVM"].map((x, i) => ({ file: "tick", at: w("incorporate", x, 230 + i * 18) - 2, vol: 0.35 })),
+    { file: "coin", at: w("earn", "pay", 24) + 6, vol: 0.3 },
+    { file: "chime", at: w("earn", "signed,", 227), vol: 0.32 },
+    { file: "whoosh", at: w("earn", "listed", 330) - 16, vol: 0.28 },
+    { file: "sign", at: w("treasury", "signs", 119), vol: 0.4 },
+    { file: "chime", at: w("treasury", "Half", 302), vol: 0.3 },
+    { file: "typing", at: sc("rob") + 20, vol: 0.18, dur: 75 },
+    { file: "denied", at: w("rob", "refuses", 375) - 2, vol: 0.45 },
+    { file: "stamp", at: w("rob", "refuses", 375) + 4, vol: 0.5 },
+    { file: "glitch", at: w("rob", "fooled.", 474), vol: 0.3 },
+    { file: "click", at: w("sell", "List", 52), vol: 0.35 },
+    { file: "slide", at: w("sell", "change", 253) - 6, vol: 0.4 },
+    { file: "lock", at: w("sell", "frozen.", 381) - 4, vol: 0.4 },
+    { file: "link", at: w("borrow", "Pledge", 53), vol: 0.35 },
+    { file: "lock", at: w("borrow", "Until", 152), vol: 0.35 },
+    { file: "chime", at: w("proof", "eleven", 201), vol: 0.3 },
+    { file: "impact", at: sc("close") + 2, vol: 0.45 },
   ];
   const have = new Set(T.sfx ?? []);
   return fx.filter((x) => have.has(x.file) && x.at >= 0 && x.at < T.totalFrames);
@@ -80,14 +90,13 @@ function effects(): Fx[] {
  * scripts/encode.mjs writes a clip to src/footage.json, the scenes that name it play it instead.
  * Audio plays only for files that exist (timing.json records which), so the film renders without audio.
  */
-export const Film: React.FC<FilmProps> = (props) => {
+export const Film: React.FC = () => {
   // Captions sit out where big type already carries the words.
   const hideCaptions = (f: number) => {
     const s = T.scenes.find((x) => f >= x.from && f < x.from + x.durationInFrames);
-    return !s || ["hook", "close"].includes(s.id);
+    return !s || ["turn", "close"].includes(s.id);
   };
   return (
-    <EvidenceCtx.Provider value={props}>
       <AbsoluteFill style={{ background: C.bg }}>
         {T.scenes.map((s, i) => {
           const S = SCENES[s.id];
@@ -100,7 +109,6 @@ export const Film: React.FC<FilmProps> = (props) => {
           ) : null;
         })}
         <Grain opacity={0.07} />
-        <Chrome />
         <Captions hidden={hideCaptions} />
         {T.music ? <Audio src={staticFile(T.music.file)} volume={musicVolume} /> : null}
         {T.scenes.flatMap((s) => s.lines).filter((l) => l.audio).map((l, i) => (
@@ -114,6 +122,5 @@ export const Film: React.FC<FilmProps> = (props) => {
           </Sequence>
         ))}
       </AbsoluteFill>
-    </EvidenceCtx.Provider>
   );
 };

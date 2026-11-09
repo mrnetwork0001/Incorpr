@@ -1,1 +1,551 @@
-{}
+{
+ "btc": {
+  "file": "footage/btc.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 381,
+  "marks": {
+   "btc.first": 120,
+   "btc.s0": 120,
+   "btc.s1": 246
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "mempool.space/tx/da6679b0adaae2bf9beace1eab248c8800e674d703d59062c2bb65224a4b6a8f",
+  "rects": {}
+ },
+ "company": {
+  "file": "footage/company.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 944,
+  "marks": {
+   "company.first": 105,
+   "company.s0": 105,
+   "company.s1": 237,
+   "company.s2": 370,
+   "company.s3": 502,
+   "company.s4": 635,
+   "company.s5": 767
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "desk": {
+  "file": "footage/desk.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 144,
+  "marks": {
+   "desk.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/desk",
+  "rects": {}
+ },
+ "exchange": {
+  "file": "footage/exchange.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 456,
+  "marks": {
+   "exchange.first": 105,
+   "exchange.cta": 147,
+   "exchange.s0": 174,
+   "exchange.s1": 295
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/exchange",
+  "rects": {}
+ },
+ "incorporate": {
+  "file": "footage/incorporate.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 266,
+  "marks": {
+   "incorporate.first": 105,
+   "incorporate.s0": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/incorporate",
+  "rects": {}
+ },
+ "landing": {
+  "file": "footage/landing.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 837,
+  "marks": {
+   "landing.first": 149,
+   "landing.cta": 149,
+   "landing.s0": 177,
+   "landing.s1": 297,
+   "landing.s2": 418,
+   "landing.s3": 538,
+   "landing.s4": 659
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/",
+  "rects": {}
+ },
+ "market": {
+  "file": "footage/market.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 558,
+  "marks": {
+   "market.first": 105,
+   "market.cta": 147,
+   "market.s0": 192,
+   "market.s1": 313,
+   "market.s2": 433
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "market.near.ai/a/ledgerline-audit",
+  "rects": {}
+ },
+ "rob": {
+  "file": "footage/rob.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 1151,
+  "marks": {
+   "rob.type": 112,
+   "rob.send": 345,
+   "rob.reply": 412,
+   "rob.run": 647,
+   "rob.verdict": 940
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/rob",
+  "rects": {
+   "chat": {
+    "x": 67,
+    "y": 88,
+    "w": 721,
+    "h": 565
+   },
+   "verdict": {
+    "x": 840,
+    "y": 160,
+    "w": 665,
+    "h": 1442
+   }
+  }
+ },
+ "state_final": {
+  "file": "footage/state_final.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 284,
+  "marks": {
+   "state_final.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "state_free_before": {
+  "file": "footage/state_free_before.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 284,
+  "marks": {
+   "state_free_before.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "state_listed": {
+  "file": "footage/state_listed.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 284,
+  "marks": {
+   "state_listed.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "state_pledged": {
+  "file": "footage/state_pledged.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 288,
+  "marks": {
+   "state_pledged.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "state_repaid": {
+  "file": "footage/state_repaid.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 284,
+  "marks": {
+   "state_repaid.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "state_sold": {
+  "file": "footage/state_sold.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 284,
+  "marks": {
+   "state_sold.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "state_sold_settled": {
+  "file": "footage/state_sold_settled.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 284,
+  "marks": {
+   "state_sold_settled.first": 135
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {}
+ },
+ "verify": {
+  "file": "footage/verify.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 948,
+  "marks": {
+   "verify.first": 105,
+   "verify.s0": 105,
+   "verify.s1": 237,
+   "verify.s2": 370,
+   "verify.s3": 502,
+   "verify.s4": 635,
+   "verify.s5": 767
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/verify",
+  "rects": {}
+ },
+ "nb_borrow": {
+  "file": "footage/nb_borrow.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 252,
+  "marks": {
+   "nb_borrow.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "nearblocks.io/txns/3Hv7sqjnoXfcDzrEASNFZZBvsBJs3FkHQ5cJNmF47RtB",
+  "hash": "3Hv7sqjnoXfcDzrEASNFZZBvsBJs3FkHQ5cJNmF47RtB",
+  "rects": {}
+ },
+ "nb_btcsign": {
+  "file": "footage/nb_btcsign.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 252,
+  "marks": {
+   "nb_btcsign.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "nearblocks.io/txns/ENe31utHVK4j8RHiDBjG1QAxThs1m26tHexUQquEFQ1R",
+  "hash": "ENe31utHVK4j8RHiDBjG1QAxThs1m26tHexUQquEFQ1R",
+  "rects": {}
+ },
+ "nb_buy": {
+  "file": "footage/nb_buy.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 252,
+  "marks": {
+   "nb_buy.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "nearblocks.io/txns/9hEnUAfwe245Q7szmxX4Mowby1WEUr4tkT4yDSipp6VL",
+  "hash": "9hEnUAfwe245Q7szmxX4Mowby1WEUr4tkT4yDSipp6VL",
+  "rects": {}
+ },
+ "nb_incorporate": {
+  "file": "footage/nb_incorporate.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 257,
+  "marks": {
+   "nb_incorporate.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "nearblocks.io/txns/2xPK7TCGCM2q6ZrxH8FK1uwfcS4KaDFs6N4vPg2oTJHX",
+  "hash": "2xPK7TCGCM2q6ZrxH8FK1uwfcS4KaDFs6N4vPg2oTJHX",
+  "rects": {}
+ },
+ "nb_rob": {
+  "file": "footage/nb_rob.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 252,
+  "marks": {
+   "nb_rob.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "nearblocks.io/txns/E2xwV55RRmb82mNo6rwUPucE43yPzZ2MKuGG3itfVoeJ",
+  "hash": "E2xwV55RRmb82mNo6rwUPucE43yPzZ2MKuGG3itfVoeJ",
+  "rects": {}
+ },
+ "nb_swap": {
+  "file": "footage/nb_swap.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 252,
+  "marks": {
+   "nb_swap.first": 105
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "nearblocks.io/txns/4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+  "hash": "4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+  "rects": {}
+ },
+ "pk_borrow": {
+  "file": "footage/pk_borrow.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 260,
+  "marks": {
+   "pk_borrow.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/3Hv7sqjnoXfcDzrEASNFZZBvsBJs3FkHQ5cJNmF47RtB",
+  "hash": "3Hv7sqjnoXfcDzrEASNFZZBvsBJs3FkHQ5cJNmF47RtB",
+  "rects": {}
+ },
+ "pk_btcsign": {
+  "file": "footage/pk_btcsign.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 258,
+  "marks": {
+   "pk_btcsign.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/ENe31utHVK4j8RHiDBjG1QAxThs1m26tHexUQquEFQ1R",
+  "hash": "ENe31utHVK4j8RHiDBjG1QAxThs1m26tHexUQquEFQ1R",
+  "rects": {}
+ },
+ "pk_buy": {
+  "file": "footage/pk_buy.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 258,
+  "marks": {
+   "pk_buy.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/9hEnUAfwe245Q7szmxX4Mowby1WEUr4tkT4yDSipp6VL",
+  "hash": "9hEnUAfwe245Q7szmxX4Mowby1WEUr4tkT4yDSipp6VL",
+  "rects": {}
+ },
+ "pk_incorporate": {
+  "file": "footage/pk_incorporate.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 258,
+  "marks": {
+   "pk_incorporate.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/2xPK7TCGCM2q6ZrxH8FK1uwfcS4KaDFs6N4vPg2oTJHX",
+  "hash": "2xPK7TCGCM2q6ZrxH8FK1uwfcS4KaDFs6N4vPg2oTJHX",
+  "rects": {}
+ },
+ "pk_presigned": {
+  "file": "footage/pk_presigned.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 258,
+  "marks": {
+   "pk_presigned.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/288ZLY6r1w766ABsfHXFWm16qJb1NTXG5gTwur8CVWi1",
+  "hash": "288ZLY6r1w766ABsfHXFWm16qJb1NTXG5gTwur8CVWi1",
+  "rects": {}
+ },
+ "pk_rob": {
+  "file": "footage/pk_rob.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 258,
+  "marks": {
+   "pk_rob.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/E2xwV55RRmb82mNo6rwUPucE43yPzZ2MKuGG3itfVoeJ",
+  "hash": "E2xwV55RRmb82mNo6rwUPucE43yPzZ2MKuGG3itfVoeJ",
+  "rects": {}
+ },
+ "pk_swap": {
+  "file": "footage/pk_swap.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 258,
+  "marks": {
+   "pk_swap.first": 104
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "pikespeak.ai/transaction-viewer/4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+  "hash": "4AmTFGH5Lb7KSki1zQeVf65owD2zDTZwCpg4uf9XAkvi",
+  "rects": {}
+ },
+ "owner_pay": {
+  "file": "footage/owner/owner-pay.mp4",
+  "width": 3200,
+  "height": 1800,
+  "durationFrames": 789,
+  "marks": {
+   "connect": 0,
+   "meteor_connect": 78,
+   "pasted": 138,
+   "pay_click": 198,
+   "approve": 288,
+   "confirmed_running": 348,
+   "answer": 435,
+   "verify_click": 537,
+   "verify_pass": 573,
+   "served_before": 654,
+   "served_after": 699
+  },
+  "deviceScale": 2,
+  "viewport": {
+   "w": 1600,
+   "h": 900
+  },
+  "url": "tryincorpr.vercel.app/company/1",
+  "rects": {},
+  "source": "owner screen recording ~/Desktop/incorpr-rec.mov, 2026-11-09 ~09:46 UTC, Meteor Wallet, mrnetwork.near; muted and cut (owner-pay.segments.txt)"
+ }
+}

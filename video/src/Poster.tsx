@@ -1,27 +1,21 @@
 import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
-import { BG, C, amberButton, mono, sans } from "./theme";
-import { type FilmProps } from "./evidence";
-import { Charter } from "./ui/Charter";
-import { Grain } from "./ui/Grain";
+import { BG, C, mono, sans } from "./theme";
+import { Seal } from "./ui/Seal";
+import { Em } from "./scenes/common";
 
-/** 1280x720 thumbnail: the headline, the charter between the two marble hands, and the event. */
-export const Poster: React.FC<FilmProps> = ({ assets }) => (
-  <AbsoluteFill style={{ background: BG, color: "#fff", fontFamily: sans, overflow: "hidden" }}>
-    <div style={{ position: "absolute", left: 64, top: 56, fontFamily: mono, fontSize: 18, letterSpacing: "0.16em", color: C.amber, textTransform: "uppercase" }}>incorpr · near hackathon</div>
-    <div style={{ position: "absolute", left: 60, top: 100, width: 1160, fontSize: 84, fontWeight: 520, letterSpacing: "-0.05em", lineHeight: 0.98 }}>
-      A company you can sell in <span style={{ color: C.amber, textShadow: "0 0 40px rgba(240,162,76,0.45)" }}>one NFT transfer.</span>
+/** YouTube thumbnail, 1920x1080: one line, the seal, the logo. Readable at small size. */
+export const Poster: React.FC = () => (
+  <AbsoluteFill style={{ background: BG, fontFamily: sans, color: C.ink }}>
+    <div style={{ position: "absolute", left: 110, top: 100, display: "flex", alignItems: "center", gap: 22 }}>
+      <Img src={staticFile("brand/incorpr-icon.png")} style={{ width: 96, height: 96, borderRadius: 22 }} />
+      <div style={{ fontSize: 80, fontWeight: 600, letterSpacing: "-0.05em" }}>Incorpr</div>
     </div>
-    {assets.hands ? (
-      <>
-        <Img src={staticFile("hero/hand-left.png")} style={{ position: "absolute", left: -120, top: 430, width: 470, filter: "drop-shadow(0 24px 30px rgba(0,0,0,0.6))" }} />
-        <Img src={staticFile("hero/hand-right.png")} style={{ position: "absolute", right: -110, top: 390, width: 440, filter: "drop-shadow(0 24px 30px rgba(0,0,0,0.6))" }} />
-      </>
-    ) : null}
-    <div style={{ position: "absolute", left: 430, top: 360, transform: "rotate(-3deg)" }}>
-      <Charter width={420} glow={1} />
+    <div style={{ position: "absolute", left: 110, top: 300, width: 1000, fontSize: 132, fontWeight: 600, letterSpacing: "-0.055em", lineHeight: 0.98 }}>
+      Every NFT is an AI <Em>company.</Em>
     </div>
-    <div style={{ position: "absolute", right: 60, top: 44, ...amberButton, padding: "10px 22px", fontSize: 22, fontWeight: 500 }}>Built on NEAR</div>
-    <Grain opacity={0.06} />
+    <div style={{ position: "absolute", left: 114, top: 800, fontFamily: mono, fontSize: 38, color: C.amber, letterSpacing: "0.04em" }}>0 keys · BTC · SOL · EVM</div>
+    <div style={{ position: "absolute", left: 114, top: 870, fontFamily: mono, fontSize: 28, color: C.grey1, letterSpacing: "0.14em" }}>LIVE ON NEAR MAINNET</div>
+    <Seal at={-200} size={600} x={1470} y={560} spin={0} orbitAt={-200} />
   </AbsoluteFill>
 );
