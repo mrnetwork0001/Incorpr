@@ -2,7 +2,7 @@
 
 Agent Market (market.near.ai) is a NEAR ecosystem marketplace where people and agents hire AI agents per job. This integration lists company #1, Ledgerline Audit (an AI smart-contract auditor, `c-1.incorpr.near`), as a self-hosted agent there. A hire on the marketplace runs the same NEAR AI Cloud skill that on-chain customers pay 0.05 USDC per call for, and the deliverable carries the TEE signature with the steps to check it.
 
-What is built and tested, and what waits on the listing, is set out in "Status" at the end.
+**Live since 2026-11-09:** https://market.near.ai/a/ledgerline-audit (handle `ledgerline-audit`, Dev tools, 2.00 per call, 1-hour SLA), webhook `https://tryincorpr.vercel.app/api/market/webhook`. What has run against it, and what has not, is set out in "Status" at the end.
 
 ## The hire, step by step
 
@@ -165,18 +165,25 @@ Set the listing to Live (`listing_status: live`). The marketplace refuses this u
 
 ## Status
 
-Built and tested:
+Run on the live listing (2026-11-09, hosted app `https://tryincorpr.vercel.app`):
+
+- **Registration through the API.** The agent was created with `POST /v1/agents/register`, which returns the `aat_` token once, then configured with `PATCH /v1/agents/{id}` (description, tags, webhook URL and secret) and `POST /v1/agents/{id}/pricing-plans`. An agent token cannot change `runtime`; a registered agent is already `http`. The listing was then claimed into the owner's market.near.ai account with an adoption code (`POST /v1/agents/me/adoption-code`). Discover lists the agent only after that claim; before it, the profile URL worked but search did not find it.
+- **Webhook test.** `POST /v1/agents/{id}/webhook/test` sent a signed `webhook.ping`; the hosted route answered 200 in 336 ms.
+- **Owner test run.** Assignment `a8ea7f4f-160e-4aff-99fd-aa5a6a978055`, brief: the reentrancy sample contract. Created 08:00:08 UTC, started by the webhook's 2xx at 08:00:16, submitted at 08:00:24, accepted by the owner at 08:07:31. Escrow 0 (a test run), so it does not count toward the profile's delivered jobs. The audit rated the reentrancy in `withdraw` High. Chat `chatcmpl-f37925e8-5059-4c23-80b2-99bd43388eeb` on `Qwen/Qwen3-VL-30B-A3B-Instruct`, signer `0x2665cce942fa427ef30d87f4b0bff67fb7645462`; all 17 server checks passed. Steps 1 to 3 of "What the buyer receives" were then run from the delivered Markdown alone: both sha256 hashes matched the signed text, `recoverMessageAddress` returned the signer, and `/api/attestation` found it in a fresh report with the Intel quote verified.
+- `/api/market/status` reports every `configured` flag true, and `scripts/check-deploy.sh` passes 31 of 31 with no warnings.
+
+Built and tested offline:
 
 - Signature check, with expected values computed separately using `node:crypto` in the tests.
 - Dedupe, every route answer, and the state machine (fresh hire, redelivery, rework, truncated feedback, dispute redo, lease, a lease taken between read and report, no release of another worker's lease, cancel during work, failed verification, in-invocation retries and their limits, the 96 KiB request cap on a brief of control characters, poll idempotency, attachments), tested against an in-memory model of the documented API.
 - The schemas, checked against the live `openapi.json`.
-- One live NEAR AI Cloud rehearsal.
 - The forward script, in dry runs only.
 
 Not yet exercised:
 
-- Any authenticated marketplace call. No listing or token exists yet.
-- `waitUntil` on Vercel, and the in-invocation retries behind it. If the request context is missing there, the route runs one attempt before answering (`mode: "inline"` in the response, about 10 to 60 s) within `maxDuration` 300, and relies on the marketplace's redelivery for retries.
+- A paid hire by a second marketplace account, and a "request changes" round on the live listing.
+- The in-invocation retries behind `waitUntil` on Vercel: the test run succeeded on the first attempt, so no retry was needed.
+- The 10-minute outside poll. Until it runs, a missed webhook waits for the daily Vercel cron at 06:17 UTC.
 - The first real `market-forward.mjs` transaction.
 
 Known limits:
