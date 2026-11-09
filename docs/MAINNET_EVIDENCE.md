@@ -112,6 +112,7 @@ Signers come from a NEAR AI Cloud attestation report fetched with a fresh nonce 
 | 65 | repay | repay 1.010000 USDC on token 1 | `ft_transfer_call` | `717260aea2e5c0d732a164cbbd16ec066112be7a6fa79f91c6f5164ee9b765b9` → `17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1` | 1 yocto | success | [3VndCyS7…qVV7N8](https://nearblocks.io/txns/3VndCyS7HhJ3dCzSqrE3HQqVLoHeP9jYZ4GZxqqVV7N8) |
 | 66 | list | list "Ledgerline Audit" for 0.450000 USDC | `list_company` | `717260aea2e5c0d732a164cbbd16ec066112be7a6fa79f91c6f5164ee9b765b9` → `incorpr.near` | 1 yocto | success | [2nphj5uh…iw2uCe](https://nearblocks.io/txns/2nphj5uh6YKdRH7GDe2eZ1yUpYVoiRkqMUJp4Jiw2uCe) |
 | 67 | buy | buy token 1 for 0.450000 USDC at sync_nonce 17 | `ft_transfer_call` | `demo-buyer.incorpr.near` → `17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1` | 1 yocto | success | [34uDSJQv…wu6PrQ](https://nearblocks.io/txns/34uDSJQvhDZJDbJf9jtnSswEwiNz8FLRinRwpUwu6PrQ) |
+| 68 | live-pay | pay 0.050000 USDC for one call through the hosted app https://tryincorpr.vercel.app | `ft_transfer_call` | `demo-customer.incorpr.near` → `17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1` | 1 yocto | success | [5BFbQd7i…yDH4fg](https://nearblocks.io/txns/5BFbQd7iUGXu3ZufK5Cyk7EZxykiWoaPg78E34yDH4fg) |
 
 ## Rejected on purpose
 

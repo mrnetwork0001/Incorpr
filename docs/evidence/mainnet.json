@@ -1446,6 +1446,25 @@
       "receipt_failures": [],
       "gas_burnt": "35079425247453",
       "tokens_burnt_yocto": "3329396474745300000000"
+    },
+    {
+      "seq": 68,
+      "at": "2026-11-09T07:50:15.991Z",
+      "step": "live-pay",
+      "purpose": "pay 0.050000 USDC for one call through the hosted app https://tryincorpr.vercel.app",
+      "method": "ft_transfer_call",
+      "signer": "demo-customer.incorpr.near",
+      "receiver": "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+      "deposit_yocto": "1",
+      "gas": "100000000000000",
+      "tx_hash": "5BFbQd7iUGXu3ZufK5Cyk7EZxykiWoaPg78E34yDH4fg",
+      "explorer_url": "https://nearblocks.io/txns/5BFbQd7iUGXu3ZufK5Cyk7EZxykiWoaPg78E34yDH4fg",
+      "status": "success",
+      "expected_failure": false,
+      "error": null,
+      "receipt_failures": [],
+      "gas_burnt": "11083262242308",
+      "tokens_burnt_yocto": "1063689711730800000000"
     }
   ],
   "quotes": [
